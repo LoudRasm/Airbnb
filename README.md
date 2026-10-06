@@ -34,7 +34,7 @@ TV1–TV5 là ký hiệu theo tài liệu phân công; nhóm điền tên/MSSV t
 
 | Thành viên | Phạm vi và file chính | KPI / công việc phát triển | Reviewer |
 |---|---|---|---|
-| TV1 — nhóm trưởng | `run_pipeline.py`, `configs/toronto.yaml`, `src/airbnb/io.py`, `download.py`, `analysis.py` | Pipeline, tải dữ liệu, supply/churn, tích hợp, issues và merge PR | TV4 |
+| TV1 | `run_pipeline.py`, `configs/toronto.yaml`, `src/airbnb/io.py`, `download.py`, `analysis.py` | Pipeline, tải dữ liệu, supply/churn, tích hợp, issues và merge PR | TV4 |
 | TV2 | `src/airbnb/qa.py`, `eda.py`, `docs/QA.md`, `docs/CONTRACTS.md`, notebook `02_qa.ipynb` | QA, preprocessing, dictionary, tác động QA lên KPI | TV3 |
 | TV3 | `src/airbnb/kpi.py`, phần spatial trong `viz.py`, notebook `03_listings_spatial.ipynb` | Giá, entire-home share, multi-listing host share, neighbourhood/maps | TV1 |
 | TV4 | `src/airbnb/calendar.py`, notebook `04_calendar.ipynb` | Availability 30/90 ngày, weekday/weekend, tối ưu calendar lớn | TV5 |
