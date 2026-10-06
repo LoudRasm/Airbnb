@@ -2,7 +2,7 @@
 
 | Người | File chính sở hữu | KPI / kết quả | Reviewer |
 |---|---|---|---|
-| TV1 — leader | run_pipeline.py, configs/, io.py, download.py, analysis.py | supply/churn, integration, Git issues | TV4 |
+| TV1 | run_pipeline.py, configs/, io.py, download.py, analysis.py | supply/churn, integration, Git issues | TV4 |
 | TV2 | qa.py, eda.py, docs/QA.md, docs/CONTRACTS.md | QA, dictionary, before/after | TV3 |
 | TV3 | kpi.py, viz.py (spatial), notebook 03 | price, entire-home, host, spatial | TV1 |
 | TV4 | calendar.py, notebook 04 | 30/90-day, weekend, temporal | TV5 |
