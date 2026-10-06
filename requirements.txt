@@ -1,0 +1,2 @@
+# Runtime dependencies: none (Python 3.13 standard library).
+# Add exact == pins here when the team introduces third-party libraries.

@@ -1,0 +1,47 @@
+{
+  "city": "toronto",
+  "data_root": "canada/on/toronto",
+  "currency": "CAD",
+  "snapshots": [
+    "2025-09-11",
+    "2025-11-11",
+    "2026-03-19",
+    "2026-06-15"
+  ],
+  "seed": 42,
+  "qa": {
+    "price_max": 10000,
+    "min_nights_cap": 365,
+    "room_types": [
+      "Entire home/apt",
+      "Private room",
+      "Shared room",
+      "Hotel room"
+    ]
+  },
+  "calendar": {
+    "window_days": 90
+  },
+  "llm": {
+    "model": "gemini-2.5-flash",
+    "sample_size": 20,
+    "aspects": [
+      "location",
+      "cleanliness",
+      "host",
+      "value",
+      "amenities",
+      "noise",
+      "safety",
+      "check-in"
+    ],
+    "cache": "data/processed/llm_cache.jsonl",
+    "retries": 3
+  },
+  "paths": {
+    "raw": "data/raw",
+    "processed": "data/processed",
+    "reports": "reports/generated",
+    "figures": "figures"
+  }
+}

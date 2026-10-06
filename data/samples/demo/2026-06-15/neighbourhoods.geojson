@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"neighbourhood": "Demo West"}, "geometry": {"type": "Polygon", "coordinates": [[[-79.42, 43.64], [-79.36, 43.64], [-79.36, 43.69], [-79.42, 43.69], [-79.42, 43.64]]]}}]}

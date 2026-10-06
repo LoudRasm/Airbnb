@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.env.*
+!.env.example
+data/raw/
+data/processed/*
+!data/processed/.gitkeep
+figures/*
+!figures/.gitkeep
+reports/generated/
+reports/qa_report.csv
+.ipynb_checkpoints/
+.DS_Store
