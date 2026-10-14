@@ -1,5 +1,9 @@
 # KPI dự kiến
 
+**Trạng thái: kế hoạch tham khảo, chưa triển khai trong module phân tích. Owner: Hiếu/Nam/Phan Huy theo từng KPI.**
+Xem IMPLEMENTATION_GUIDE.md và CONTRACTS.md; data check đã hoàn thành vẫn giữ nguyên.
+
+
 Stakeholder: theo dõi thị trường lưu trú Toronto; giá CAD, không quy đổi tiền.
 
 | KPI | Công thức | Đơn vị / giới hạn |

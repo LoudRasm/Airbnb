@@ -19,7 +19,7 @@ git pull --ff-only origin main
 git switch -c feat/tv2-qa-price
 # sửa module của mình; chạy test + demo
 python -m unittest discover -s tests -v
-python run_pipeline.py --demo --skip-llm
+python run_pipeline.py --status
 git add src/airbnb/qa.py tests/ docs/QA.md
 git commit -m "feat(qa): flag invalid nightly prices"
 git push -u origin feat/tv2-qa-price
@@ -35,7 +35,7 @@ git fetch origin
 git merge origin/main
 # giải conflict, giữ cả hai logic phù hợp; không chọn toàn bộ ours/theirs một cách máy móc
 python -m unittest discover -s tests -v
-python run_pipeline.py --demo --skip-llm
+python run_pipeline.py --status
 git add PATHS_YOU_RESOLVED
 git commit
 git push
@@ -49,3 +49,10 @@ Không commit generated output, raw hoặc key; thêm processed thật chỉ sau
 
 Final: clone sạch, chạy pipeline thật có LLM, xác nhận mọi output, ghi commit trong report.
 Sau đó `git tag final` và `git push origin final`. Không di chuyển tag final sau khi nộp.
+
+## Làm phần phân tích còn TODO
+
+Sau khi pull, đọc IMPLEMENTATION_GUIDE.md và xem run_pipeline.py --status.
+Các thành viên tự triển khai src/airbnb theo owner; chỉ bật READY sau khi có logic/test/review.
+Lệnh --status và CI nền không chứng minh thuật toán đã xong. Nhóm trưởng nối code qua import,
+không chép implementation thành viên vào pipeline. Luồng scripts/check_data.py giữ nguyên.

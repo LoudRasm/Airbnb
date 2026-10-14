@@ -1,5 +1,9 @@
 # QA starter và phần cần phát triển
 
+**Trạng thái: kế hoạch tham khảo, chưa triển khai trong module phân tích. Owner: TV2 — Đức.**
+Xem IMPLEMENTATION_GUIDE.md và CONTRACTS.md; data check đã hoàn thành vẫn giữ nguyên.
+
+
 | Rule | Điều kiện | Lý do | Hành động |
 |---|---|---|---|
 | missing_id | ID trống | không định danh | loại khỏi cleaned |

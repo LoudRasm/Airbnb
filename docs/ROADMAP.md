@@ -1,5 +1,10 @@
 # Từ starter đến bài nộp
 
+**Giai đoạn hiện tại:** data check đã hoàn thành; các module phân tích là TODO theo TEAM.md.
+Các bước dưới là backlog cho thành viên tự triển khai, không phải implementation đã có sẵn.
+Xem IMPLEMENTATION_GUIDE.md để viết module, thêm test và nối qua import.
+
+
 Starter chạy demo offline và có adapter LLM, nhưng chưa kiểm chứng dữ liệu/API thật.
 
 1. TV1: tải thật đủ 16 file, kiểm manifest và schema, đo thời gian/RAM; thử snapshot mới.

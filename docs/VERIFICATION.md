@@ -26,3 +26,11 @@ không có review 50/30/25/25 và price thiếu mốc cuối 20.
 File nộp kiểm 16 cột, 4 dòng ngoài header. Mẫu LLM/nhãn tay đọc workbook = 1.000/100.
 Không gọi API LLM. Các câu trả lời được sinh là gợi ý, cần nhóm trưởng đọc và bổ sung câu 4.
 Workbook/raw vẫn ignore; chỉ source, config, docs, fixtures giả và báo cáo thống kê nhỏ vào commit.
+
+## Tách data check và khung phân tích — 14/10/2026
+
+Data check, config/checks, script Nam và kết quả kiểm tra được giữ nguyên.
+QA/EDA/KPI/calendar/reviews/LLM/evaluation/figures cả kỳ chuyển sang TODO theo owner.
+11 tests pass: 6 tests data check có dữ liệu tổng hợp và 5 tests import/orchestration/loader.
+Tests đường nối dùng test doubles, KHÔNG xác nhận thuật toán phân tích/LLM đã hoàn thành.
+run_pipeline --status liệt kê owner; chạy pipeline khi còn TODO dừng trước tải/API/output.

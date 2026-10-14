@@ -30,3 +30,13 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
 - Kiểm chứng: test ID dài, lọc review_id độc lập listing_id, đủ bốn mốc, lỗi ngày,
   thiếu dữ liệu, kết quả cũ/khác workbook và chặn merge khi chưa đủ phần.
 - Chạy lại kiểm tra trên raw Toronto local; không gọi API LLM, không sửa file gốc hoặc workbook.
+
+## Cập nhật 14/10/2026 — khung TODO theo phân công
+- Theo yêu cầu nhóm trưởng, Codex bỏ implementation AI trong các module phân tích cả kỳ,
+  giữ interface, TODO theo TV1–TV5, owner và trạng thái READY=False để thành viên tự làm.
+- Giữ nguyên data check đã kiểm chứng, script/CSV calendar do Nam merge ở PR #1
+  và script/kết quả listings của Đức ở PR #2/#3.
+- TV1 có loader/orchestration và import các module; mỗi owner tự triển khai logic, test và report section.
+- Prompt: giữ data check, để TODO theo phân công, sau này ghép code thành viên qua import.
+- Kiểm chứng: 11 tests cho data check và integration bằng test doubles; chưa có algorithm/LLM thật trong khung TODO.
+- Implementation AI cũ vẫn ở lịch sử Git; không đổi tác giả commit hoặc coi khung này là code do thành viên tự viết.

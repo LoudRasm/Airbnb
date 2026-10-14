@@ -1,28 +1,39 @@
-# Nhóm 10 — phân công theo bản kế hoạch Toronto
+# Phân công nhóm 10
 
-| Người | File chính sở hữu | KPI / kết quả | Reviewer |
+Thứ tự do nhóm trưởng chốt: TV1 Dương Nhật Huy; TV2 Mai Anh Đức; TV3 Nguyễn Quốc Hiếu;
+TV4 Vũ Phạm Khánh Nam; TV5 Phan Ngọc Huy. Mỗi người phụ trách phần mình ở cả bốn mốc.
+
+## Hai giai đoạn
+
+**Data check đã làm xong:** giữ nguyên `assignment.py`, `data_check.py`, `scripts/check_data.py`,
+config/checks, kết quả CSV/notes và tests. PR calendar của Nam và các script/kết quả listings của Đức đã merge cũng giữ nguyên.
+Không biến phần này thành TODO và không dùng nó thay cho QA/phân tích cả kỳ.
+
+**Bài phân tích cả kỳ:** các file dưới đây hiện là khung TODO, chưa có thuật toán hoàn chỉnh.
+Tên và chữ ký hàm thống nhất để nhóm trưởng gọi qua import.
+
+| Người | File trong src/airbnb/ | Nhiệm vụ tự triển khai | Reviewer |
 |---|---|---|---|
-| TV1 — Dương Nhật Huy | run_pipeline.py, configs/, io.py, download.py, analysis.py | supply/churn, integration, Git issues | TV4 — Vũ Phạm Khánh Nam |
-| TV2 — Mai Anh Đức | qa.py, eda.py, docs/QA.md, docs/CONTRACTS.md | QA, dictionary, before/after | TV3 — Nguyễn Quốc Hiếu |
-| TV3 — Nguyễn Quốc Hiếu | kpi.py, viz.py (spatial), notebook 03 | price, entire-home, host, spatial | TV1 — Dương Nhật Huy |
-| TV4 — Vũ Phạm Khánh Nam | calendar.py, notebook 04 | availability, calendar, temporal (không dùng giá calendar) | TV5 — Phan Ngọc Huy |
-| TV5 — Phan Ngọc Huy | reviews.py, llm.py, baseline.py, evaluate.py, notebook 05 | guest KPI, LLM/evaluation | TV2 — Mai Anh Đức |
+| TV1 — Dương Nhật Huy | loading.py, download.py, io.py, analysis.py, viz_market.py; run_pipeline.py ở gốc | Config/tải/loader/import đã có nền; còn market evolution và hình, tích hợp PR | Nam |
+| TV2 — Mai Anh Đức | qa.py, eda.py, viz_qa.py | QA rules, cleaning/types/flags/drift, data dictionary, tác động KPI và hình QA | Hiếu |
+| TV3 — Nguyễn Quốc Hiếu | kpi.py, viz_spatial.py | Giá mốc cuối, entire-home/host share, vùng/map, denominator và giới hạn mẫu | Nhóm trưởng |
+| TV4 — Vũ Phạm Khánh Nam | calendar.py, viz_calendar.py | Streaming, availability 30/90 ngày, coverage, temporal; không dùng giá calendar | Phan Huy |
+| TV5 — Phan Ngọc Huy | reviews.py, baseline.py, llm.py, evaluate.py, review_kpi.py, viz_reviews.py | Review dedupe, mẫu được giao, API/cache/retry, đối chứng/evaluation, guest KPI/hình | Đức |
 
-Repository chung: [2627-LTXLDL-Airbnb-dse2049_1-nhom10](https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10).
-TV1–TV5 và tên theo thứ tự nhóm trưởng đã chốt. Mỗi người làm phần mình cho cả 4 snapshot.
+Mỗi người tự thêm `tests/test_qa.py`, `test_listings.py`, `test_calendar_analysis.py`,
+`test_reviews.py` hoặc tên tương ứng; tự viết `reports/sections/tvN.md`.
+Không cùng sửa một file viz lớn; mỗi người đã có file riêng. `viz.py` chỉ nối imports.
 
-**Nhiệm vụ hiện tại:** báo cáo kiểm tra đầu vào. Dùng [DATA_CHECK_WORKFLOW.md](DATA_CHECK_WORKFLOW.md)
-để chạy phần riêng, xuất CSV/notes và mở PR. Nhóm trưởng ghép báo cáo cuối.
-Bảng dưới đây và nhãn tay 200 review là kế hoạch cả kỳ trước đây; riêng câu 2 của báo cáo kiểm tra
-phải lấy 1.000/100 trực tiếp từ workbook, không lấy số nhãn/prediction trong pipeline.
-Mỗi người viết `reports/sections/tvN.md`, tạo test riêng `tests/test_tvN_*.py`.
-Tách thêm `viz_spatial.py`, `viz_calendar.py`, `viz_reviews.py` khi phát triển để giảm đụng viz.py.
-TV1 review thay đổi orchestration; thống nhất schema bằng issue trước khi sửa contract.
+## Hợp tác và hoàn thành task
 
-Nhãn tay: 200 review thật, 40/người. TV5 chuẩn bị guideline, assignment review_id không trùng;
-mỗi người commit `data/samples/labels/tvN.csv`, TV5 hợp nhất thành manual_labels.csv và xử lý bất đồng.
-Starter không tạo 200 nhãn giả. Có thể tăng llm.sample_size để đủ ít nhất 100 paired labels.
+Đức thống nhất cleaned schema để các bạn dùng chung; các bạn có thể phát triển với sample/fixture
+và contract trong lúc QA chưa xong. Đổi chữ ký/cột phải thống nhất nhóm trưởng và downstream.
+Mỗi thành viên triển khai logic, kiểm số liệu, thêm test phù hợp, cập nhật AI_USAGE nếu dùng AI,
+push branch và được người khác review trước merge. Chỉ sau đó mới đặt module `READY = True`.
 
-Definition of Done: chạy bốn mốc, không hard-code ngày, output đúng contract, test + demo pass,
-QA/KPI được kiểm chứng, PR có reviewer, tài liệu/AI_USAGE được cập nhật.
-Mọi thành viên học toàn bộ pipeline để vấn đáp; owner không phải người duy nhất hiểu module.
+Nhãn tay: theo workbook hiện tại, 100 ID đánh dấu x nằm trong 1.000 mẫu LLM.
+Phan Huy tổ chức guideline và phân việc gán nhãn cho cả nhóm. Mục tiêu 200 review trong kế hoạch
+cũ là mở rộng nội bộ nếu nhóm chọn làm thêm; không thay số 1.000/100 của báo cáo data check.
+Tất cả phải giải thích được toàn bộ sản phẩm khi vấn đáp.
+
+[Hướng dẫn TODO/import/PR](IMPLEMENTATION_GUIDE.md) · [Contracts](CONTRACTS.md)
