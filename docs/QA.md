@@ -1,27 +1,32 @@
-# QA starter và phần cần phát triển
+# Kế hoạch QA — Đức phụ trách
 
-**Trạng thái: kế hoạch tham khảo, chưa triển khai trong module phân tích. Owner: TV2 — Đức.**
-Xem IMPLEMENTATION_GUIDE.md và CONTRACTS.md; data check đã hoàn thành vẫn giữ nguyên.
+Module phân tích hiện là TODO; các quy tắc dưới là đề xuất để Đức khảo sát, kiểm chứng và
+triển khai. Data check đã hoàn thành vẫn giữ nguyên và đếm dữ liệu trước cleaning.
+[Hướng dẫn triển khai](IMPLEMENTATION_GUIDE.md) · [Schema](CONTRACTS.md).
 
+Mỗi quy tắc cần ghi điều kiện, lý do, hành động và tác động số liệu. Ưu tiên gắn cờ; việc loại
+bỏ/dedupe hoặc chọn dòng phải có lý do và test. Không dùng quy tắc dự kiến như kết quả đã chạy.
 
-| Rule | Điều kiện | Lý do | Hành động |
-|---|---|---|---|
-| missing_id | ID trống | không định danh | loại khỏi cleaned |
-| duplicate_listing | ID lặp trong snapshot | tránh đếm đôi | giữ dòng đầu |
-| invalid_price | không parse / không hữu hạn | KPI giá cần numeric | None + flag |
-| price_outlier | <=0 hoặc >qa.price_max | giá bất thường | flag, không tính median |
-| category_drift | room_type ngoài config | schema/category thay đổi | flag |
-| missing_area/host | trống | không breakdown/host metric được | flag; host trống không vào denominator |
-| invalid_minimum_nights | thiếu/<1/>cap | lưu trú bất thường | flag |
-| calendar invalid date/available | không parse / không t,f | aggregate sai | bỏ khỏi aggregate |
-| orphan_calendar | không có listing cleaned | join không hợp lệ | loại aggregate |
-| duplicate_calendar | cùng listing,date trong snapshot | đếm đôi | giữ dòng đầu |
-| invalid_review | thiếu ID/text/date, date sau snapshot | không thể phân tích | loại |
-| duplicate_review | ID đã thấy | review tích lũy | giữ lần thấy đầu |
-| review_collision | cùng ID, khác nội dung/listing/date | collision | báo count, giữ lần đầu |
+| Nhóm kiểm tra | Đề xuất | Người triển khai |
+|---|---|---|
+| Thiếu | ID/host/vùng/giá/text thiếu; phân biệt thiếu cột với giá trị trống | Đức: listings; Nam: calendar; Phan Huy: reviews |
+| Kiểu sai | ID chuỗi chính xác; số/ngày parse đúng, hữu hạn; available t/f | Theo owner từng bảng |
+| Trùng | Khóa trong mốc và bản ghi giữa mốc; quy tắc chọn dòng và collision | Theo owner từng bảng |
+| Ngoại lai | Giá mốc cuối, minimum_nights, tọa độ; khảo sát ngưỡng và ảnh hưởng | Đức phối hợp Hiếu |
+| Danh mục/schema lệch | Room type ngoài danh mục và cột/kiểu thay đổi giữa mốc | Đức |
+| Bao phủ/join | Calendar thiếu ngày, review không ghép được listing, vùng không xác định | Nam/Hiếu/Phan Huy phối hợp Đức |
 
-qa_report.csv có affected_rows, rows_after và median price trước/sau cho listings.
-Những rule khác chưa có KPI impact đầy đủ; không xem starter là hoàn thành rubric.
-Ngưỡng 10,000 CAD là **giả định khung**, nhóm phải khảo sát/phê duyệt và giải thích.
-Backlog: geographic bounds, schema drift giữa mốc, room type drift theo tỷ lệ,
-review orphan, coverage thiếu calendar, QA provenance chi tiết, KPI impact của từng rule.
+`qa.clean_listings` trả cleaned schema và QA report; calendar/reviews trả issue counts theo
+CONTRACTS. Nhóm trưởng gom thành `reports/qa_report.csv`; thống nhất tên rule để tránh trùng.
+Bảng có snapshot, rule, affected_rows, action, rows_after, median_price_before/after.
+Đức cần giải thích tác động lên KPI và bổ sung contract nếu các KPI khác cần trường riêng.
+
+Giá chỉ phân tích ở mốc cuối; thiếu giá các mốc trước không phải lỗi cần xin dữ liệu khác.
+Ngưỡng `qa.price_max = 10000` CAD và `min_nights_cap = 365` là tham số khung, chưa được khảo
+sát; chỉ dùng sau khi giải thích lựa chọn. Calendar không kiểm/tính giá.
+`neighbourhood_cleansed` thiếu không được điền bằng mã vùng chữ nhật rồi gọi là neighbourhood.
+ID không qua float; raw/workbook không bị sửa; review filter độc lập listing_id.
+
+Đức bổ sung từ điển dữ liệu, quy tắc đã chọn, số dòng/KPI trước và sau QA vào docs/phần báo cáo.
+Tests cần có trường hợp lỗi thật được mô phỏng và kết quả kỳ vọng có lý do; hình QA do
+`viz_qa.py` sinh. Đọc output CSV để kiểm số liệu, không chỉ nhìn terminal hoặc CI xanh.

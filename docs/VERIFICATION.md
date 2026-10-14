@@ -1,36 +1,48 @@
-# Kiểm chứng starter — 06/10/2026
+# Phạm vi kiểm chứng — 14/10/2026
 
-Python 3.13.7, virtualenv mới: cài requirements.txt thành công (không runtime dependency).
-Demo bốn snapshot: 12 listing sau dedupe, 90 ngày/listing, availability 2/3.
-4 unittest pass, gồm pipeline trong bản sao sạch từ working directory ngoài repo.
-SVG parse XML thành công; 4 notebook parse JSON thành công.
+## Khung hiện tại
 
-Chưa kiểm chứng: tải dữ liệu thật, bộ nhãn tay thật, API Gemini thật, Windows,
-GitHub branch protection. Cài editable package tùy chọn cần mạng để tải build backend;
-không cần cài package để chạy pipeline/test.
+Python 3.13.7. Các lệnh kiểm tra ở gốc repo:
 
-## Repo Desktop nhóm 10 — 06/10/2026
+```bash
+python -m unittest discover -s tests -v
+python run_pipeline.py --status
+python run_pipeline.py --status --skip-llm
+git diff --check
+```
 
-Đã chạy lại 4 unittest: pass. Demo 4 snapshot: 12 listing sau dedupe.
-Đã kiểm HTTP HEAD 16 URL dữ liệu thật: tất cả 200. Chưa kiểm nội dung dữ liệu.
-Bổ sung .gitignore/.python-version/.env.example/CI bị thiếu trong bản Desktop.
-Git check-ignore xác nhận raw, processed output, generated reports/figures, .env và .DS_Store bị ignore.
+Bộ nền hiện có 11 tests: 6 data check và 5 pipeline/loader. Data check kiểm fixture XLSX,
+ID dài, lọc review_id độc lập listing_id, đếm trước cleaning, lỗi dữ liệu và chặn tổng hợp sai/cũ.
+Test pipeline dùng hàm giả để kiểm import/schema/xuất file, phạm vi ID và dừng khi còn TODO.
+Chúng không chứng minh thuật toán QA/KPI/calendar/LLM của thành viên đã hoàn thành.
+`--status` không đọc raw/gọi API; pipeline thật và demo đều dừng khi module bắt buộc chưa READY.
 
-## Luồng kiểm tra theo workbook — 14/10/2026
+Lần chỉnh tài liệu hiện tại kiểm thêm: link local, đường dẫn output/lệnh/interface, mẫu PR,
+phân công và tính nhất quán giữa README/TEAM/Git workflow/backlog. Giữ source phân tích ở TODO,
+không tải lại raw, không ghi đè báo cáo data check hoặc chạy API.
 
-10 tests pass: fixture XLSX, ID dài chính xác, review_id độc lập listing_id, bốn mốc,
-ngày lỗi, thiếu file, số đếm sửa/lệch, báo cáo cột thiếu, workbook/raw thay đổi và merge chặn draft.
-Chạy scripts/check_data.py --part all trên 12 raw gzip local: mọi mốc đúng
-1.000 listings, 365.000 dòng calendar, 5.000 reviews; entire/private 875/125;
-không có review 50/30/25/25 và price thiếu mốc cuối 20.
-File nộp kiểm 16 cột, 4 dòng ngoài header. Mẫu LLM/nhãn tay đọc workbook = 1.000/100.
-Không gọi API LLM. Các câu trả lời được sinh là gợi ý, cần nhóm trưởng đọc và bổ sung câu 4.
-Workbook/raw vẫn ignore; chỉ source, config, docs, fixtures giả và báo cáo thống kê nhỏ vào commit.
+## Data check đã chạy trên raw local
 
-## Tách data check và khung phân tích — 14/10/2026
+Ngày 14/10/2026, luồng kiểm đầu vào đã đọc 12 CSV gzip theo workbook của nhóm:
+1.000 listings, 365.000 dòng calendar và 5.000 reviews mỗi mốc; entire/private 875/125.
+Listing không có review theo bốn mốc: 50/30/25/25; thiếu price mốc cuối: 20.
+Mẫu LLM/nhãn tay lấy workbook: 1.000/100. CSV tổng hợp kiểm 16 cột, 4 dòng ngoài header.
+Không gọi API LLM; câu trả lời sinh tự động cần nhóm trưởng đọc trước nộp.
+Script/kết quả đã merge của Nam và Đức giữ nguyên, không coi là thuật toán phân tích cả kỳ.
 
-Data check, config/checks, script Nam và kết quả kiểm tra được giữ nguyên.
-QA/EDA/KPI/calendar/reviews/LLM/evaluation/figures cả kỳ chuyển sang TODO theo owner.
-11 tests pass: 6 tests data check có dữ liệu tổng hợp và 5 tests import/orchestration/loader.
-Tests đường nối dùng test doubles, KHÔNG xác nhận thuật toán phân tích/LLM đã hoàn thành.
-run_pipeline --status liệt kê owner; chạy pipeline khi còn TODO dừng trước tải/API/output.
+## Chưa xác nhận
+
+- Thuật toán và số liệu/hình phân tích thật; Gemini API/cache/evaluation trên 100 nhãn thật.
+- KPI theo neighbourhood, ý nghĩa churn trong cohort cố định và chạy mốc ngoài workbook.
+- Toàn bộ môi trường Windows, quyền private/giảng viên và branch protection GitHub.
+- Clone sạch chạy toàn pipeline có LLM và tái tạo báo cáo cuối.
+
+Owner bổ sung test thuật toán có ý nghĩa vào PR. Chỉ sau kiểm chứng tích hợp/dữ liệu thật mới
+cập nhật trạng thái hoàn thành; CI nền xanh và data check đạt không thay bước này.
+
+## Lịch sử tham khảo
+
+Starter ngày 06/10/2026 từng có implementation AI chạy demo và kiểm HTTP HEAD các URL;
+những kết quả đó thuộc phiên bản cũ. Module phân tích đã chuyển về TODO theo yêu cầu nhóm trưởng.
+Lịch sử chi tiết còn trong Git và SOURCE_REVIEW/AI_USAGE; không dùng demo cũ làm bằng chứng
+khả năng chạy của khung hiện tại hoặc kết quả thật của thành viên.

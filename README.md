@@ -4,7 +4,13 @@ Bài tập lớn Lập trình xử lý dữ liệu, lớp **UET.DSE2049 1**, nh�
 [GitHub nhóm](https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10)
 · [Đề bài](https://courses.iaidev.com/programming-for-data-processing/2627-1/projects/project_airbnb.html)
 
-**Repo có hai phần khác nhau:**
+## Trạng thái hiện tại
+
+Repo giữ cấu trúc **module trong `src/airbnb/`**. Đây là source chung: mỗi thành viên sửa
+file được giao trên branch riêng, mở PR vào `main`; sau merge, pipeline import code mới.
+Không cần folder theo tên người hoặc chép code sang một bộ source khác.
+
+**Repo có hai phần:**
 
 | Phần | Trạng thái | Lệnh |
 |---|---|---|
@@ -27,12 +33,43 @@ triển khai của các thành viên. [Hướng dẫn triển khai và import](d
 | TV5 — Phan Ngọc Huy | `reviews.py`, `baseline.py`, `llm.py`, `evaluate.py`, `review_kpi.py`, `viz_reviews.py` | Đức |
 
 Các tên file trên nằm trong `src/airbnb/`. Mỗi người làm module cho **cả 4 mốc**, không chia
-mỗi người một mốc. Mỗi người viết test và report section riêng. [Phân công](docs/TEAM.md).
+mỗi người một mốc. Mỗi người viết test phù hợp và phần báo cáo riêng. [Phân công chi tiết](docs/TEAM.md).
+
+## Cấu trúc và tài liệu cần đọc
+
+```text
+configs/                 Cấu hình Toronto và kiểm tra đầu vào
+data/raw/<YYYY-MM-DD>/   Dữ liệu gốc của từng mốc, gitignore
+data/assignments/        Workbook gốc giữ trên mỗi máy, gitignore
+data/samples/            Fixture giả và manual_labels.csv chờ nhãn thật
+data/processed/          Bảng sạch, kết quả LLM và KPI do pipeline sinh
+src/airbnb/              Module chung; TODO và OWNER ghi ngay trong file
+scripts/                Lệnh tải dữ liệu và kiểm tra đầu vào
+tests/                  Kiểm thử nền và kiểm thử do từng thành viên bổ sung
+figures/                Hình do pipeline sinh
+reports/checks/         CSV, ghi chú và chẩn đoán data check đã hoàn thành
+reports/generated/      Báo cáo thống kê do pipeline phân tích sinh
+reports/sections/       Mỗi người tự tạo tvN.md để bàn giao phần báo cáo
+notebooks/              Khám phá tùy chọn; không thay luồng chạy chung
+run_pipeline.py         Điều phối import → xử lý → xuất file
+```
+
+| Cần làm | Đọc |
+|---|---|
+| Biết phần của mình và kết quả phải bàn giao | [TEAM.md](docs/TEAM.md) |
+| Triển khai TODO, giữ đầu vào/đầu ra và nối import | [IMPLEMENTATION_GUIDE.md](docs/IMPLEMENTATION_GUIDE.md), [CONTRACTS.md](docs/CONTRACTS.md) |
+| Tạo branch, push, mở PR, merge và pull lại | [GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md) |
+| Chạy lại kiểm tra dữ liệu hoặc tổng hợp CSV nộp | [DATA_CHECK_WORKFLOW.md](docs/DATA_CHECK_WORKFLOW.md) |
+| Theo dõi việc còn thiếu trước bài cuối | [ROADMAP.md](docs/ROADMAP.md) |
+
+Sơ đồ trong đề gợi ý tên module bên trong `src/`; repo đặt chúng trong package `airbnb`
+để import ổn định. Những thư mục và file bàn giao ở gốc vẫn giữ theo đề.
 
 ## Cài môi trường và cập nhật code
 
 Python đã kiểm thử: **3.13.7**, xem `.python-version`. Khung dùng Python stdlib;
-không cần pandas để chạy data check. Nếu thêm thư viện cho phần mình, ghim `==` trong requirements.
+không cần pandas để chạy data check chung. Nếu thêm thư viện cho phần mình, ghim `==` trong
+`requirements.txt`; nếu khai báo trong `pyproject.toml` thì giữ hai nơi đồng nhất.
 
 ```bash
 git clone https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10.git
@@ -46,12 +83,25 @@ Windows PowerShell: dùng `py -3.13 -m venv .venv` và `.venv\Scripts\Activate.p
 Repo cần quyền truy cập GitHub của nhóm. Đã clone thì `git switch main` và `git pull --ff-only origin main`,
 sau khi lưu/commit công việc đang làm. [Git workflow](docs/GIT_WORKFLOW.md).
 
+Kiểm tra khung ngay sau khi cài, chưa cần raw/workbook/API:
+
+```bash
+python run_pipeline.py --status
+python -m unittest discover -s tests -v
+```
+
+Hiện `--status` liệt kê TODO, bộ test nền có 11 tests. Xem [phạm vi kiểm chứng](docs/VERIFICATION.md).
+
 ## Dataset và phạm vi nhóm
 
 Nguồn: [Inside Airbnb Toronto](https://data.insideairbnb.com/canada/on/toronto/) (CC BY 4.0).
-Mã dữ liệu **DSE2049-C01-G10-toronto**, tiền tệ **CAD**. Theo workbook mới:
+Mã dữ liệu **DSE2049-C01-G10-toronto**, tiền tệ **CAD**. Theo workbook được giao cho nhóm:
 **2025-09-11, 2025-12-12, 2026-03-19, 2026-06-15**.
 Giá chỉ phân tích ở mốc cuối. Calendar không dùng để phân tích giá; unavailable không đồng nghĩa booked.
+
+Trang đề hiện liệt kê mốc thứ hai Toronto là `2025-11-11`, khác `2025-12-12` trong workbook
+của nhóm. Config hiện theo workbook; không tự đổi ngày để khớp ví dụ trên trang.
+Giữ mã/ngày đúng phân công và ghi rõ nguồn này trong báo cáo.
 
 | Mốc | Listings | Calendar | Reviews | Neighbourhoods |
 |---|---|---|---|---|
@@ -63,6 +113,10 @@ Giá chỉ phân tích ở mốc cuối. Calendar không dùng để phân tích
 Downloader: `python scripts/download_data.py configs/toronto.yaml`.
 Raw ở `data/raw/<ngày>/`; workbook giữ nguyên ở `data/assignments/assignment.xlsx`.
 Cả hai thư mục đều gitignore; không commit raw/workbook/key và không mở rồi lưu lại bằng Excel.
+Nếu đã tải dữ liệu, đặt đúng tên/path theo [data/README.md](data/README.md); không phải tải lại.
+Chép workbook gốc vào path trên; hoặc dùng `--assignment` cho data check và sửa
+`assignment.path` trong config khi chạy phân tích. Người mới phải tự chuẩn bị raw/workbook,
+vì pull Git chỉ lấy file đã commit.
 ID dài giữ dạng chuỗi/số nguyên chính xác, không qua float.
 Vùng `analysis_area` là 8 hình chữ nhật từ workbook, không phải neighbourhood hành chính.
 Danh sách cố định 1.000 listing không đo được entry/exit hay quy mô toàn thị trường Toronto.
@@ -85,7 +139,8 @@ Phần reviews lọc bằng **review_id**, 5.000/mốc. Câu 2 lấy trực ti�
 Merge tạo `check_DSE2049-C01-G10-toronto.csv` có 16 cột và 4 dòng; có lỗi thì tạo `.draft.csv`.
 Bản `report_answers.md` tự sinh là gợi ý, cần nhóm trưởng đọc trước khi nộp.
 Script `scripts/check_calendar.py` và `reports/check_calendar.csv` do Nam đã đóng góp được giữ nguyên;
-luồng data check chung tiếp tục dùng `scripts/check_data.py`.
+script/kết quả listings của Đức cũng giữ nguyên. Luồng data check chung tiếp tục dùng
+`scripts/check_data.py`; đây là lệnh được hướng dẫn cho mọi máy và không cần pandas.
 
 ## Luồng phân tích để các thành viên tự làm
 
@@ -103,6 +158,8 @@ Sau khi tất cả module cần thiết đã triển khai/test/review và đặt
 ```bash
 # Phân tích, tạm bỏ LLM/evaluation/guest KPI/hình LLM:
 python run_pipeline.py --config configs/toronto.yaml --skip-llm
+# Nếu raw đã đủ cả CSV và GeoJSON, thêm --no-download để dùng file local:
+python run_pipeline.py --config configs/toronto.yaml --skip-llm --no-download
 # Khi đã đủ phần LLM và nhãn sentiment thật:
 export GEMINI_API_KEY='YOUR_API_KEY'
 python run_pipeline.py --config configs/toronto.yaml
@@ -118,14 +175,37 @@ các module được triển khai. Demo là dữ liệu giả, không dùng tron
 
 Output sau khi triển khai: `data/processed/real/` chứa cleaned, baseline, LLM và kpi_*.csv;
 `reports/generated/real/` chứa QA, EDA, evaluation; `figures/real/` chứa hình của từng người.
-QA thật còn được xuất vào `reports/qa_report.csv`. [Hợp đồng hàm và bảng](docs/CONTRACTS.md).
+QA thật còn được xuất vào `reports/qa_report.csv`. Terminal báo trạng thái và đường dẫn;
+CSV/hình là đầu ra để đối chiếu, không cần chụp terminal hoặc chép kết quả vào notebook.
+[Hợp đồng hàm và bảng](docs/CONTRACTS.md).
 
 ## Quy trình đóng góp
 
-Tạo branch, triển khai TODO của mình, thêm test/tài liệu và mở PR. Không chỉ đổi `READY` hoặc
-xóa comment để coi là hoàn thành. Nhóm trưởng review và tích hợp qua import sau merge;
-thành viên tự commit công việc bằng tài khoản mình. Code không chạy download/API ở cấp module.
-Chi tiết và ví dụ import: [IMPLEMENTATION_GUIDE.md](docs/IMPLEMENTATION_GUIDE.md).
+1. Pull `main` sau khi commit/lưu công việc đang làm; tạo branch cho một task.
+2. Đọc file được giao và `CONTRACTS.md`; triển khai TODO trong `src/airbnb/`.
+3. Test riêng phần mình trước, kể cả khi pipeline chung còn bị chặn bởi TODO của bạn khác.
+4. Bổ sung test, phần báo cáo `reports/sections/tvN.md`, tài liệu và AI_USAGE nếu có dùng AI.
+5. Kiểm diff, chỉ stage file liên quan, commit bằng tài khoản mình, push branch và mở PR.
+6. Reviewer kiểm logic/số liệu; nhóm trưởng merge rồi mọi người pull `main`.
+
+Không chỉ đổi `READY` hoặc xóa comment để coi là hoàn thành. Khi giữ đúng hàm và schema,
+import sẵn có tự dùng code mới; nhóm trưởng chỉ sửa luồng nếu thêm bước hoặc đổi giao diện.
+Code không chạy download/API ở cấp module. [Ví dụ làm module](docs/IMPLEMENTATION_GUIDE.md)
+· [Lệnh Git và xử lý conflict](docs/GIT_WORKFLOW.md).
+
+Đầu ra phân tích tự sinh đang gitignore; ghi lệnh, số liệu chính và giới hạn trong PR/phần báo cáo.
+Data check có quy ước commit CSV/notes nhỏ riêng. Ảnh có thể minh họa nhưng không thay code,
+test và file kết quả. Không dùng `git add .` để gom cả file của người khác.
+
+## Trước khi nộp bài cuối
+
 AI tạo khung/data check được ghi trong [AI_USAGE.md](AI_USAGE.md); mỗi thành viên cập nhật khi dùng AI.
-Trước bài cuối: đủ QA/KPI/hình/LLM được kiểm chứng, nhãn thật, report PDF tối đa 10 trang,
-clean clone chạy đầy đủ bằng key khác rồi mới tag `final` theo đề.
+Nhóm cần chốt bên nhận phân tích, hoàn thiện QA và 5–8 KPI, hình không gian/thời gian/LLM,
+baseline và đánh giá trên 100 nhãn thật. KPI theo `analysis_area` hiện chưa thay thế được
+yêu cầu neighbourhood: Hiếu và nhóm trưởng phải xác minh cách xử lý cột thiếu và ghi rõ
+phương án trước khi chốt bài. Cohort cố định cũng chưa đủ để suy luận entry/exit toàn thị trường.
+
+Sau khi hoàn thành: clone sạch, chạy đầy đủ có LLM bằng khóa môi trường, tái tạo số liệu/hình,
+ghép `reports/report.pdf` tối đa 10 trang và ghi mã commit. Hạn ghi trong đề là
+22/11/2026, tag `final`; thao tác tag nằm trong [GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md).
+Data check đạt và CI xanh hiện tại chưa có nghĩa bài phân tích cuối đã hoàn thành.
