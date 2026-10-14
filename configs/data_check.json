@@ -1,0 +1,19 @@
+{
+  "course_class": "UET.DSE2049 1",
+  "group": 10,
+  "data_code": "DSE2049-C01-G10-toronto",
+  "assignment": "data/assignments/assignment.xlsx",
+  "raw": "data/raw",
+  "output": "reports/checks",
+  "expected": {
+    "listings": 1000,
+    "calendar_days_per_listing": 365,
+    "reviews": 5000,
+    "llm": 1000,
+    "manual": 100,
+    "entire_home": 875,
+    "private_room": 125,
+    "no_reviews": [50, 30, 25, 25],
+    "missing_price_last": 20
+  }
+}

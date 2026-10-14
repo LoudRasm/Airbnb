@@ -2,14 +2,19 @@
 
 | Người | File chính sở hữu | KPI / kết quả | Reviewer |
 |---|---|---|---|
-| TV1 | run_pipeline.py, configs/, io.py, download.py, analysis.py | supply/churn, integration, Git issues | TV4 |
-| TV2 | qa.py, eda.py, docs/QA.md, docs/CONTRACTS.md | QA, dictionary, before/after | TV3 |
-| TV3 | kpi.py, viz.py (spatial), notebook 03 | price, entire-home, host, spatial | TV1 |
-| TV4 | calendar.py, notebook 04 | 30/90-day, weekend, temporal | TV5 |
-| TV5 | reviews.py, llm.py, baseline.py, evaluate.py, notebook 05 | guest KPI, LLM/evaluation | TV2 |
+| TV1 — Dương Nhật Huy | run_pipeline.py, configs/, io.py, download.py, analysis.py | supply/churn, integration, Git issues | TV4 — Vũ Phạm Khánh Nam |
+| TV2 — Mai Anh Đức | qa.py, eda.py, docs/QA.md, docs/CONTRACTS.md | QA, dictionary, before/after | TV3 — Nguyễn Quốc Hiếu |
+| TV3 — Nguyễn Quốc Hiếu | kpi.py, viz.py (spatial), notebook 03 | price, entire-home, host, spatial | TV1 — Dương Nhật Huy |
+| TV4 — Vũ Phạm Khánh Nam | calendar.py, notebook 04 | availability, calendar, temporal (không dùng giá calendar) | TV5 — Phan Ngọc Huy |
+| TV5 — Phan Ngọc Huy | reviews.py, llm.py, baseline.py, evaluate.py, notebook 05 | guest KPI, LLM/evaluation | TV2 — Mai Anh Đức |
 
 Repository chung: [2627-LTXLDL-Airbnb-dse2049_1-nhom10](https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10).
-TV1–TV5 theo bản phân công, chưa có tên/MSSV được cung cấp. Điền tên thật trong issue; mỗi người làm module cho cả 4 snapshot.
+TV1–TV5 và tên theo thứ tự nhóm trưởng đã chốt. Mỗi người làm phần mình cho cả 4 snapshot.
+
+**Nhiệm vụ hiện tại:** báo cáo kiểm tra đầu vào. Dùng [DATA_CHECK_WORKFLOW.md](DATA_CHECK_WORKFLOW.md)
+để chạy phần riêng, xuất CSV/notes và mở PR. Nhóm trưởng ghép báo cáo cuối.
+Bảng dưới đây và nhãn tay 200 review là kế hoạch cả kỳ trước đây; riêng câu 2 của báo cáo kiểm tra
+phải lấy 1.000/100 trực tiếp từ workbook, không lấy số nhãn/prediction trong pipeline.
 Mỗi người viết `reports/sections/tvN.md`, tạo test riêng `tests/test_tvN_*.py`.
 Tách thêm `viz_spatial.py`, `viz_calendar.py`, `viz_reviews.py` khi phát triển để giảm đụng viz.py.
 TV1 review thay đổi orchestration; thống nhất schema bằng issue trước khi sửa contract.

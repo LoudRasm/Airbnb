@@ -26,6 +26,6 @@ def write_csv(path, records, fields=None):
     path.parent.mkdir(parents=True, exist_ok=True)
     fields = fields or (list(records[0]) if records else [])
     with path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         writer.writerows(records)

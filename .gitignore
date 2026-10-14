@@ -14,3 +14,6 @@ reports/generated/
 reports/qa_report.csv
 .ipynb_checkpoints/
 .DS_Store
+
+# Lecturer workbook: keep an unchanged local copy; it includes other teams.
+data/assignments/

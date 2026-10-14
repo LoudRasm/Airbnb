@@ -21,3 +21,12 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
 - Bổ sung lại các dotfile setup/Git/CI đang thiếu trong bản repo Desktop.
 - Prompt: kiểm tra chia code theo phân công, dùng code chung trên main/pull và viết README
   đúng nhóm, đường dẫn GitHub/dataset đầy đủ.
+
+## Cập nhật 14/10/2026 — luồng xuất kết quả và tổng hợp
+- Codex tạo script kiểm tra chung theo workbook, bốn phần cho TV2–TV5 và lệnh merge của TV1.
+- Tích hợp lại phần calendar của Nam: đọc đúng path, bỏ phụ thuộc pandas/NumPy và ID hard-code,
+  xuất CSV/notes, báo lỗi ngày mà không dừng các mốc còn lại. Lịch sử script gốc còn trong Git.
+- Prompt: tạo luồng chạy kiểm tra → file kết quả → push lên repo để mọi người làm theo.
+- Kiểm chứng: test ID dài, lọc review_id độc lập listing_id, đủ bốn mốc, lỗi ngày,
+  thiếu dữ liệu, kết quả cũ/khác workbook và chặn merge khi chưa đủ phần.
+- Chạy lại kiểm tra trên raw Toronto local; không gọi API LLM, không sửa file gốc hoặc workbook.

@@ -13,6 +13,30 @@ Nhóm có **5 thành viên**, cùng phát triển một pipeline phân tích Tor
 > Chưa xác minh pipeline trên toàn bộ dữ liệu Toronto hoặc API Gemini thật; chưa có nhãn tay thật và báo cáo cuối.
 > Demo là dữ liệu tổng hợp, không được sử dụng làm kết quả nghiên cứu Toronto.
 
+## Luồng kiểm tra dữ liệu hiện tại — chạy và nhận file kết quả
+
+Theo workbook mới, nhóm dùng mã **DSE2049-C01-G10-toronto**, mốc 2 **2025-12-12**.
+Đọc [hướng dẫn từng người](docs/DATA_CHECK_WORKFLOW.md) trước khi chạy. Giữ nguyên workbook
+và chép vào `data/assignments/assignment.xlsx` trên máy mình (gitignore); raw ở `data/raw/<ngày>/`.
+Các lệnh sau chạy bằng Python stdlib, không cần pandas/notebook/API:
+
+| Người | Lệnh | CSV kết quả trong reports/checks/ |
+|---|---|---|
+| Đức — TV2 | `python scripts/check_data.py --part listings` | `listings_summary.csv`, `missing_columns.csv` |
+| Hiếu — TV3 | `python scripts/check_data.py --part listing-details` | `listing_details.csv` |
+| Nam — TV4 | `python scripts/check_data.py --part calendar` | `calendar_summary.csv` |
+| Phan Huy — TV5 | `python scripts/check_data.py --part reviews` | `reviews_summary.csv`, `review_sample_counts.csv` |
+| Bạn — TV1 | `python scripts/check_data.py --part merge` | `check_DSE2049-C01-G10-toronto.csv`, `report_answers.md` |
+
+Mỗi phần xuất thêm notes/diagnostics, kể cả khi có lỗi. Push code và các file kết quả nhỏ của
+phần mình lên branch rồi mở PR; terminal chỉ hiển thị tiến độ. Không commit raw/workbook.
+Nhóm trưởng có thể chạy lại tất cả bằng `python scripts/check_data.py --part all`.
+Merge chỉ tạo bản cuối khi các kiểm tra đạt; có blocker thì tạo `.draft.csv`, không được nộp.
+Câu 2 đọc đúng hai cột workbook (1.000/100); không lấy từ pipeline phân tích.
+
+Các mục về `run_pipeline.py` bên dưới mô tả khung phân tích cũ, **không thay thế bước kiểm tra
+được giao theo workbook**. Không dùng output demo hoặc pipeline cũ để điền CSV lần này.
+
 ## 1. Mục tiêu phân tích
 
 Stakeholder dự kiến theo bản phân công: **Toronto Short-Term Rental & Tourism Market Monitoring Team**,
@@ -37,7 +61,7 @@ TV1–TV5 là ký hiệu theo tài liệu phân công; nhóm điền tên/MSSV t
 | TV1 | `run_pipeline.py`, `configs/toronto.yaml`, `src/airbnb/io.py`, `download.py`, `analysis.py` | Pipeline, tải dữ liệu, supply/churn, tích hợp, issues và merge PR | TV4 |
 | TV2 | `src/airbnb/qa.py`, `eda.py`, `docs/QA.md`, `docs/CONTRACTS.md`, notebook `02_qa.ipynb` | QA, preprocessing, dictionary, tác động QA lên KPI | TV3 |
 | TV3 | `src/airbnb/kpi.py`, phần spatial trong `viz.py`, notebook `03_listings_spatial.ipynb` | Giá, entire-home share, multi-listing host share, neighbourhood/maps | TV1 |
-| TV4 | `src/airbnb/calendar.py`, notebook `04_calendar.ipynb` | Availability 30/90 ngày, weekday/weekend, tối ưu calendar lớn | TV5 |
+| TV4 | `src/airbnb/calendar.py`, notebook `04_calendar.ipynb` | Availability 30/90 ngày, tối ưu calendar lớn; không dùng giá calendar | TV5 |
 | TV5 | `src/airbnb/reviews.py`, `llm.py`, `baseline.py`, `evaluate.py`, notebook `05_reviews_llm.ipynb` | Reviews, Gemini, cache, baseline, guest KPI, đánh giá và chi phí | TV2 |
 
 `kpi.py` và `viz.py` hiện là nơi tổng hợp có nhiều người liên quan: mỗi PR chỉ sửa hàm thuộc nhiệm vụ,
@@ -54,7 +78,7 @@ Chi tiết: [TEAM.md](docs/TEAM.md), [CONTRACTS.md](docs/CONTRACTS.md).
 Config ở [configs/toronto.yaml](configs/toronto.yaml): `city = toronto`,
 `data_root = canada/on/toronto`, `currency = CAD`.
 Bốn ngày trong config khớp bản phân công và danh sách Toronto trong đề bài:
-**2025-09-11, 2025-11-11, 2026-03-19, 2026-06-15**.
+**2025-09-11, 2025-12-12, 2026-03-19, 2026-06-15**.
 
 Mỗi snapshot tải **4 file chi tiết**, tổng cộng **16 file**:
 
@@ -71,13 +95,13 @@ Các URL dưới đây được dựng theo quy tắc của đề bài và giố
 Không thay file `.csv.gz` chi tiết bằng file CSV summary ở thư mục `visualisations`.
 Trang gốc Toronto có thể không cung cấp trang liệt kê; khi tải, dùng URL từng file cụ thể.
 
-**Kiểm tra ngày 06/10/2026:** cả 16 URL bên dưới trả về **HTTP 200** qua HEAD.
-Đây là kiểm tra truy cập file, chưa kiểm nội dung/schema hoặc tải đủ dữ liệu.
+Các link dưới đây theo bốn ngày trong workbook mới. Ngày 14/10/2026, luồng kiểm tra
+đã đọc đủ 12 CSV gzip local của nhóm; kiểm tra HTTP trước đây không thay thế kiểm tra dữ liệu.
 
 | Snapshot | Listings | Calendar | Reviews | Neighbourhoods |
 |---|---|---|---|---|
 | 2025-09-11 | [listings.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/data/listings.csv.gz) | [calendar.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/data/calendar.csv.gz) | [reviews.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/data/reviews.csv.gz) | [neighbourhoods.geojson](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/visualisations/neighbourhoods.geojson) |
-| 2025-11-11 | [listings.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-11-11/data/listings.csv.gz) | [calendar.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-11-11/data/calendar.csv.gz) | [reviews.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-11-11/data/reviews.csv.gz) | [neighbourhoods.geojson](https://data.insideairbnb.com/canada/on/toronto/2025-11-11/visualisations/neighbourhoods.geojson) |
+| 2025-12-12 | [listings.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/data/listings.csv.gz) | [calendar.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/data/calendar.csv.gz) | [reviews.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/data/reviews.csv.gz) | [neighbourhoods.geojson](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/visualisations/neighbourhoods.geojson) |
 | 2026-03-19 | [listings.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/listings.csv.gz) | [calendar.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/calendar.csv.gz) | [reviews.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/reviews.csv.gz) | [neighbourhoods.geojson](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/visualisations/neighbourhoods.geojson) |
 | 2026-06-15 | [listings.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/listings.csv.gz) | [calendar.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/calendar.csv.gz) | [reviews.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/reviews.csv.gz) | [neighbourhoods.geojson](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/visualisations/neighbourhoods.geojson) |
 

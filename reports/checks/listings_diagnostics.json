@@ -1,0 +1,238 @@
+[
+  {
+    "ma_du_lieu": "DSE2049-C01-G10-toronto",
+    "moc": 1,
+    "ngay": "2025-09-11",
+    "part": "listings",
+    "missing_ids": [],
+    "high_missing_columns": [
+      {
+        "column": "neighbourhood_group_cleansed",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "calendar_updated",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      }
+    ],
+    "status": "ok",
+    "error": ""
+  },
+  {
+    "ma_du_lieu": "DSE2049-C01-G10-toronto",
+    "moc": 2,
+    "ngay": "2025-12-12",
+    "part": "listings",
+    "missing_ids": [],
+    "high_missing_columns": [
+      {
+        "column": "neighborhood_overview",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "neighbourhood",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "neighbourhood_group_cleansed",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "price",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "calendar_updated",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "estimated_revenue_l365d",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      }
+    ],
+    "status": "ok",
+    "error": ""
+  },
+  {
+    "ma_du_lieu": "DSE2049-C01-G10-toronto",
+    "moc": 3,
+    "ngay": "2026-03-19",
+    "part": "listings",
+    "missing_ids": [],
+    "high_missing_columns": [
+      {
+        "column": "neighborhood_overview",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_since",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_response_time",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_response_rate",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_acceptance_rate",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_thumbnail_url",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_neighbourhood",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_total_listings_count",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "neighbourhood",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "neighbourhood_group_cleansed",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "calendar_updated",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "instant_bookable",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      }
+    ],
+    "status": "ok",
+    "error": ""
+  },
+  {
+    "ma_du_lieu": "DSE2049-C01-G10-toronto",
+    "moc": 4,
+    "ngay": "2026-06-15",
+    "part": "listings",
+    "missing_ids": [],
+    "high_missing_columns": [
+      {
+        "column": "neighborhood_overview",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_since",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_response_time",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_response_rate",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_acceptance_rate",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_thumbnail_url",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_neighbourhood",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "host_total_listings_count",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "neighbourhood",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "neighbourhood_group_cleansed",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "calendar_updated",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      },
+      {
+        "column": "instant_bookable",
+        "missing_count": 1000,
+        "rows": 1000,
+        "missing_rate": 1.0
+      }
+    ],
+    "status": "ok",
+    "error": ""
+  }
+]
