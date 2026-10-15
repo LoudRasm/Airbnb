@@ -65,6 +65,40 @@ run_pipeline.py         Điều phối import → xử lý → xuất file
 Sơ đồ trong đề gợi ý tên module bên trong `src/`; repo đặt chúng trong package `airbnb`
 để import ổn định. Những thư mục và file bàn giao ở gốc vẫn giữ theo đề.
 
+### Các file `viz_*` là gì? Bản final có giữ không?
+
+`viz` là viết tắt của visualization (trực quan hóa). Đề gợi ý `viz.py` và yêu cầu có hình
+theo góc độ không gian, thời gian và LLM. Các tên `viz_calendar.py`, `viz_spatial.py`… là
+cách nhóm chia code theo phần việc, không phải tên file bắt buộc hay yêu cầu phân tích thêm.
+
+| File trong src/airbnb/ | Vai trò | Người phụ trách |
+|---|---|---|
+| `viz.py` | Gọi các hàm vẽ và gom đường dẫn hình; không viết chung mọi biểu đồ vào đây | Nhóm trưởng |
+| `viz_market.py` | Hình tổng hợp cho câu hỏi phân tích chung | Nhóm trưởng |
+| `viz_qa.py` | Hình về dữ liệu thiếu và chất lượng dữ liệu | Đức |
+| `viz_spatial.py` | Bản đồ, so sánh theo vùng; ghi rõ giới hạn neighbourhood | Hiếu |
+| `viz_calendar.py` | Hình availability/coverage theo thời gian; không phân tích giá calendar | Nam |
+| `viz_reviews.py` | Hình cảm xúc/khía cạnh từ kết quả LLM | Phan Huy |
+
+```text
+run_pipeline.py
+    → tính các bảng dữ liệu và KPI
+    → viz.render_all(...)
+        → viz_market / viz_qa / viz_spatial / viz_calendar / viz_reviews
+        → lưu hình vào figures/real/ (hoặc figures/demo/ khi chạy demo)
+```
+
+Mỗi người triển khai `render(tables, figures, cfg)` trong file vẽ của mình: nhận các bảng đã
+xử lý, lưu hình vào thư mục `figures` được truyền vào và trả `list[Path]`. Dùng tên hình riêng
+để tránh ghi đè; không tự tải raw/gọi LLM lại trong bước vẽ. `--skip-llm` bỏ `viz_reviews`.
+Các file vẽ hiện vẫn TODO; có tên file không có nghĩa đã sinh được hình.
+
+**Bản final giữ các module mà chương trình sử dụng**, kể cả các file `viz_*` không được liệt
+kê riêng trong sơ đồ đề. Các file hiện đã được `viz.py` import và gọi; không xóa chỉ để tên
+file giống sơ đồ minh họa. Nếu nhóm gộp/đổi module sau này, phải sửa import/lời gọi và kiểm
+tra lại pipeline. Hình nộp phải sinh tự động từ luồng chung, dùng số liệu khớp báo cáo;
+notebook khám phá và ảnh terminal không thay bước này.
+
 ## Cài môi trường và cập nhật code
 
 Python đã kiểm thử: **3.13.7**, xem `.python-version`. Khung dùng Python stdlib;

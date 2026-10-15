@@ -55,3 +55,11 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
   và việc chạy trên mốc ngoài workbook chưa được xác minh.
 - Kiểm chứng: rà đường dẫn/lệnh/interface trong tài liệu; chạy bộ 11 tests và lệnh --status.
   Không tải lại raw, không chạy lại API hoặc biến module TODO thành thuật toán đã hoàn thành.
+
+## Cập nhật 15/10/2026 — giải thích các file vẽ trong README
+
+- Prompt: kiểm tra đã ghi đầy đủ note hướng dẫn trong README sau khi giải thích các file viz.
+- Codex bổ sung ý nghĩa viz, bảng file/người phụ trách, luồng render và đường dẫn hình,
+  chữ ký hàm, trạng thái TODO và quy tắc giữ module được sử dụng trong bản final.
+- Kiểm chứng: đối chiếu với `src/airbnb/viz.py` và chữ ký các module vẽ; kiểm diff tài liệu.
+  Không sửa source hoặc chạy lại thuật toán/API cho thay đổi tài liệu này.
