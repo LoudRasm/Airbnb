@@ -1,14 +1,23 @@
-"""TV2 — Mai Anh Đức. Khung công việc cả kỳ; chưa triển khai.
+"""TV2 — Mai Anh Đức: thống kê cờ QA sau cleaning (EDA tối thiểu theo contract).
 
-Không import hoặc chạy pipeline ở cấp module. Giữ chữ ký hàm để TV1 tích hợp.
+Không import hoặc chạy pipeline ở cấp module.
 """
+from collections import Counter
 
 OWNER = 'TV2 — Mai Anh Đức'
-READY = False  # Chỉ bật True sau khi triển khai, có test và review.
+READY = False  # Chỉ bật True sau khi có test, chạy dữ liệu thật và reviewer xác nhận.
 
 
 def profile(listings):
-    """Trả list[dict]: snapshot_date, qa_flags, count; bổ sung EDA trong file riêng nếu cần.
+    """Đếm số listing theo từng cờ QA ở mỗi mốc: [{snapshot_date, qa_flags, count}].
+
+    Mỗi dòng nhiều cờ được đếm vào từng cờ (cột qa_flags ở đây là MỘT tên cờ, không phải chuỗi
+    nối '|'); dòng không có cờ được đếm vào 'none'. Không sửa bảng cleaned. Sắp xếp theo mốc
+    rồi tên cờ để kết quả ổn định.
     """
-    # TODO[TV2]: Thống kê missingness, flags và drift trên dữ liệu sau QA; không tự sửa cleaned.
-    raise NotImplementedError("TODO[TV2]: eda.profile — Mai Anh Đức")
+    counts = Counter()
+    for row in listings:
+        for flag in (row['qa_flags'].split('|') if row['qa_flags'] else ['none']):
+            counts[(row['snapshot_date'], flag)] += 1
+    return [{'snapshot_date': snapshot, 'qa_flags': flag, 'count': n}
+            for (snapshot, flag), n in sorted(counts.items())]
