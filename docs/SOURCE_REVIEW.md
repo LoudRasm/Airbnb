@@ -1,3 +1,9 @@
+# Ghi chú đối chiếu nguồn
+
+**Phần dưới ghi lịch sử starter ngày 06/10/2026, không mô tả trạng thái hoàn thành hiện tại.**
+Config hiện theo workbook nhóm có mốc thứ hai 2025-12-12; trang đề hiện ghi 2025-11-11.
+Các module phân tích hiện là TODO; xem README, TEAM và VERIFICATION để biết trạng thái.
+
 # Kiểm tra nguồn ngày 06/10/2026
 
 ZIP upload chứa một Markdown ~24 KB, kế hoạch Toronto và phân công 5 người, không có code/data.

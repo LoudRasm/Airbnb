@@ -24,7 +24,7 @@
   },
   "llm": {
     "model": "gemini-2.5-flash",
-    "sample_size": 20,
+    "sample_size": 1000,
     "aspects": [
       "location",
       "cleanliness",
@@ -43,5 +43,11 @@
     "processed": "data/processed",
     "reports": "reports/generated",
     "figures": "figures"
+  },
+  "assignment": {
+    "path": "data/assignments/assignment.xlsx",
+    "course_class": "UET.DSE2049 1",
+    "group": 10,
+    "data_code": "DSE2049-C01-G10-toronto"
   }
 }

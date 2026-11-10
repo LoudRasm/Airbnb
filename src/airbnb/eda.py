@@ -1,5 +1,23 @@
+"""TV2 — Mai Anh Đức: thống kê cờ QA sau cleaning (EDA tối thiểu theo contract).
+
+Không import hoặc chạy pipeline ở cấp module.
+"""
 from collections import Counter
 
+OWNER = 'TV2 — Mai Anh Đức'
+READY = False  # Chỉ bật True sau khi có test, chạy dữ liệu thật và reviewer xác nhận.
+
+
 def profile(listings):
-    return [{"snapshot_date": s, "qa_flags": flags or "none", "count": n}
-            for (s, flags), n in sorted(Counter((r["snapshot_date"], r["qa_flags"]) for r in listings).items())]
+    """Đếm số listing theo từng cờ QA ở mỗi mốc: [{snapshot_date, qa_flags, count}].
+
+    Mỗi dòng nhiều cờ được đếm vào từng cờ (cột qa_flags ở đây là MỘT tên cờ, không phải chuỗi
+    nối '|'); dòng không có cờ được đếm vào 'none'. Không sửa bảng cleaned. Sắp xếp theo mốc
+    rồi tên cờ để kết quả ổn định.
+    """
+    counts = Counter()
+    for row in listings:
+        for flag in (row['qa_flags'].split('|') if row['qa_flags'] else ['none']):
+            counts[(row['snapshot_date'], flag)] += 1
+    return [{'snapshot_date': snapshot, 'qa_flags': flag, 'count': n}
+            for (snapshot, flag), n in sorted(counts.items())]
