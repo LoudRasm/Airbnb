@@ -1,6 +1,11 @@
-"""Stream calendar; dedupe within each snapshot, aggregate a configurable window."""
-from collections import Counter
-from datetime import date, timedelta
+"""TV4 — Vũ Phạm Khánh Nam. Khung công việc cả kỳ; chưa triển khai.
+
+Không import hoặc chạy pipeline ở cấp module. Giữ chữ ký hàm để TV1 tích hợp.
+"""
+
+OWNER = 'TV4 — Vũ Phạm Khánh Nam'
+READY = False  # Chỉ bật True sau khi triển khai, có test và review.
+
 
 def aggregate(records, snapshot, window_days, listing_ids):
     start = date.fromisoformat(snapshot)
