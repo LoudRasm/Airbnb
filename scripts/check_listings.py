@@ -65,11 +65,11 @@ def main():
               f"{dong['so_cot_listings']} cột, {dong['so_cot_nan_90']} cột NaN>=90%")
 
     # 1) Bảng tóm tắt TV2 (4 dòng, mỗi dòng một mốc)
-    out1 = OUT_DIR / f"check_listings.csv"
+    out1 = OUT_DIR / f"listings_summary.csv"
     pd.DataFrame(ket_qua).to_csv(out1, index=False, encoding="utf-8")
 
     # 2) Tỷ lệ thiếu của từng cột ở từng mốc (phục vụ qa_report / Câu 3)
-    out2 = OUT_DIR / f"ty_le_thieu_listings.csv"
+    out2 = OUT_DIR / f"missing_columns.csv"
     pd.DataFrame(bang_thieu).round(4).rename_axis("cot").to_csv(out2, encoding="utf-8")
 
     print("Đã ghi:", out1)

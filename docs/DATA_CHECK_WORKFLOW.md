@@ -34,7 +34,8 @@ python scripts/check_data.py --part calendar --assignment "/path/to/assignment.x
 | TV1 — bạn, nhóm trưởng | `python scripts/check_data.py --part merge` | `check_DSE2049-C01-G10-toronto.csv`, `report_answers.md`, `merge_status.json` |
 
 Đức và Hiếu dùng cùng hàm lọc listings trong module chung; không cần chuyển dữ liệu đã lọc lớn qua Git.
-Script calendar cũ đã được nhóm xóa trên main. Nam dùng lệnh `python scripts/check_data.py --part calendar`.
+Script/kết quả calendar Nam và listings Đức đã merge vẫn được giữ để lưu đóng góp.
+Luồng chung hiện dùng `scripts/check_data.py`; Nam chạy `--part calendar` như bảng trên.
 Terminal hiển thị tiến độ/trạng thái và đường dẫn đã lưu. **CSV/ghi chú là kết quả bàn giao**, không chụp ảnh terminal thay file.
 Không bắt buộc dùng notebook để chạy kiểm tra.
 
@@ -107,9 +108,11 @@ Nếu phát triển logic trong `src/airbnb/data_check.py`, trao đổi owner, P
 python -m unittest discover -s tests -v
 ```
 
-## Phạm vi với pipeline cũ
+## Phân biệt với pipeline phân tích cả kỳ
 
-`run_pipeline.py` là khung phân tích trước đây, chưa lọc theo workbook; không dùng output đó điền
-bảng kiểm tra mới. Luồng trong tài liệu này là `scripts/check_data.py`.
-Các quyết định phân tích cả kỳ (KPI, mẫu LLM, giá, analysis_area) cần cập nhật theo dữ liệu được giao.
+`run_pipeline.py` hiện có loader lọc theo workbook và các module phân tích TODO theo owner.
+Không dùng output sau QA hoặc kết quả sampling của pipeline để điền bảng kiểm tra đầu vào.
+Luồng trong tài liệu này là `scripts/check_data.py`, đếm từng mốc trước cleaning và đọc
+trực tiếp hai cột Mẫu LLM/Nhãn tay. Data check vẫn chạy dù các module phân tích chưa READY.
+Các quyết định phân tích cả kỳ (KPI, LLM, giá, vùng) do owner triển khai theo CONTRACTS.
 Vùng workbook là 8 hình chữ nhật A01–A08; không đồng nhất với neighbourhood hành chính.
