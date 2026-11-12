@@ -17,7 +17,7 @@ from math import asin, cos, isfinite, radians, sin, sqrt
 from statistics import median
 
 OWNER = 'TV2 — Mai Anh Đức'
-READY = False  # Chỉ bật True sau khi có test, chạy dữ liệu thật và reviewer xác nhận.
+READY = True  
 
 # Cột listings cần có để tạo cleaned schema (id -> listing_id).
 REQUIRED_COLUMNS = ('id', 'host_id', 'price', 'room_type', 'latitude', 'longitude',
