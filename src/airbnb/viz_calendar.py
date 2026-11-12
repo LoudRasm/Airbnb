@@ -4,10 +4,6 @@ from __future__ import annotations
 from collections import defaultdict
 from pathlib import Path
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-
 OWNER = "TV4 — Vũ Phạm Khánh Nam"
 READY = True
 
@@ -24,6 +20,10 @@ def render(tables, figures, cfg):
 
     tables xem docs/CONTRACTS.md; figures là Path đã tạo; không sửa bảng đầu vào.
     """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
     figures = Path(figures)
     figures.mkdir(parents=True, exist_ok=True)
     saved_paths: list[Path] = []

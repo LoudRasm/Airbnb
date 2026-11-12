@@ -4,6 +4,9 @@ from __future__ import annotations
 from collections import Counter
 from datetime import date, timedelta
 
+OWNER = "TV4 — Vũ Phạm Khánh Nam"
+READY = True
+
 
 def aggregate(records, snapshot, window_days, listing_ids):
     """Tổng hợp availability rate trong cửa sổ `window_days` (ví dụ 90 ngày) từ `snapshot`.
@@ -73,7 +76,6 @@ def metrics(calendar, listings, cfg):
     Contract output columns:
     snapshot_date, analysis_area, availability_rate, observed_days, expected_days, listing_n
     """
-    # Ánh xạ (snapshot_date, listing_id) -> analysis_area từ bảng listings
     area_map: dict[tuple[str, str], str] = {}
     fallback_area: dict[str, str] = {}
 
@@ -86,8 +88,6 @@ def metrics(calendar, listings, cfg):
                 area_map[(snap, lid)] = area
             fallback_area[lid] = area
 
-    # Gom nhóm theo (snapshot_date, analysis_area)
-    # stats[(snap, area)] = [avail_days_sum, obs_days_sum, exp_days_sum, set_of_listing_ids]
     stats: dict[tuple[str, str], list] = {}
 
     for row in calendar:
@@ -133,7 +133,6 @@ def weekday_weekend_breakdown(records, snapshot, window_days, listing_ids):
     stop = start + timedelta(days=win)
     valid_ids = {str(lid).strip() for lid in listing_ids}
 
-    # counts[lid] = [wd_avail, wd_obs, we_avail, we_obs]
     counts: dict[str, list[int]] = {}
     seen: set[tuple[str, str, date]] = set()
 
