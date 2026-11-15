@@ -20,7 +20,8 @@ LLM_MODULES = (llm, evaluate, review_kpi, viz_reviews)
 def module_status(skip_llm=False):
     required = CORE_MODULES + (() if skip_llm else LLM_MODULES)
     return [{'module': module.__name__, 'owner': module.OWNER,
-             'ready': module.READY, 'required': module in required}
+             'ready': module.READY, 'implemented': getattr(module, 'IMPLEMENTED', module.READY),
+             'required': module in required}
             for module in CORE_MODULES + LLM_MODULES]
 
 
@@ -28,7 +29,7 @@ def require_implemented(skip_llm=False):
     pending = [r for r in module_status(skip_llm) if r['required'] and not r['ready']]
     if pending:
         details = '\n'.join(f'- {r["module"]}: {r["owner"]}' for r in pending)
-        raise NotImplementedError('Pipeline phân tích còn TODO, chưa tải dữ liệu hoặc tạo kết quả:\n' + details)
+        raise NotImplementedError('Pipeline còn module chưa READY (TODO hoặc chờ review), chưa tải dữ liệu hoặc tạo kết quả:\n' + details)
 
 
 def records_csv(path, records, fields):
@@ -85,6 +86,8 @@ def run(config_path, demo=False, skip_llm=False, no_download=False):
               'qa_report': qa_report, 'eda': eda.profile(listings),
               'market_kpi': kpi.summarize(listings, cfg),
               'calendar_kpi': calendar.metrics(calendars, listings, cfg),
+              'cohort_summary': analysis.cohort_summary(listings, cfg['snapshots'],
+                                                       None if assignment is None else assignment.listing_ids),
               'churn_kpi': analysis.churn(listings, cfg['snapshots']),
               'baseline': [baseline.predict(r) for r in review_map.values()],
               'llm_reviews': [], 'guest_kpi': [], 'evaluation': []}
@@ -103,13 +106,14 @@ def run(config_path, demo=False, skip_llm=False, no_download=False):
         (processed / 'reviews.csv', 'reviews', ['review_id','listing_id','date','comments','first_seen_snapshot']),
         (processed / 'kpi_market.csv', 'market_kpi', ['snapshot_date','analysis_area','supply','median_price','price_n','currency','entire_home_share','multi_listing_host_share']),
         (processed / 'kpi_calendar.csv', 'calendar_kpi', ['snapshot_date','analysis_area','availability_rate','observed_days','expected_days','listing_n']),
-        (processed / 'kpi_churn.csv', 'churn_kpi', ['previous_snapshot','snapshot_date','new','retained','disappeared','entry_rate','exit_rate']),
+        (processed / 'kpi_churn.csv', 'churn_kpi', analysis.TRANSITION_FIELDS),
         (processed / 'baseline.csv', 'baseline', ['review_id','sentiment','source']),
         (processed / 'llm_reviews.csv', 'llm_reviews', ['review_id','sentiment','language','positive_aspects','negative_aspects','source']),
         (processed / 'kpi_guest.csv', 'guest_kpi', ['metric','value','sample_n','source','scope']),
         (reports / 'qa_report.csv', 'qa_report', ['snapshot_date','rule','affected_rows','action','rows_after','median_price_before','median_price_after']),
         (reports / 'eda_flags.csv', 'eda', ['snapshot_date','qa_flags','count']),
         (reports / 'evaluation.csv', 'evaluation', ['source','paired_n','manual_n','accuracy','macro_f1','meets_100_paired']),
+        (processed / 'kpi_cohort.csv', 'cohort_summary', analysis.SUMMARY_FIELDS),
     ]
     # First validate the complete result set; missing columns do not leave a half-written run.
     for path, key, fields in outputs:
@@ -138,7 +142,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.status:
         for row in module_status(args.skip_llm):
-            state = 'READY' if row['ready'] else 'TODO'
+            state = 'READY' if row['ready'] else ('REVIEW' if row['implemented'] else 'TODO')
             extra = '' if row['required'] else ' (bỏ qua trong --skip-llm)'
             print(f'{state}: {row["module"]} — {row["owner"]}{extra}')
         return 0

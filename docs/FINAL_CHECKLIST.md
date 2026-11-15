@@ -23,7 +23,9 @@ Cả nhóm chỉ cần 100 ID được giao; không chia mỗi người một sn
   Hình QA còn TODO; các kiểm tra QA giữa mốc/missingness/KPI impact cần nối đủ vào luồng chung.
 - Nam: `calendar.py` có dòng tên branch sót sau merge, thiếu import và còn logic giá calendar.
   `run_pipeline.py --status` đang lỗi IndentationError ở calendar; module metrics/hình chưa xong.
-- Hiếu/Phan Huy/TV1: các module phân tích được giao còn TODO theo file hiện tại.
+- Hiếu/Phan Huy: các module phân tích được giao còn TODO theo file hiện tại.
+- TV1: analysis/viz_market đã triển khai, 14 tests đạt, hai SVG và báo cáo riêng đã có;
+  có `scripts/run_tv1.py` chạy độc lập. READY chờ peer review; 20 nhãn tay và finalize chung còn mở.
 - `manual_labels.csv` chỉ có header. Phiếu 5×20 mới chuẩn bị có text nhưng **chưa có nhãn tay**.
 
 Không coi các ghi nhận trong báo cáo phân tích cũ là kết quả mới nếu chưa đo lại. Ví dụ:

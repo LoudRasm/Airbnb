@@ -7,6 +7,8 @@ TV4 Vũ Phạm Khánh Nam; TV5 Phan Ngọc Huy. Mỗi người phụ trách ph�
 [hướng dẫn nhãn tay](MANUAL_LABELING.md). Đã chia sẵn 5 phiếu, 20 review/người.
 Đức đã có implementation QA/EDA; calendar của Nam đang lỗi cú pháp sau merge; các phần
 còn thiếu được giao lại đúng owner, không sửa thay trong đợt chuẩn bị hướng dẫn này.
+TV1 đã có analysis/viz_market, 14 tests và runner độc lập xuất bảng/hình trên dữ liệu thật;
+xem checklist TV1 để tách phần code đã xong với nhãn tay, peer review và finalize còn chờ.
 
 ## Hai giai đoạn
 

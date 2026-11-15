@@ -2,6 +2,20 @@
 
 ## Kết quả hiện tại
 
+- TV1: **14 tests riêng đạt**, chạy được demo và raw thật chỉ qua ID/host/room projection,
+  xuất hai CSV/hai SVG/metadata và phần báo cáo. Hai hình đã render/xem trực quan đủ cả cột/chữ.
+- Discovery sau bổ sung TV1: **72 mục, 71 tests đạt, 1 lỗi tải test_pipeline** do calendar.py
+  của Nam. Không sửa source Nam hoặc bỏ test; status/5 case integration qua import thật còn chặn.
+- Kiểm thêm riêng 4 case nối TV1 với calendar giả tạm trong bộ nhớ: đạt, gồm CSV cohort/transitions,
+  schema lỗi và wiring LLM. Đây chỉ là test orchestration dùng test double, không xác nhận calendar
+  thật hoặc end-to-end. Case status subprocess vẫn lỗi khi import calendar thật.
+- Raw thật: coverage 1.000/1.000 mỗi mốc, host khác nhau 930/930/937/930; host_id đổi
+  3/35/37 trên 1.000 cặp, room_type đổi 0/0/0. Chưa coi là kết quả sau QA tích hợp toàn nhóm.
+- analysis/viz_market có IMPLEMENTED=True; READY=False chờ Nam review. Code khác và 20 nhãn
+  tay TV1 giữ nguyên; không gán nhãn gold bằng AI hoặc đánh dấu finalize xong.
+
+### Đợt chuẩn bị phiếu và checklist trước phần TV1
+
 - QA của Đức: **42 tests đạt**; data check: **6 tests đạt**.
 - Công cụ nhãn mới: **9 tests đạt** trên dữ liệu/nhãn tổng hợp giả, không gán nhãn review thật.
 - Chạy discovery toàn bộ: 58 mục, 57 tests đạt và 1 lỗi tải module test_pipeline do calendar.py

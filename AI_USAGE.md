@@ -77,3 +77,23 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
   nhãn trống/sai/ca khó, từ chối ghi đè và ghép đủ 100 dòng; không gọi API LLM.
 - Kết quả: 9 tests nhãn, 42 QA và 6 data check đạt; full discovery có 1 lỗi tải test_pipeline
   do calendar của Nam (5 case integration chưa chạy). Không sửa/tắt test hoặc CI để che lỗi.
+
+## Cập nhật 15/11/2026 — hoàn thiện phần code riêng TV1
+
+- Prompt: hoàn thành nốt phần của nhóm trưởng, không liên quan phần của thành viên khác.
+- Codex triển khai analysis.cohort_summary/churn và viz_market, giữ tên API legacy nhưng
+  giới hạn ở hiện diện/thay đổi thuộc tính cohort; không coi ID mới/mất là market entry/exit.
+- Thêm runner TV1 độc lập không import module cá nhân khác, SVG bằng stdlib, tests và báo cáo;
+  nối thêm bảng/fields TV1 vào pipeline do TV1 sở hữu. Test double QA trong test_pipeline của
+  TV1 được chỉnh giữ một dòng/ID đúng contract, không thay implementation QA của Đức.
+- Bên nhận phân tích giả định giữ theo kế hoạch gốc, ghi vào config. Đọc raw đúng ID để kiểm
+  chứng riêng; không chạy thuật toán/calendar/LLM của người khác, không đổi raw/workbook.
+- Kết quả thực đo: 1.000 listing mỗi mốc; host khác nhau 930/930/937/930; host_id đổi
+  3/35/37 trên 1.000 cặp, room_type đổi 0/0/0. Không giả làm kết quả toàn pipeline sau QA.
+- Kiểm chứng: 14 tests TV1 đạt; toàn discovery 71 đạt/1 lỗi import calendar có sẵn. Bốn case
+  orchestration đạt khi dùng calendar giả tạm; status với source calendar thật vẫn lỗi.
+  Hai SVG thật đã được render và xem bố cục. Không sửa source/test/READY của thành viên khác.
+- IMPLEMENTED=True nhưng READY=False chờ peer review theo workflow; 20 nhãn tay TV1 giữ
+  trống để con người đọc/chốt, không dùng AI tạo gold labels hoặc ký thay reviewer.
+- Status TV1 phân biệt REVIEW với TODO khi import chung chạy được; guard vẫn chặn module
+  chưa READY. Test guard dùng trạng thái chưa READY tường minh để không phụ thuộc tiến độ thật của nhóm.
