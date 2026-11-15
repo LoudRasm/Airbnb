@@ -2,6 +2,11 @@
   "city": "toronto",
   "data_root": "canada/on/toronto",
   "currency": "CAD",
+  "stakeholder": {
+    "name": "Nhóm theo dõi thị trường lưu trú ngắn hạn và du lịch Toronto",
+    "role": "Bên nhận phân tích giả định cho bài tập, theo định hướng kế hoạch gốc",
+    "decision": "Theo dõi biến động trong cohort được giao; dùng KPI không gian, thời gian và trải nghiệm để đặt câu hỏi cần kiểm chứng thêm"
+  },
   "snapshots": [
     "2025-09-11",
     "2025-12-12",

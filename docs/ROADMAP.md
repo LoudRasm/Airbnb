@@ -4,13 +4,15 @@
 hiện tại; [hướng dẫn nhãn](MANUAL_LABELING.md) đã có 5 phiếu chia sẵn. QA/EDA Đức đã có code,
 calendar Nam cần tự sửa lỗi merge/import, các phần khác theo checklist. Không sửa lỗi cá nhân
 thay các bạn trong đợt này; nhóm trưởng finalize sau khi đủ PR đã được review/merge.
+Phần code riêng TV1 đã triển khai và kiểm chứng độc lập: coverage/thay đổi thuộc tính,
+hai SVG, 14 tests, runner và báo cáo cá nhân; READY giữ chờ review, finalize chung chưa xong.
 
 Data check đã hoàn thành. Các mục dưới là định hướng/backlog, không phải bằng chứng bài cả kỳ
 đã xong. [Phân công](TEAM.md) · [Triển khai](IMPLEMENTATION_GUIDE.md).
 
 | Người | Kết quả còn phải làm |
 |---|---|
-| TV1 — nhóm trưởng | Chốt bên nhận phân tích; duy trì config/loader/import; thiết kế chỉ số biến động hợp lý với cohort cố định; hình tổng hợp; tích hợp PR và báo cáo |
+| TV1 — nhóm trưởng | Code/hình/báo cáo riêng đã có; còn 20 nhãn tay tự đọc, peer review, thống nhất KPI toàn nhóm, tích hợp PR và báo cáo cuối |
 | TV2 — Đức | Khảo sát schema và missingness; quy tắc QA/types/trùng/ngoại lai/danh mục lệch; cleaned schema, tác động QA, EDA và hình |
 | TV3 — Hiếu | KPI listing/host, giá ở mốc cuối; thống nhất denominator; xử lý giới hạn neighbourhood và hình không gian |
 | TV4 — Nam | Calendar streaming, availability/coverage theo cửa sổ và thời gian; kiểm trùng/ngày/available, hình thời gian; không tính giá calendar |

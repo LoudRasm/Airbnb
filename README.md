@@ -15,6 +15,23 @@ Bài tập lớn Lập trình xử lý dữ liệu, lớp **UET.DSE2049 1**, nh�
 - **Bàn giao:** mỗi người sửa phần mình trên branch, test và mở PR; nhóm trưởng review/merge.
   TV5 ghép 100 nhãn qua PR; TV1 tích hợp và finalize sau khi các phần đã hoàn thiện.
 
+**Phần riêng TV1 đã triển khai:** coverage cohort, thay đổi host_id/room_type, hai SVG,
+14 tests và [báo cáo cá nhân](reports/sections/tv1.md). Chạy độc lập, không cần module của bạn khác:
+
+```bash
+python scripts/run_tv1.py --config configs/toronto.yaml
+python scripts/run_tv1.py --demo
+python -m unittest discover -s tests -p test_tv1.py -v
+```
+
+CSV: `data/processed/real/tv1/`; hình: `figures/real/tv1/`; metadata/tóm tắt:
+`reports/generated/real/tv1/`. Mặc định chỉ chiếu ID/host/room từ raw đã lọc workbook, chưa thay
+cho QA chung. Khi bảng sạch có sẵn, thêm `--listings data/processed/real/listings.csv` để chạy
+trên cleaned. Demo là dữ liệu giả. Không tải/gọi API hoặc sửa code của owner khác.
+analysis/viz_market có `IMPLEMENTED=True`, READY giữ False chờ Nam review theo quy trình;
+status sẽ ghi REVIEW cho hai module này khi import calendar đã được sửa.
+20 nhãn tay TV1 vẫn cần bạn tự đọc/chốt. Các bước finalize chung chưa đánh dấu hoàn thành.
+
 **Blocker đang có, chưa sửa thay owner:** calendar.py sót nội dung merge nên `--status` và
 integration đang lỗi import/cú pháp; Nam tự xử lý theo checklist. Đức đã có QA/EDA và 42 test
 QA đạt, còn hình/kiểm chứng tích hợp; nhiều module của các bạn khác vẫn TODO.
@@ -119,7 +136,7 @@ run_pipeline.py
 Mỗi người triển khai `render(tables, figures, cfg)` trong file vẽ của mình: nhận các bảng đã
 xử lý, lưu hình vào thư mục `figures` được truyền vào và trả `list[Path]`. Dùng tên hình riêng
 để tránh ghi đè; không tự tải raw/gọi LLM lại trong bước vẽ. `--skip-llm` bỏ `viz_reviews`.
-Các file vẽ hiện vẫn TODO; có tên file không có nghĩa đã sinh được hình.
+`viz_market.py` đã sinh hình TV1; các file vẽ còn lại vẫn TODO. Có tên file không có nghĩa đã sinh được hình.
 
 **Bản final giữ các module mà chương trình sử dụng**, kể cả các file `viz_*` không được liệt
 kê riêng trong sơ đồ đề. Các file hiện đã được `viz.py` import và gọi; không xóa chỉ để tên

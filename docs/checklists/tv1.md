@@ -3,13 +3,27 @@
 Việc của bạn gồm phần cá nhân và finalize sau khi các bạn đã tự hoàn thiện/PR.
 [Checklist chung](../FINAL_CHECKLIST.md) · [Hướng dẫn nhãn](../MANUAL_LABELING.md).
 
+**Cập nhật 15/11:** code riêng TV1, lệnh chạy độc lập, 14 tests, hai hình và
+[phần báo cáo](../../reports/sections/tv1.md) đã hoàn thành. Lệnh:
+
+```bash
+python scripts/run_tv1.py --config configs/toronto.yaml
+python -m unittest discover -s tests -p test_tv1.py -v
+```
+
+Không import/sửa module thành viên khác. READY giữ False chờ Nam review theo quy trình,
+không phải code còn NotImplementedError; status hiển thị REVIEW khi import chung thông.
+20 nhãn tay cần bạn tự đọc/chốt; AI không điền thay.
+
 ## Phần cá nhân
 
 - [ ] Gán 20 review trong [tv1.json](../../data/samples/labeling/tv1.json), chạy `python scripts/label_reviews.py check --member tv1`.
-- [ ] Chốt bên nhận phân tích, câu hỏi và ý nghĩa từng KPI với cả nhóm; tổng bộ KPI gồm phần Hiếu/Nam/Phan Huy, không giao 5–8 KPI riêng cho từng người.
-- [ ] Thiết kế `analysis.churn` hoặc thay bằng chỉ số biến động quan sát phù hợp. Cohort 1.000 ID cố định không đủ đo entry/exit toàn Toronto; đổi metric thì sửa contract/writer/tests đồng bộ.
-- [ ] Hoàn thiện `viz_market.render`; lưu hình đúng figures được truyền vào, trả list[Path], kiểm số liệu trên hình.
-- [ ] Test phần analysis và viết `reports/sections/tv1.md`: công thức, phạm vi, lệnh chạy, phát hiện/giới hạn.
+- [x] Ghi bên nhận phân tích giả định/câu hỏi TV1 theo kế hoạch gốc trong config và báo cáo.
+- [ ] Thống nhất bộ KPI cuối với cả nhóm; tổng bộ KPI gồm phần Hiếu/Nam/Phan Huy, không giao 5–8 KPI riêng cho từng người.
+- [x] Triển khai `analysis.churn` thành chẩn đoán hiện diện và thay đổi thuộc tính trên các cặp listing; thêm cohort_summary với mẫu số ID phân công, giữ alias legacy và cập nhật contract/writer/test.
+- [x] Hoàn thiện `viz_market.render`; lưu hai SVG, trả list[Path], kiểm số liệu và ảnh render.
+- [x] Test phần analysis/runner/hình (14 tests) và viết `reports/sections/tv1.md` với kết quả thật, công thức, phạm vi, lệnh, phát hiện/giới hạn.
+- [ ] Nam review phần TV1; chỉ sau đó bật READY cho analysis/viz_market bằng commit rõ ràng.
 
 ## Điều phối PR, không làm thay lỗi cá nhân
 
