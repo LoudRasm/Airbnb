@@ -63,3 +63,17 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
   chữ ký hàm, trạng thái TODO và quy tắc giữ module được sử dụng trong bản final.
 - Kiểm chứng: đối chiếu với `src/airbnb/viz.py` và chữ ký các module vẽ; kiểm diff tài liệu.
   Không sửa source hoặc chạy lại thuật toán/API cho thay đổi tài liệu này.
+
+## Cập nhật 15/11/2026 — nhãn tay và checklist hoàn thiện
+
+- Prompt: dựa vào status mới, viết hướng dẫn gán nhãn thủ công và checklist từng người;
+  chưa sửa lỗi cá nhân, thành viên tự hoàn thiện/PR rồi nhóm trưởng finalize.
+- Codex đối chiếu main 0df65f5, xác nhận 42 test QA đạt và calendar đang lỗi import/cú pháp.
+- Bổ sung guideline, checklist TV1–TV5, liên kết README và công cụ chuẩn bị/kiểm/ghép nhãn
+  độc lập pipeline. Không sửa source, cờ READY, thuật toán hay test cá nhân của thành viên.
+- Trích đúng 100 ID Nhãn tay từ workbook, text raw mốc 2026-06-15, chia 20/người; mọi sentiment
+  khởi tạo rỗng. AI không gán nhãn các review thật. Workbook/raw chỉ được đọc; CSV nhãn cuối còn header.
+- Test công cụ dùng review/nhãn tổng hợp giả để kiểm ID dài, scope, text/nguồn thay đổi,
+  nhãn trống/sai/ca khó, từ chối ghi đè và ghép đủ 100 dòng; không gọi API LLM.
+- Kết quả: 9 tests nhãn, 42 QA và 6 data check đạt; full discovery có 1 lỗi tải test_pipeline
+  do calendar của Nam (5 case integration chưa chạy). Không sửa/tắt test hoặc CI để che lỗi.

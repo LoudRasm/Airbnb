@@ -1,6 +1,7 @@
 # Hợp đồng dữ liệu và hàm
 
-Các hàm dưới đây là interface để tự triển khai, **chưa có thuật toán**. Đừng đổi chữ ký/cột ngầm.
+Các hàm dưới đây là interface thống nhất: QA/EDA đã có implementation, nhiều module khác
+còn TODO/cần sửa theo checklist ngày 15/11. Đừng đổi chữ ký/cột ngầm.
 `data_check.py` là luồng đã hoàn thành và độc lập; file này mô tả pipeline phân tích cả kỳ.
 
 ## Input chung
@@ -49,6 +50,8 @@ Các cột bắt buộc để pipeline chung xuất CSV; thêm cột thì cập 
 - Guest KPI: metric, value, sample_n, source, scope; nếu thêm breakdown, thống nhất writer.
 - Evaluation: source, paired_n, manual_n, accuracy, macro_f1, meets_100_paired.
 - Manual labels: review_id, sentiment. Đủ nhãn thật của 100 ID được đánh dấu trong workbook.
+  Phiếu cá nhân ở data/samples/labeling/tvN.json, quy trình trong MANUAL_LABELING.md;
+  CSV cuối chỉ được ghép sau khi người đọc chốt nhãn. Text 100 review phải khớp phiên bản phiếu.
 
 Danh sách tables truyền vào viz: listings, calendar, reviews, qa_report, eda, market_kpi,
 calendar_kpi, churn_kpi, baseline, llm_reviews, guest_kpi, evaluation.

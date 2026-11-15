@@ -1,7 +1,12 @@
 # Việc còn lại trước bài cuối
 
-Data check đã hoàn thành; QA/EDA/KPI/LLM/hình là khung TODO. Đây là backlog, không phải
-bằng chứng bài cả kỳ đã xong. [Phân công](TEAM.md) · [Triển khai](IMPLEMENTATION_GUIDE.md).
+**Cập nhật 15/11:** [checklist mới theo owner](FINAL_CHECKLIST.md) là điểm theo dõi công việc
+hiện tại; [hướng dẫn nhãn](MANUAL_LABELING.md) đã có 5 phiếu chia sẵn. QA/EDA Đức đã có code,
+calendar Nam cần tự sửa lỗi merge/import, các phần khác theo checklist. Không sửa lỗi cá nhân
+thay các bạn trong đợt này; nhóm trưởng finalize sau khi đủ PR đã được review/merge.
+
+Data check đã hoàn thành. Các mục dưới là định hướng/backlog, không phải bằng chứng bài cả kỳ
+đã xong. [Phân công](TEAM.md) · [Triển khai](IMPLEMENTATION_GUIDE.md).
 
 | Người | Kết quả còn phải làm |
 |---|---|
@@ -27,8 +32,8 @@ bằng chứng bài cả kỳ đã xong. [Phân công](TEAM.md) · [Triển khai
 
 - Bên nhận phân tích cụ thể và lý do chọn bộ KPI. Mục tiêu dự kiến trong kế hoạch cũ chưa thay
   cho quyết định cuối của nhóm.
-- `neighbourhood_cleansed` thiếu: xác minh khả năng gán từ tọa độ/GeoJSON và độ bao phủ, hoặc
-  thống nhất phương án với giảng viên. Không gọi vùng chữ nhật workbook là neighbourhood.
+- Xác minh `neighbourhood_cleansed` và độ bao phủ GeoJSON thật từng mốc; báo cáo QA mới có tên
+  neighbourhood, nên không mặc định thiếu toàn bộ theo starter. Không gọi vùng chữ nhật workbook là neighbourhood.
 - Không diễn giải thay đổi trong 1.000 ID cố định thành listing gia nhập/rời toàn Toronto.
 - Giá chỉ mốc cuối; availability không phải occupancy; mọi tỷ lệ phải ghi mẫu số/phạm vi.
 - Config hiện theo workbook có mốc thứ hai 2025-12-12; trang đề ghi 2025-11-11.

@@ -3,6 +3,11 @@
 Thứ tự do nhóm trưởng chốt: TV1 Dương Nhật Huy; TV2 Mai Anh Đức; TV3 Nguyễn Quốc Hiếu;
 TV4 Vũ Phạm Khánh Nam; TV5 Phan Ngọc Huy. Mỗi người phụ trách phần mình ở cả bốn mốc.
 
+**Cập nhật 15/11/2026:** xem [checklist từng người](FINAL_CHECKLIST.md) và
+[hướng dẫn nhãn tay](MANUAL_LABELING.md). Đã chia sẵn 5 phiếu, 20 review/người.
+Đức đã có implementation QA/EDA; calendar của Nam đang lỗi cú pháp sau merge; các phần
+còn thiếu được giao lại đúng owner, không sửa thay trong đợt chuẩn bị hướng dẫn này.
+
 ## Hai giai đoạn
 
 Nhóm dùng các file module ngay trong `src/airbnb/`. Branch tách công việc đang phát triển;
@@ -13,8 +18,9 @@ mỗi người một snapshot và không chuyển code thủ công sau khi làm 
 config/checks, kết quả CSV/notes và tests. PR calendar của Nam và các script/kết quả listings của Đức đã merge cũng giữ nguyên.
 Không biến phần này thành TODO và không dùng nó thay cho QA/phân tích cả kỳ.
 
-**Bài phân tích cả kỳ:** các file dưới đây hiện là khung TODO, chưa có thuật toán hoàn chỉnh.
-Tên và chữ ký hàm thống nhất để nhóm trưởng gọi qua import.
+**Bài phân tích cả kỳ:** bảng dưới là phân công sở hữu module; một số đã có implementation,
+một số còn TODO hoặc cần sửa. Tên/chữ ký thống nhất để nhóm trưởng gọi qua import.
+Theo dõi hoàn thành trong checklist ngày 15/11 thay vì suy ra từ bảng phân công.
 
 | Người | File trong src/airbnb/ | Nhiệm vụ tự triển khai | Reviewer |
 |---|---|---|---|
@@ -37,10 +43,10 @@ push branch và được người khác review trước merge. Chỉ bật modul
 và test đã hoàn thành, reviewer xác nhận trong PR; commit trạng thái này trên branch trước merge.
 
 Nhãn tay: theo workbook hiện tại, 100 ID đánh dấu x nằm trong 1.000 mẫu LLM.
-Phan Huy tổ chức guideline và phân việc gán nhãn cho cả nhóm: 100 review được đánh dấu,
-chia đều 20/người nếu nhóm chọn cách chia này. Kết quả lưu chung vào
-`data/samples/manual_labels.csv` sau khi thống nhất nhãn bất đồng. Không cần 200 nhãn theo
-kế hoạch cũ để bắt đầu; báo cáo data check luôn đọc 1.000/100 từ workbook.
+Phan Huy điều phối theo guideline đã chuẩn bị: 100 review được đánh dấu đã chia 20/người
+trong `data/samples/labeling/tvN.json`. Mỗi người sửa phiếu mình qua PR. Sau khi xử lý bất đồng,
+TV5 ghép `data/samples/manual_labels.csv` qua PR riêng để TV1 duyệt; không cùng sửa CSV cuối.
+Báo cáo data check luôn đọc 1.000/100 từ workbook, không lấy số từ phiếu đang gán dở.
 Tất cả phải giải thích được toàn bộ sản phẩm khi vấn đáp.
 
 ## Kết quả bàn giao mỗi PR

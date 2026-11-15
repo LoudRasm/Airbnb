@@ -1,0 +1,188 @@
+{
+  "data_code": "DSE2049-C01-G10-toronto",
+  "member": "tv1",
+  "guideline_version": "1.0",
+  "source_snapshot": "2026-06-15",
+  "labels": [
+    {
+      "review_id": "7129453",
+      "listing_id": "985003",
+      "date": "2013-09-07",
+      "comments": "Kirsten and Jeff were very accommodating and supportive. A lovely couple who really \"get\" the AirB&B experience. It's a great little pad and just minutes from central Toronto by 24/hr streetcar on Queen East. *Recommended*",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "31106665",
+      "listing_id": "1214297",
+      "date": "2015-05-02",
+      "comments": "Wies and Dorota were very accommodating and provided everything we'd ever need. The basement suite was just the right size for 3 people and it felt very homey. It has the quaint charm of a real Toronto home. The apartment is located in a quiet neighborhood that is accessible by the 504 streetcar and Dundas West subway station, and right smack in the middle of the busy and quieter areas in Toronto.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "31792225",
+      "listing_id": "5025880",
+      "date": "2015-05-10",
+      "comments": "This place was perfect for our needs. The space is exactly as advertised and is plenty of space for 2 people. Lina and Paul were the kindest hosts and had some great recommendations. Their property is lovely and sits in a relaxing neighborhood. I loved the trail that leads down to the lake right near their house. It's a doable distance from the downtown area no matter if you've got a car or not. Plenty of public transportation nearby that is fairly easy to figure out, plus, if you need help Lina or Paul will be more than accommodating I'm sure. I would definitely re-book this place in the future! Thanks for helping to make a great trip! ",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "33778565",
+      "listing_id": "4058460",
+      "date": "2015-06-01",
+      "comments": "Upon arriving into town, Sean kindly greeted me at the property to check me in. He was a super gentleman. I was shown the condo, how the building worked and was welcomed with open arms. The listing was super accurate, it was a great cozy spot right in the heart of downtown Toronto. The place was fully furnished with everything you could possibly need, all the way down to the utensils and kitchen seasonings. The view from the balcony is amazing, and you can see BMO Field where Toronto FC plays. There are so many things within walking distance, and the places that are a little further out aren't any longer than an Uber ride for a few minutes. You can't go wrong with this spot, and I literally have zero complaints. This will be my first choice when I come back to Toronto.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "72824889",
+      "listing_id": "4070051",
+      "date": "2016-05-04",
+      "comments": "Everything was spot on. Communication was easy and reliable. The appartment was spotless. Would not hesitate to book again. Thank you Darrell!",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "76981391",
+      "listing_id": "5432639",
+      "date": "2016-05-30",
+      "comments": "The house is located in a quiet residential community but just a few minutes walk you will find all kinds of local foods/stores/etc. Sandy is an awesome host! She really cares for her guest as she makes the room and the house super clean and comfortable, just like home. She's even hand-drawn local food maps so you won't be hungry. Feel free to ask her about various places to visit and she will be more than happy to tell you all about them. Her companion Roxy is also a sweet dog, great with people! Overall very nice experience!",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "90369312",
+      "listing_id": "9295372",
+      "date": "2016-07-31",
+      "comments": "George made my guests and I feel very welcomed. He was very responsive and easy to work with. George was very friendly (along with his wife and family). The house, backyard and neighborhood were gorgeous. The bathrooms were a little small, but were also manageable. If I ever come back to Toronto, I would stay here again and I would recommend George to friends. Thank you again Geroge for your hospitality.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "108099109",
+      "listing_id": "13605154",
+      "date": "2016-10-14",
+      "comments": "Olga's place is super comfy and clean. The view is amazing, the decoration of the apartment is modern, white and neat. I loved the bed, it is on the hard side, perfect for a good night's sleep. The kitchen has everything you need (oven, microwave, electric kettle, etc). There are a supermarket and a Starbucks just a few steps away. Olga is an excellent host. ",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "113680743",
+      "listing_id": "7390728",
+      "date": "2016-11-13",
+      "comments": "We had a wonderful time at the Brookfield Hideaway! We stayed here a year ago, and we had such a great experience that we decided to book a second stay. The apartment is beautiful, the location is ideal, and Monique is a wonderful host. I highly recommend her place!",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "158221005",
+      "listing_id": "11720805",
+      "date": "2017-06-05",
+      "comments": "Kevin's a wonderful host and had a beautiful place.  I'd stay there again if I had the chance ",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "182752713",
+      "listing_id": "10141898",
+      "date": "2017-08-15",
+      "comments": "Truly appreciated for everything that Jenny and John had helped during our stay. It's a very pleasant memory to live in this house and experience everything in Toronto. Highly recommended Jenny and John's house. We definitely will choose to live here if visiting Toronto again. Thanks a lot for everything!",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "192957730",
+      "listing_id": "17584515",
+      "date": "2017-09-11",
+      "comments": "Great, large, clean room in a lively neighbourhood. Can take a while to get to the city centre on the trams but other than that it's a great stay. Lots of bars and restaurants close by and the park is full of people on a sunny weekend.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "202493849",
+      "listing_id": "6170154",
+      "date": "2017-10-11",
+      "comments": "We enjoyed our stay at David's apartment. The apartment is very close to the places where we want to go for our short stay in Toronto. We recommend this place if you are looking for a place in Toronto. Thank you David.<br/>Harold and Lailene",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "228932311",
+      "listing_id": "18788443",
+      "date": "2018-01-21",
+      "comments": "The apartment was clean and offered all amenities needed for a short stay. It is centrally located in Toronto's financial district and easily accessible. Thank you again for this quick and convenient stay.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "263653854",
+      "listing_id": "23013595",
+      "date": "2018-05-12",
+      "comments": "Great location for so much in the 6! This Airbnb has everything you’ll need for a short visit. Very quiet professional building. Would definitely stay there again.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "273261312",
+      "listing_id": "18289730",
+      "date": "2018-06-05",
+      "comments": "I found a cockroach in my bedroom but other than that I’d say this room is good for 1 person only, it’s small and the bathroom is small aswell. This is okay to stay for 1 night or 2. Cars make noise very late at night across the street from you and is loud to sleep.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "280552719",
+      "listing_id": "21185839",
+      "date": "2018-06-23",
+      "comments": "Frank was great , his responses where quick he even allowed a late check out with little notice , and recommended a great breakfast spot thank you, very much appreciated.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "357143236",
+      "listing_id": "29060600",
+      "date": "2018-12-09",
+      "comments": "Great location near all the best sights. Parking structure was a little difficult to find but once found everything was great!! Fast communication with host, 10/10 would stay again.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "415783177",
+      "listing_id": "28264606",
+      "date": "2019-02-23",
+      "comments": "If you are ever in Toronto you must stay here! Absolutely unparrelled views of the CN Tower and entertainment district and great flat (stylish, well decorated and more than functional). Lifts got a bit annoying as they often took ages to arrive but absolutely nothing that the host could have done about it and Idrees was a fantastic host- super quick and responsive. Would fully recommend!",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    },
+    {
+      "review_id": "433514334",
+      "listing_id": "28714868",
+      "date": "2019-04-06",
+      "comments": "3rd review. I guess, repetitive booking says it all. Felt like home away from home. Thank you.",
+      "sentiment": "",
+      "needs_review": false,
+      "note": ""
+    }
+  ]
+}
