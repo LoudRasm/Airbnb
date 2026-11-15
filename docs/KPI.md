@@ -1,7 +1,8 @@
-# KPI dự kiến — chưa triển khai
+# KPI theo phân công
 
-Hiếu/Nam/Phan Huy và nhóm trưởng triển khai theo TEAM.md. Nhóm phải chốt bên nhận phân tích
-cụ thể và lý do chọn KPI; bảng này là đề xuất, không phải số liệu đã có.
+Hiếu/Nam/Phan Huy và nhóm trưởng triển khai theo TEAM.md. TV1 đã có coverage/thay đổi thuộc tính
+cohort và báo cáo kiểm chứng riêng. Các KPI còn lại vẫn cần owner triển khai; không coi bảng
+đề xuất dưới là toàn bộ kết quả đã có. Bên nhận phân tích giả định theo kế hoạch gốc nằm trong config.
 [Hợp đồng hàm/bảng](CONTRACTS.md) · [Việc còn lại](ROADMAP.md).
 
 | KPI đề xuất | Cách tính dự kiến | Owner / phạm vi |
@@ -12,7 +13,7 @@ cụ thể và lý do chọn KPI; bảng này là đề xuất, không phải s�
 | Tỷ lệ listing của host nhiều chỗ ở | Listing thuộc host có >1 listing quan sát / listing có host hợp lệ | Hiếu; không suy ra toàn bộ tài sản của host |
 | Availability | Ngày available=t / ngày quan sát hợp lệ t,f trong cửa sổ | Nam; theo mốc/vùng, kèm observed/expected và coverage |
 | Cảm xúc mixed/negative | Review mẫu LLM có nhãn mixed hoặc negative / review mẫu có dự đoán hợp lệ | Phan Huy; không suy rộng toàn bộ khách hàng |
-| Thay đổi trong cohort | Chỉ số biến động quan sát được sau khi xác minh ý nghĩa | TV1; contract churn hiện cần xem xét lại |
+| Thay đổi thuộc tính trong cohort | Host/room-type đổi / cặp retained có thuộc tính dùng được cả hai mốc; kèm coverage phân công | TV1; đã triển khai, chưa suy rộng ra thị trường |
 
 Công thức/mẫu số trên phải thống nhất với source và CONTRACTS trước merge. Ghi tên, mục tiêu,
 công thức, đơn vị, cách xử lý missing và phạm vi mẫu trong phần báo cáo; không chỉ xuất con số.
