@@ -36,7 +36,8 @@ class PipelineIntegrationTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_todo_blocks_before_download_or_output_and_status_works_outside_repo(self):
-        with patch.object(pipeline, 'download') as download, contextlib.redirect_stderr(io.StringIO()) as errors:
+        # Exercise the guard explicitly even after every member has finished their module.
+        with patch.object(pipeline.analysis, 'READY', False), patch.object(pipeline, 'download') as download, contextlib.redirect_stderr(io.StringIO()) as errors:
             self.assertEqual(pipeline.main(['--config', str(self.config)]), 2)
             download.assert_not_called()
         self.assertIn('TODO', errors.getvalue())
@@ -51,6 +52,11 @@ class PipelineIntegrationTests(unittest.TestCase):
         for module in pipeline.CORE_MODULES + pipeline.LLM_MODULES:
             stack.enter_context(patch.object(module, 'READY', True))
         def clean(records, snapshot, cfg):
+            # Model the cleaned-table uniqueness contract; the raw demo contains a duplicate ID.
+            unique = {}
+            for record in records:
+                unique.setdefault(record['id'], record)
+            records = unique.values()
             return ([{'snapshot_date':snapshot, 'listing_id':r['id'], 'host_id':r['host_id'], 'price':None,
                       'room_type':r['room_type'], 'analysis_area':r.get('analysis_area','DEMO'),
                       'neighbourhood_cleansed':r['neighbourhood_cleansed'], 'latitude':None,
@@ -81,7 +87,9 @@ class PipelineIntegrationTests(unittest.TestCase):
         return stack, mocks
 
     def test_imported_owner_functions_are_called_and_outputs_written(self):
+        real_churn = pipeline.analysis.churn
         stack, mocks = self.stage_doubles()
+        mocks['churn'].side_effect = real_churn
         with stack, contextlib.redirect_stdout(io.StringIO()):
             pipeline.run(self.config, demo=True, skip_llm=True)
         self.assertEqual(mocks['clean_listings'].call_count,4)
@@ -89,6 +97,15 @@ class PipelineIntegrationTests(unittest.TestCase):
         self.assertEqual(mocks['collect'].call_count,4)
         self.assertEqual(mocks['predict'].call_count,3)
         self.assertTrue((self.root/'data/processed/demo/kpi_market.csv').exists())
+        with (self.root/'data/processed/demo/kpi_cohort.csv').open() as stream:
+            cohort = list(csv.DictReader(stream))
+        self.assertEqual(len(cohort), 4)
+        self.assertTrue(all(r['cohort_basis']=='observed_union' and r['observed_listings']=='3' for r in cohort))
+        with (self.root/'data/processed/demo/kpi_churn.csv').open() as stream:
+            transitions = list(csv.DictReader(stream))
+        self.assertEqual(len(transitions), 3)
+        self.assertEqual(set(transitions[0]), set(pipeline.analysis.TRANSITION_FIELDS))
+        self.assertTrue(all(r['retained']=='2' and r['host_changed']=='0' for r in transitions))
         mocks['airbnb.viz_reviews'].assert_not_called()
 
     def test_full_wiring_passes_assigned_llm_ids_and_evaluates_same_review_ids(self):
