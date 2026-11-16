@@ -6,7 +6,8 @@ Lệnh: python scripts/run_qa.py --config configs/toronto.yaml
 Ghi : data/processed/real/listings.csv (bảng sạch, gitignore; pipeline chung sẽ ghi đè cùng đường dẫn),
       reports/data_dictionary.csv, reports/qa_rule_catalog.csv (tĩnh, commit được) và
       reports/generated/real/ (gitignore): qa_report_listings.csv, qa_kpi_impact.csv,
-      qa_missingness.csv.
+      qa_missingness.csv; và figures/real/ (gitignore): qa_rules.svg, qa_missingness_drift.svg,
+      qa_kpi_impact.svg (viz_qa.render trên cùng kết quả QA).
 Pipeline chung dùng cùng các hàm trong src/airbnb/qa.py; script này chỉ để tái lập/kiểm chứng.
 """
 import argparse
@@ -16,7 +17,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
-from airbnb import qa
+from airbnb import qa, viz_qa
 from airbnb.io import load_config, write_csv
 from airbnb.loading import read_assignment, snapshot_rows
 
@@ -39,6 +40,7 @@ def run(config_path, out_dir=None):
     generated = Path(out_dir) if out_dir else root / cfg['paths']['reports'] / 'real'
     static = Path(out_dir) if out_dir else root / 'reports'
     processed = Path(out_dir) if out_dir else root / cfg['paths']['processed'] / 'real'
+    figures = Path(out_dir) / 'figures' if out_dir else root / cfg['paths']['figures'] / 'real'
     raw_by_snapshot, names, no_geojson = {}, {}, []
     for snapshot in cfg['snapshots']:
         raw_by_snapshot[snapshot] = list(snapshot_rows(root, cfg, snapshot, 'listings.csv.gz', assignment))
@@ -58,6 +60,7 @@ def run(config_path, out_dir=None):
               ['column', 'type', 'description', 'source', 'qa_rules'])
     write_csv(static / 'qa_rule_catalog.csv', qa.rule_catalog(),
               ['rule', 'group', 'condition', 'reason', 'action'])
+    result['figures'] = viz_qa.render({'listings': result['cleaned'], 'qa_report': result['qa_report']}, figures, cfg)
     return generated, static, result, no_geojson
 
 
@@ -73,6 +76,7 @@ def main(argv=None):
         return 2
     print(f'QA listings: {len(result["cleaned"])} cleaned rows, {len(result["qa_report"])} report rows')
     print(f'Generated: {generated}; static docs: {static}; cleaned listings: listings.csv')
+    print('Figures: ' + ', '.join(str(path) for path in result['figures']))
     if no_geojson:
         print(f'No neighbourhoods.geojson for {", ".join(no_geojson)}; reference check skipped there.', file=sys.stderr)
     return 0
