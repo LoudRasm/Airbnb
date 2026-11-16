@@ -206,10 +206,4 @@ def render(tables, figures, cfg):
     return list_path
 
     
-        
-if __name__ == '__main__':
-    listings_demo = pd.read_csv(ROOT / 'data/processed/real/listings.csv')
-    table_demo = {'listings': listings_demo}
-    figure_path_demo = ROOT / 'figures'
-    cfg_demo, _ = load_config(ROOT / 'configs/toronto.yaml')
-    print(render(table_demo, figure_path_demo, cfg_demo))
+
