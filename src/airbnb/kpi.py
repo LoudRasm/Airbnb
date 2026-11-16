@@ -19,7 +19,6 @@ READY = False  # Chỉ bật True sau khi triển khai, có test và review.
 
 
 
-
 def df_kpi(df_listings: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     """Tính toán các chỉ số KPI theo từng vùng analysis_area từ DataFrame listings."""
     # 0. Kiểm tra nếu DataFrame đầu vào rỗng

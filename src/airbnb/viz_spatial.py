@@ -22,7 +22,6 @@ matplotlib.use("Agg")
 OWNER = 'TV3 — Nguyễn Quốc Hiếu'
 READY = False
 
-
 def viz1_median_price(df_listings,df_kpi_summary, gdf_areas,cfg, path):
     FINAL_SNAPSHOT = cfg['snapshots'][-1]
     CURRENCY= cfg['currency']
@@ -207,3 +206,4 @@ def render(tables, figures, cfg):
     return list_path
 
     
+
