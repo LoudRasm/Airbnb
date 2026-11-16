@@ -5,7 +5,7 @@ Không import hoặc chạy pipeline ở cấp module.
 from collections import Counter
 
 OWNER = 'TV2 — Mai Anh Đức'
-READY = False  # Chỉ bật True sau khi có test, chạy dữ liệu thật và reviewer xác nhận.
+READY = True 
 
 
 def profile(listings):

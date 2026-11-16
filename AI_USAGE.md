@@ -97,3 +97,21 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
   trống để con người đọc/chốt, không dùng AI tạo gold labels hoặc ký thay reviewer.
 - Status TV1 phân biệt REVIEW với TODO khi import chung chạy được; guard vẫn chặn module
   chưa READY. Test guard dùng trạng thái chưa READY tường minh để không phụ thuộc tiến độ thật của nhóm.
+
+## Cập nhật 15/11/2026 — hoàn thiện phần TV5 (Phan Ngọc Huy)
+
+- Prompt: hoàn thành gói nhãn cá nhân `tv5.json`, triển khai các module TV5 (`reviews.py`,
+  `baseline.py`, `llm.py`, `evaluate.py`, `review_kpi.py`, `viz_reviews.py`), script chạy độc lập
+  `scripts/run_tv5.py`, bộ kiểm thử `tests/test_tv5.py`, báo cáo `reports/sections/tv5.md` và review code cho TV4.
+- Triển khai:
+  - `reviews.collect` khử trùng lặp theo `review_id`, giữ nguyên ID chữ số dài, phát hiện xung đột
+    văn bản giữa các mốc (`review_text_collision`) và đảm bảo văn bản khớp mốc cuối `2026-06-15`.
+  - `baseline.predict` và `predict_with_aspects` phân loại đa ngữ theo mệnh đề, phủ định và liên từ đối lập.
+  - `llm.validate`, `llm.analyze` và `llm.estimate_cost` kiểm tra chặt schema/taxonomy 8 khía cạnh,
+    cache JSONL kèm SHA-256 provenance (`review_id`, `text_sha256`, `model`, `prompt_sha256`),
+    retry lỗi mạng/timeout và không biến lỗi API thành nhãn mặc định.
+  - `evaluate.evaluate` tính Accuracy/Macro-F1 và chặn thiếu dự đoán hoặc trùng ID.
+  - `review_kpi.guest_kpi` tính KPI 7 (`guest_issue_rate`) và tỷ lệ khía cạnh/khu vực không nhân bội theo snapshot.
+  - `viz_reviews.render` sinh 4 biểu đồ SVG chuẩn ghi rõ phạm vi mẫu và `n`.
+- Kiểm chứng: `python scripts/label_reviews.py check --member tv5` đạt 0 lỗi; 10/10 unit tests
+  trong `tests/test_tv5.py` đạt; `READY = False`, `IMPLEMENTED = True` chờ TV2 (Đức) review.
