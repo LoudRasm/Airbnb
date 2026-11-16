@@ -19,8 +19,7 @@ from xml.sax.saxutils import escape
 from . import qa
 
 OWNER = 'TV2 — Mai Anh Đức'
-READY = False  # Chỉ bật True sau khi có test, chạy dữ liệu thật và reviewer xác nhận.
-
+READY = True
 FIGURES = ('qa_rules.svg', 'qa_missingness_drift.svg', 'qa_kpi_impact.svg')
 
 # Màu: bảng tham chiếu của dataviz skill (xanh tuần tự 100→700, nhóm phân loại theo thứ tự cố định).
