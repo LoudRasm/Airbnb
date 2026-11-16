@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 import geopandas as gpd    
+import matplotlib
 import matplotlib.pyplot as plt
 from shapely.geometry import box
 import plotly.express as px
@@ -16,7 +17,7 @@ import pandas as pd
 from matplotlib import cm
 from matplotlib.colors import Normalize
 from src.airbnb.io import load_config
-
+matplotlib.use("Agg")
 
 OWNER = 'TV3 — Nguyễn Quốc Hiếu'
 READY = False
@@ -80,6 +81,7 @@ def viz1_median_price(df_listings,df_kpi_summary, gdf_areas,cfg, path):
 
     plt.grid(True, linestyle=":", alpha=0.5)
     fig.savefig(path, dpi=200, bbox_inches='tight')
+    plt.close(fig)
     print(f'Đã lưu fig1 ở {path}')
     return path
 
@@ -159,6 +161,7 @@ def viz3_compare(df_kpi_summary, cfg, path):
     plt.grid(axis="y", linestyle=":", alpha=0.6)
     
     fig.savefig(path, dpi=200, bbox_inches='tight')
+    plt.close(fig)
     print(f'Đã lưu fig3 ở {path}')
     return path
     
