@@ -3,6 +3,7 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -12,6 +13,21 @@ from airbnb import baseline, evaluate, llm, review_kpi, reviews, viz_reviews
 from airbnb.io import load_config, rows, write_csv
 from airbnb.labels import manual_labels
 from airbnb.loading import read_assignment, snapshot_rows
+
+
+def _load_env_if_present(root: Path):
+    """Nạp GEMINI_API_KEY từ file .env nếu có và môi trường chưa thiết lập."""
+    if os.environ.get('GEMINI_API_KEY'):
+        return
+    env_file = root / '.env'
+    if env_file.is_file():
+        for line in env_file.read_text(encoding='utf-8').splitlines():
+            line = line.strip()
+            if line.startswith('GEMINI_API_KEY=') and not line.startswith('#'):
+                val = line.split('=', 1)[1].strip().strip('"\'')
+                if val:
+                    os.environ['GEMINI_API_KEY'] = val
+                    break
 
 
 def digest(path):
@@ -24,6 +40,7 @@ def digest(path):
 
 def run(config_path, demo=False, skip_llm=True):
     cfg, root = load_config(config_path)
+    _load_env_if_present(root)
     assignment = None
     stage = 'synthetic_demo' if demo else 'assigned_workbook_or_manifest_raw'
     if not demo:
