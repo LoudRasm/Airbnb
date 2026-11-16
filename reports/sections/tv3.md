@@ -45,8 +45,8 @@ Trong đó:
 |---|---|---|---|
 | 1 | `src/airbnb/kpi.py` | Python Module | Triển khai hàm `summarize(listings, cfg)` và `df_kpi()`. Trả về `list[dict]` chứa các chỉ số KPI chuẩn hóa theo Contract. |
 | 2 | `src/airbnb/viz_spatial.py` | Python Module | Triển khai hàm `render(tables, figures, cfg)`. Xuất $3$ hình ảnh/bản đồ không gian, trả về `list[Path]`. |
-| 3 | `tests/test_kpi.py` | Pytest  | Kiểm thử $8$ trường hợp biên (edge cases): missing/invalid price, $0$ mẫu hợp lệ, host trống, nhóm rỗng, nhiều snapshot, mẫu số và unjoined area. |
-| 4 | `tests/test_listings.py` | Pytest| Kiểm thử tích hợp hàm `summarize` và `render` với mock data và thư mục tạm `tmp_path`. |
+| 3 | `tests/test_kpi.py`  (PYTHONPATH=. pytest tests/test_kpi.py -v )| Pytest  | Kiểm thử $8$ trường hợp biên (edge cases): missing/invalid price, $0$ mẫu hợp lệ, host trống, nhóm rỗng, nhiều snapshot, mẫu số và unjoined area. |
+| 4 | `tests/test_listings.py`(PYTHONPATH=. pytest tests/test_listings.py -v )| Pytest| Kiểm thử tích hợp hàm `summarize` và `render` với mock data và thư mục tạm `tmp_path`. |
 | 5 | `figures/viz1_median_price.png` | Output Image (.png) | Bản đồ phân bố vị trí listing và giá trung vị theo $8$ phân vùng `analysis_area`. |
 | 6 | `figures/viz2_choropleth.html` | Output HTML (.html)| Bản đồ Choropleth tương tác tô màu ranh giới hành chính `neighbourhood_cleansed`. |
 | 7 | `figures/viz3_compare.png` | Output Image  (.png)| Biểu đồ cột so sánh tỷ lệ `Entire Home Share` và `Multi-host Share` giữa các phân vùng. |
