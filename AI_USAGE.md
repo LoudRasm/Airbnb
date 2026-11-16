@@ -115,3 +115,17 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
   - `viz_reviews.render` sinh 4 biểu đồ SVG chuẩn ghi rõ phạm vi mẫu và `n`.
 - Kiểm chứng: `python scripts/label_reviews.py check --member tv5` đạt 0 lỗi; 10/10 unit tests
   trong `tests/test_tv5.py` đạt; `READY = False`, `IMPLEMENTED = True` chờ TV2 (Đức) review.
+
+## Cập nhật 2026-11-17 — sửa sau rà soát và chuẩn hóa pipeline
+
+- Yêu cầu: sửa lỗi đã rà soát, dọn phần trùng, cập nhật theo đề mới, kiểm dữ liệu trước/sau và đẩy main;
+  giữ nguyên nhãn tay cùng phần code đúng của các thành viên.
+- Codex dùng thuật toán đã có của từng owner, sửa điểm nối QA đầy đủ, market/neighbourhood theo mốc,
+  denominator calendar, guest join và output riêng từng chế độ. Tách runner/schema/reader nhãn;
+  bỏ path/ID ghi cứng trong script cũ và bản sao dictionary/catalog, CSV fallback cá nhân của notebook.
+- Chuyển mặc định sang cache-only để chấm không API key; thêm lệnh tạo/kiểm cache riêng và hướng dẫn.
+  Người dùng xác nhận chưa có cache thật, nên không tạo dự đoán hoặc nhãn giả để hoàn thành bài.
+- Thêm/sửa test cho hợp đồng đã thay đổi, chạy dữ liệu thật không LLM và đối chiếu CSV/raw SHA256
+  với data check ban đầu; xem docs/VERIFICATION.md và reports/data_alignment_2026-11-16.json.
+- 100 nhãn tay/phiếu được giữ nguyên từng byte; AI không gán lại nhãn. Các cache giả dùng trong test
+  chỉ nằm ở thư mục tạm. Không gọi Gemini thật, không chỉnh tác giả commit cũ, không tag final.

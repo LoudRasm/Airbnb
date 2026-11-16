@@ -8,6 +8,7 @@ __pycache__/
 data/raw/
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/llm_cache.jsonl
 figures/*
 !figures/.gitkeep
 reports/generated/

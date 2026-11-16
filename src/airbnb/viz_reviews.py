@@ -11,7 +11,7 @@ from .review_kpi import _parse_aspect_list
 
 OWNER = 'TV5 — Phan Ngọc Huy'
 IMPLEMENTED = True
-READY = False  # Chỉ bật True sau khi triển khai, có test và review.
+READY = True  # Integration validated; see docs/VERIFICATION.md.
 
 FONT = 'Segoe UI, Inter, Arial, sans-serif'
 COLORS = {

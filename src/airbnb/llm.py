@@ -16,7 +16,7 @@ from .reviews import clean_comment, comment_sha256, is_digit_id
 
 OWNER = 'TV5 — Phan Ngọc Huy'
 IMPLEMENTED = True
-READY = False  # Chỉ bật True sau khi triển khai, có test và review.
+READY = True  # Integration validated; see docs/VERIFICATION.md.
 
 SENTIMENTS = {'positive', 'mixed', 'negative'}
 LLM_FIELDS = ['review_id', 'sentiment', 'language', 'positive_aspects', 'negative_aspects', 'source']
@@ -223,7 +223,7 @@ def select_reviews(reviews: list[dict], cfg: dict, review_ids=None) -> list[dict
     return sorted(sampled, key=lambda r: int(r['review_id']))
 
 
-def analyze(reviews, cfg, root, review_ids=None):
+def analyze(reviews, cfg, root, review_ids=None, *, allow_api=False):
     """Phân tích tập review bằng Gemini API với cache provenance, retry và kiểm tra schema.
 
     Không bao giờ biến lỗi API hoặc JSON sai thành nhãn mặc định.
@@ -246,6 +246,12 @@ def analyze(reviews, cfg, root, review_ids=None):
     selected = select_reviews(list(reviews), cfg, review_ids)
     cache = load_cache(cache_path, aspects, model, p_hash)
 
+    if not allow_api:
+        missing = [row['review_id'] for row in selected
+                   if _cache_key(row['review_id'], comment_sha256(row.get('comments', '')), model, p_hash) not in cache]
+        if missing:
+            raise RuntimeError(f'LLM cache thiếu {len(missing)}/{len(selected)} review đúng ID/text/model/prompt. '
+                               'Chạy scripts/generate_llm_cache.py trước khi nộp; pipeline không gọi API.')
     results = []
     api_key = None
 
@@ -284,7 +290,7 @@ def analyze(reviews, cfg, root, review_ids=None):
 
         if validated is None:
             raise RuntimeError(
-                f'LLM analysis failed for review_id {rid} after {retries} attempts: {last_error}'
+                f'LLM analysis failed for review_id {rid} after {retries} attempts ({type(last_error).__name__})'
             ) from last_error
 
         cache_entry = {

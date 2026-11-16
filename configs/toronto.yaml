@@ -47,12 +47,73 @@
     "raw": "data/raw",
     "processed": "data/processed",
     "reports": "reports/generated",
-    "figures": "figures"
+    "figures": "figures",
+    "manual_labels": "data/samples/manual_labels.csv"
   },
   "assignment": {
     "path": "data/assignments/assignment.xlsx",
     "course_class": "UET.DSE2049 1",
     "group": 10,
-    "data_code": "DSE2049-C01-G10-toronto"
-  }
+    "data_code": "DSE2049-C01-G10-toronto",
+    "manifest": "data/reference/assignment.json"
+  },
+  "analysis_areas": [
+    {
+      "area": "A01",
+      "lon_min": -79.647273,
+      "lat_min": 43.57647011,
+      "lon_max": -79.42006839,
+      "lat_max": 43.6576896
+    },
+    {
+      "area": "A02",
+      "lon_min": -79.42006839,
+      "lat_min": 43.57647011,
+      "lon_max": -79.3957271,
+      "lat_max": 43.6576896
+    },
+    {
+      "area": "A03",
+      "lon_min": -79.647273,
+      "lat_min": 43.6576896,
+      "lon_max": -79.439125,
+      "lat_max": 43.84774
+    },
+    {
+      "area": "A04",
+      "lon_min": -79.439125,
+      "lat_min": 43.6576896,
+      "lon_max": -79.3957271,
+      "lat_max": 43.84774
+    },
+    {
+      "area": "A05",
+      "lon_min": -79.3957271,
+      "lat_min": 43.57647011,
+      "lon_max": -79.38195595,
+      "lat_max": 43.66403359
+    },
+    {
+      "area": "A06",
+      "lon_min": -79.38195595,
+      "lat_min": 43.57647011,
+      "lon_max": -79.11849,
+      "lat_max": 43.66403359
+    },
+    {
+      "area": "A07",
+      "lon_min": -79.3957271,
+      "lat_min": 43.66403359,
+      "lon_max": -79.33134033,
+      "lat_max": 43.84774
+    },
+    {
+      "area": "A08",
+      "lon_min": -79.33134033,
+      "lat_min": 43.66403359,
+      "lon_max": -79.11849,
+      "lat_max": 43.84774
+    }
+  ],
+  "price_snapshot": "2026-06-15"
 }

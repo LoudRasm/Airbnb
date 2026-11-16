@@ -11,7 +11,10 @@ def load_config(path):
         raise ValueError("snapshots must be nonempty and unique")
     from datetime import date
     for snapshot in cfg["snapshots"]:
-        date.fromisoformat(snapshot)
+        if date.fromisoformat(snapshot).isoformat() != snapshot:
+            raise ValueError("Dates must use YYYY-MM-DD")
+    if cfg["snapshots"] != sorted(cfg["snapshots"]):
+        raise ValueError("snapshots must be chronological")
     return cfg, path.parent.parent
 
 def rows(path):

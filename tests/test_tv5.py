@@ -136,7 +136,7 @@ class LlmValidationAndCacheTests(unittest.TestCase):
         with patch.dict(os.environ, {'GEMINI_API_KEY': 'fake-key'}), patch.object(
             llm, 'call_gemini_api', side_effect=responses
         ) as api_mock:
-            out1 = llm.analyze(self.reviews, self.cfg, self.root, {'2001', '2002'})
+            out1 = llm.analyze(self.reviews, self.cfg, self.root, {'2001', '2002'}, allow_api=True)
             self.assertEqual(len(out1), 2)
             self.assertEqual(api_mock.call_count, 2)
 
@@ -155,7 +155,7 @@ class LlmValidationAndCacheTests(unittest.TestCase):
             'call_gemini_api',
             return_value='{"sentiment": "negative", "language": "en", "positive_aspects": [], "negative_aspects": ["cleanliness", "host"]}',
         ) as api_mock2:
-            out3 = llm.analyze(changed_reviews, self.cfg, self.root, {'2001', '2002'})
+            out3 = llm.analyze(changed_reviews, self.cfg, self.root, {'2001', '2002'}, allow_api=True)
             self.assertEqual(api_mock2.call_count, 1)
             self.assertEqual(out3[0]['sentiment'], 'negative')
 
@@ -164,7 +164,7 @@ class LlmValidationAndCacheTests(unittest.TestCase):
             llm, 'call_gemini_api', side_effect=TimeoutError('API timed out')
         ), patch('time.sleep'):
             with self.assertRaises(RuntimeError):
-                llm.analyze(self.reviews[:1], self.cfg, self.root, {'2001'})
+                llm.analyze(self.reviews[:1], self.cfg, self.root, {'2001'}, allow_api=True)
 
 
 class EvaluationAndKpiTests(unittest.TestCase):

@@ -1,41 +1,8 @@
-# Kế hoạch QA — Đức phụ trách
-
-Module phân tích hiện là TODO; các quy tắc dưới là đề xuất để Đức khảo sát, kiểm chứng và
-triển khai. Data check đã hoàn thành vẫn giữ nguyên và đếm dữ liệu trước cleaning.
-[Hướng dẫn triển khai](IMPLEMENTATION_GUIDE.md) · [Schema](CONTRACTS.md).
-
-Mỗi quy tắc cần ghi điều kiện, lý do, hành động và tác động số liệu. Ưu tiên gắn cờ; việc loại
-bỏ/dedupe hoặc chọn dòng phải có lý do và test. Không dùng quy tắc dự kiến như kết quả đã chạy.
-
-| Nhóm kiểm tra | Đề xuất | Người triển khai |
-|---|---|---|
-| Thiếu | ID/host/vùng/giá/text thiếu; phân biệt thiếu cột với giá trị trống | Đức: listings; Nam: calendar; Phan Huy: reviews |
-| Kiểu sai | ID chuỗi chính xác; số/ngày parse đúng, hữu hạn; available t/f | Theo owner từng bảng |
-| Trùng | Khóa trong mốc và bản ghi giữa mốc; quy tắc chọn dòng và collision | Theo owner từng bảng |
-| Ngoại lai | Giá mốc cuối, minimum_nights, tọa độ; khảo sát ngưỡng và ảnh hưởng | Đức phối hợp Hiếu |
-| Danh mục/schema lệch | Room type ngoài danh mục và cột/kiểu thay đổi giữa mốc | Đức |
-| Bao phủ/join | Calendar thiếu ngày, review không ghép được listing, vùng không xác định | Nam/Hiếu/Phan Huy phối hợp Đức |
-
-`qa.clean_listings` trả cleaned schema và QA report; calendar/reviews trả issue counts theo
-CONTRACTS. Nhóm trưởng gom thành `reports/qa_report.csv`; thống nhất tên rule để tránh trùng.
-Bảng có snapshot, rule, affected_rows, action, rows_after, median_price_before/after.
-Đức cần giải thích tác động lên KPI và bổ sung contract nếu các KPI khác cần trường riêng.
-
-Giá chỉ phân tích ở mốc cuối; thiếu giá các mốc trước không phải lỗi cần xin dữ liệu khác.
-Ngưỡng `qa.price_max = 10000` CAD và `min_nights_cap = 365` là tham số khung, chưa được khảo
-sát; chỉ dùng sau khi giải thích lựa chọn. Calendar không kiểm/tính giá.
-`neighbourhood_cleansed` thiếu không được điền bằng mã vùng chữ nhật rồi gọi là neighbourhood.
-ID không qua float; raw/workbook không bị sửa; review filter độc lập listing_id.
-
-Đức bổ sung từ điển dữ liệu, quy tắc đã chọn, số dòng/KPI trước và sau QA vào docs/phần báo cáo.
-Tests cần có trường hợp lỗi thật được mô phỏng và kết quả kỳ vọng có lý do; hình QA do
-`viz_qa.py` sinh. Đọc output CSV để kiểm số liệu, không chỉ nhìn terminal hoặc CI xanh.
-
----
+# QA và preprocessing
 
 ## Triển khai của Đức (cập nhật 22/10/2026)
 
-Phần phía trên là kế hoạch ban đầu của nhóm, giữ nguyên. Phần dưới là kết quả đã triển khai và kiểm chứng; khi hai phần khác nhau (ví dụ ngưỡng "chưa khảo sát") thì lấy phần dưới.
+Các quy tắc nghiệp vụ của Đức được giữ; cập nhật tích hợp ngày 2026-11-17 ở cuối tài liệu.
 
 Tài liệu mô tả phần QA & preprocessing **đã triển khai** trong `src/airbnb/qa.py` và `src/airbnb/eda.py`.
 Data check đầu vào (`scripts/check_data.py`) vẫn giữ nguyên và đếm dữ liệu **trước** cleaning.
@@ -70,9 +37,7 @@ python scripts/run_qa.py --config configs/toronto.yaml  # chạy trên raw + wor
 `reports/data_dictionary.csv`, `reports/qa_rule_catalog.csv` (commit được) và, vào
 `reports/generated/real/` (gitignore), `qa_report_listings.csv`, `qa_kpi_impact.csv`, `qa_missingness.csv`, cùng ba hình SVG vào
 `figures/real/` (gitignore). Chạy riêng phần hình: `python -m unittest discover -s tests -p test_viz_qa.py -v`.
-Pipeline chung gọi `qa.clean_listings(records, snapshot, cfg)` từng mốc; sau 4 mốc cần gọi thêm
-`qa.compare_schemas`, `qa.cross_snapshot_checks` và `qa.check_neighbourhood_reference` (xem
-`qa.run_listings_qa` — gom đúng thứ tự các hàm này) để các dòng tương ứng vào `reports/qa_report.csv`.
+Pipeline chung đã gọi `qa.run_listings_qa` một lần cho tất cả mốc, gồm clean_listings, compare_schemas, cross_snapshot_checks và check_neighbourhood_reference.
 
 ### Quy tắc (tên → điều kiện → lý do → hành động)
 
@@ -139,3 +104,12 @@ tác động QA; KPI chính thức do `kpi.summarize` (TV3) tính theo [KPI](KPI
 - Ngưỡng chưa thử trên dữ liệu ngoài 1.000 ID của nhóm; chạy mốc khác chỉ cần sửa config nhưng phải xem lại ngưỡng.
 - `check_neighbourhood_reference` cần `neighbourhoods.geojson` từng mốc; mốc thiếu file bị bỏ qua.
 - Không dùng `host_total_listings_count` cho KPI host: cột này rỗng 100% ở hai mốc cuối.
+
+## Cập nhật tích hợp 2026-11-17
+
+Luồng chung xuất QA report, missingness trước QA cho toàn bộ cột nguồn và bảng KPI impact.
+Bản đồ thiếu dữ liệu dùng tỷ lệ trước QA; analysis_area lấy từ phân công. Đếm lượt rule vi phạm,
+không cộng thành số dòng duy nhất hoặc tính tỷ lệ vượt 100%. Schema drift đếm cột, cross checks đếm cặp.
+Giá/median/price_n trong đầu ra phân tích chỉ dùng price_snapshot; mức độ thiếu giá nguồn vẫn được ghi
+cho mọi mốc theo yêu cầu data check. Luồng không LLM có thư mục real/non_llm riêng như README.
+Runner riêng của Đức vẫn là công cụ chẩn đoán; báo cáo cuối dùng pipeline và metadata chung.

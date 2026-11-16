@@ -108,7 +108,7 @@ class HeadlineTests(unittest.TestCase):
         data = tables()
         matrix = viz_qa.rule_matrix(data['qa_report'], [EARLY, FINAL])
         title, extra = viz_qa.headline_rules(matrix, {EARLY: 2, FINAL: 3})
-        self.assertEqual(title, 'QA gắn cờ 3/5 dòng (60.0%), nhiều nhất ở price_missing_final')
+        self.assertEqual(title, 'QA ghi nhận 3 lượt vi phạm trên 5 dòng; nhiều nhất ở price_missing_final')
         self.assertIn('cross_host_id_changed = 7', extra)
 
     def test_rules_headline_when_nothing_is_flagged(self):

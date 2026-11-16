@@ -1,154 +1,31 @@
-# Nhóm 10 Inside Airbnb Toronto
+# Inside Airbnb Toronto — Nhóm 10
 
-Bài tập lớn Lập trình xử lý dữ liệu, lớp **UET.DSE2049 1**, nhóm **10**, học kỳ 1 năm 2026–2027.
+Bài tập lớn Lập trình xử lý dữ liệu, **UET.DSE2049 1**, học kỳ 1 năm 2026–2027.
+Mã dữ liệu: **DSE2049-C01-G10-toronto**. Tiền tệ: **CAD**.
+
 [GitHub nhóm](https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10)
-· [Đề bài](https://courses.iaidev.com/programming-for-data-processing/2627-1/projects/project_airbnb.html)
+· [Đề bài hiện hành](https://courses.iaidev.com/programming-for-data-processing/2627-1/projects/project_airbnb.html)
+· [Nguồn Toronto](https://data.insideairbnb.com/canada/on/toronto/)
 
-## Việc cần làm ngay — cập nhật 15/11/2026
+## Trạng thái ngày 2026-11-17
 
-- **Cả 5 người:** đọc [hướng dẫn gán nhãn tay](docs/MANUAL_LABELING.md), mở phiếu của mình
-  trong [data/samples/labeling/](data/samples/labeling/README.md), tự đọc và gán 20 review.
-  Phiếu đã có sẵn text đúng ID; chưa có nhãn cảm xúc. Không cần raw/workbook/API để làm phần này.
-- **Code/phần báo cáo:** làm theo [checklist từng người](docs/FINAL_CHECKLIST.md):
-  [Bạn — TV1](docs/checklists/tv1.md), [Đức](docs/checklists/tv2.md),
-  [Hiếu](docs/checklists/tv3.md), [Nam](docs/checklists/tv4.md), [Phan Huy](docs/checklists/tv5.md).
-- **Bàn giao:** mỗi người sửa phần mình trên branch, test và mở PR; nhóm trưởng review/merge.
-  TV5 ghép 100 nhãn qua PR; TV1 tích hợp và finalize sau khi các phần đã hoàn thiện.
+Code của các thành viên đã được nối vào luồng chung; `READY` biểu thị code tích hợp, **không có nghĩa bài đã sẵn sàng nộp**.
+100 nhãn tay đã có và được giữ nguyên. Luồng không LLM chạy trên dữ liệu thật; kết quả kiểm chứng ở
+[VERIFICATION.md](docs/VERIFICATION.md), đối chiếu dữ liệu ở [biên bản](reports/data_alignment_2026-11-16.json).
 
-**Phần riêng TV1 đã triển khai:** coverage cohort, thay đổi host_id/room_type, hai SVG,
-14 tests và [báo cáo cá nhân](reports/sections/tv1.md). Chạy độc lập, không cần module của bạn khác:
+**Còn thiếu cache Gemini thật cho 1.000 review.** Nhóm trưởng xác nhận chưa tạo cache.
+Theo đề mới, giảng viên không cần API key và không chạy lại LLM. Vì vậy lệnh pipeline mặc định chỉ đọc cache;
+nếu thiếu hoặc sai ID/text/model/prompt, chương trình dừng, không sinh dự đoán giả.
+Xem [hướng dẫn tạo cache](docs/LLM_CACHE.md). Cần hoàn thành cache, chạy lại toàn bộ, chốt báo cáo PDF ≤10 trang và mã commit trước khi tag `final`.
 
-```bash
-python scripts/run_tv1.py --config configs/toronto.yaml
-python scripts/run_tv1.py --demo
-python -m unittest discover -s tests -p test_tv1.py -v
-```
+Bên nhận phân tích giả định: nhóm theo dõi lưu trú ngắn hạn và du lịch Toronto. Mục tiêu là theo dõi
+cơ cấu nguồn cung trong cohort được giao, mức giá cuối kỳ, lịch sẵn có và vấn đề trải nghiệm khách.
+Không suy rộng biến động của cohort thành gia nhập/rời thị trường toàn Toronto.
 
-CSV: `data/processed/real/tv1/`; hình: `figures/real/tv1/`; metadata/tóm tắt:
-`reports/generated/real/tv1/`. Mặc định chỉ chiếu ID/host/room từ raw đã lọc workbook, chưa thay
-cho QA chung. Khi bảng sạch có sẵn, thêm `--listings data/processed/real/listings.csv` để chạy
-trên cleaned. Demo là dữ liệu giả. Không tải/gọi API hoặc sửa code của owner khác.
-analysis/viz_market có `IMPLEMENTED=True`, READY giữ False chờ Nam review theo quy trình;
-status sẽ ghi REVIEW cho hai module này khi import calendar đã được sửa.
-20 nhãn tay TV1 vẫn cần bạn tự đọc/chốt. Các bước finalize chung chưa đánh dấu hoàn thành.
+## Cài đặt và chạy
 
-**Blocker đang có, chưa sửa thay owner:** calendar.py sót nội dung merge nên `--status` và
-integration đang lỗi import/cú pháp; Nam tự xử lý theo checklist. Đức đã có QA/EDA và 42 test
-QA đạt, còn hình/kiểm chứng tích hợp; nhiều module của các bạn khác vẫn TODO.
-Các lệnh phân tích dưới đây là luồng mục tiêu, chưa phải toàn pipeline đang chạy được.
-
-Ví dụ Đức kiểm phiếu riêng, chạy độc lập với lỗi calendar:
-
-```bash
-python scripts/label_reviews.py check --member tv2
-```
-
-Đổi tv2 thành tv1/tv3/tv4/tv5. Check báo còn trống/ca khó là đúng khi chưa gán xong; không tự
-điền nhãn để vượt kiểm tra. Mỗi người chỉ commit phiếu mình, không cùng sửa CSV nhãn cuối.
-
-## Trạng thái hiện tại
-
-Repo giữ cấu trúc **module trong `src/airbnb/`**. Đây là source chung: mỗi thành viên sửa
-file được giao trên branch riêng, mở PR vào `main`; sau merge, pipeline import code mới.
-Không cần folder theo tên người hoặc chép code sang một bộ source khác.
-
-**Repo có hai phần:**
-
-| Phần | Trạng thái | Lệnh |
-|---|---|---|
-| Kiểm tra dữ liệu đầu vào theo workbook | Đã chạy trên dữ liệu thật; giữ nguyên | `python scripts/check_data.py --part ...` |
-| QA, EDA, KPI, LLM và hình cho bài cả kỳ | Đã có QA/EDA của Đức; các phần khác đang phát triển/TODO, calendar đang chặn import | `python run_pipeline.py --status` sau khi Nam sửa lỗi |
-
-Khung ban đầu có chữ ký hàm, hướng dẫn đầu vào/đầu ra và `TODO[TV1]` đến `TODO[TV5]` để
-thành viên tự triển khai. Các module chưa xong tiếp tục giữ `READY = False`/`NotImplementedError`;
-có code không đồng nghĩa đã được kiểm chứng. Trạng thái mới nhất xem checklist ngày 15/11.
-Implementation AI cũ nằm trong lịch sử và AI_USAGE; không dùng làm đóng góp cá nhân giả.
-[Hướng dẫn triển khai và import](docs/IMPLEMENTATION_GUIDE.md).
-
-## Thành viên và phần code cả kỳ
-
-| Người | File tự triển khai | Reviewer |
-|---|---|---|
-| TV1 — Dương Nhật Huy | `run_pipeline.py`, `loading.py`, config/download, `analysis.py`, `viz_market.py` | Nam |
-| TV2 — Mai Anh Đức | `qa.py`, `eda.py`, `viz_qa.py` | Hiếu |
-| TV3 — Nguyễn Quốc Hiếu | `kpi.py`, `viz_spatial.py` | Nhóm trưởng |
-| TV4 — Vũ Phạm Khánh Nam | `calendar.py`, `viz_calendar.py` | Phan Huy |
-| TV5 — Phan Ngọc Huy | `reviews.py`, `baseline.py`, `llm.py`, `evaluate.py`, `review_kpi.py`, `viz_reviews.py` | Đức |
-
-Các tên file trên nằm trong `src/airbnb/`. Mỗi người làm module cho **cả 4 mốc**, không chia
-mỗi người một mốc. Mỗi người viết test phù hợp và phần báo cáo riêng. [Phân công chi tiết](docs/TEAM.md).
-
-## Cấu trúc và tài liệu cần đọc
-
-```text
-configs/                 Cấu hình Toronto và kiểm tra đầu vào
-data/raw/<YYYY-MM-DD>/   Dữ liệu gốc của từng mốc, gitignore
-data/assignments/        Workbook gốc giữ trên mỗi máy, gitignore
-data/samples/            Fixture giả và manual_labels.csv chờ nhãn thật
-data/processed/          Bảng sạch, kết quả LLM và KPI do pipeline sinh
-src/airbnb/              Module chung; TODO và OWNER ghi ngay trong file
-scripts/                Lệnh tải dữ liệu và kiểm tra đầu vào
-tests/                  Kiểm thử nền và kiểm thử do từng thành viên bổ sung
-figures/                Hình do pipeline sinh
-reports/checks/         CSV, ghi chú và chẩn đoán data check đã hoàn thành
-reports/generated/      Báo cáo thống kê do pipeline phân tích sinh
-reports/sections/       Mỗi người tự tạo tvN.md để bàn giao phần báo cáo
-notebooks/              Khám phá tùy chọn; không thay luồng chạy chung
-run_pipeline.py         Điều phối import → xử lý → xuất file
-```
-
-| Cần làm | Đọc |
-|---|---|
-| Biết phần của mình và kết quả phải bàn giao | [TEAM.md](docs/TEAM.md) |
-| Triển khai TODO, giữ đầu vào/đầu ra và nối import | [IMPLEMENTATION_GUIDE.md](docs/IMPLEMENTATION_GUIDE.md), [CONTRACTS.md](docs/CONTRACTS.md) |
-| Tạo branch, push, mở PR, merge và pull lại | [GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md) |
-| Chạy lại kiểm tra dữ liệu hoặc tổng hợp CSV nộp | [DATA_CHECK_WORKFLOW.md](docs/DATA_CHECK_WORKFLOW.md) |
-| Theo dõi việc còn thiếu trước bài cuối | [ROADMAP.md](docs/ROADMAP.md) |
-| Bắt đầu gán 20 review và bàn giao 100 nhãn thật | [MANUAL_LABELING.md](docs/MANUAL_LABELING.md) |
-| Sửa lỗi đúng owner, PR/merge rồi nhóm trưởng finalize | [FINAL_CHECKLIST.md](docs/FINAL_CHECKLIST.md) |
-
-Sơ đồ trong đề gợi ý tên module bên trong `src/`; repo đặt chúng trong package `airbnb`
-để import ổn định. Những thư mục và file bàn giao ở gốc vẫn giữ theo đề.
-
-### Các file `viz_*` là gì? Bản final có giữ không?
-
-`viz` là viết tắt của visualization (trực quan hóa). Đề gợi ý `viz.py` và yêu cầu có hình
-theo góc độ không gian, thời gian và LLM. Các tên `viz_calendar.py`, `viz_spatial.py`… là
-cách nhóm chia code theo phần việc, không phải tên file bắt buộc hay yêu cầu phân tích thêm.
-
-| File trong src/airbnb/ | Vai trò | Người phụ trách |
-|---|---|---|
-| `viz.py` | Gọi các hàm vẽ và gom đường dẫn hình; không viết chung mọi biểu đồ vào đây | Nhóm trưởng |
-| `viz_market.py` | Hình tổng hợp cho câu hỏi phân tích chung | Nhóm trưởng |
-| `viz_qa.py` | Hình về dữ liệu thiếu và chất lượng dữ liệu | Đức |
-| `viz_spatial.py` | Bản đồ, so sánh theo vùng; ghi rõ giới hạn neighbourhood | Hiếu |
-| `viz_calendar.py` | Hình availability/coverage theo thời gian; không phân tích giá calendar | Nam |
-| `viz_reviews.py` | Hình cảm xúc/khía cạnh từ kết quả LLM | Phan Huy |
-
-```text
-run_pipeline.py
-    → tính các bảng dữ liệu và KPI
-    → viz.render_all(...)
-        → viz_market / viz_qa / viz_spatial / viz_calendar / viz_reviews
-        → lưu hình vào figures/real/ (hoặc figures/demo/ khi chạy demo)
-```
-
-Mỗi người triển khai `render(tables, figures, cfg)` trong file vẽ của mình: nhận các bảng đã
-xử lý, lưu hình vào thư mục `figures` được truyền vào và trả `list[Path]`. Dùng tên hình riêng
-để tránh ghi đè; không tự tải raw/gọi LLM lại trong bước vẽ. `--skip-llm` bỏ `viz_reviews`.
-`viz_market.py` đã sinh hình TV1; các file vẽ còn lại vẫn TODO. Có tên file không có nghĩa đã sinh được hình.
-
-**Bản final giữ các module mà chương trình sử dụng**, kể cả các file `viz_*` không được liệt
-kê riêng trong sơ đồ đề. Các file hiện đã được `viz.py` import và gọi; không xóa chỉ để tên
-file giống sơ đồ minh họa. Nếu nhóm gộp/đổi module sau này, phải sửa import/lời gọi và kiểm
-tra lại pipeline. Hình nộp phải sinh tự động từ luồng chung, dùng số liệu khớp báo cáo;
-notebook khám phá và ảnh terminal không thay bước này.
-
-## Cài môi trường và cập nhật code
-
-Python đã kiểm thử: **3.13.7**, xem `.python-version`. Khung dùng Python stdlib;
-không cần pandas để chạy data check chung. Nếu thêm thư viện cho phần mình, ghim `==` trong
-`requirements.txt`; nếu khai báo trong `pyproject.toml` thì giữ hai nơi đồng nhất.
+Python đã kiểm thử: **3.13.7** (`.python-version`). Các thư viện trực tiếp được ghim `==` trong
+`requirements.txt`; `pyproject.toml` đọc chính tệp này khi cài package.
 
 ```bash
 git clone https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10.git
@@ -158,141 +35,182 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-Windows PowerShell: dùng `py -3.13 -m venv .venv` và `.venv\Scripts\Activate.ps1`.
-Repo cần quyền truy cập GitHub của nhóm. Đã clone thì `git switch main` và `git pull --ff-only origin main`,
-sau khi lưu/commit công việc đang làm. [Git workflow](docs/GIT_WORKFLOW.md).
+Windows PowerShell: `py -3.13 -m venv .venv`, sau đó `.venv\Scripts\Activate.ps1`.
+Repo riêng tư cần quyền truy cập GitHub của nhóm.
 
-Kiểm tra không cần raw/workbook/API. Hiện test QA/nhãn chạy độc lập; status/toàn bộ suite
-sẽ còn lỗi calendar cho tới khi Nam sửa:
+Sau khi cache thật đã được tạo và commit, **một lệnh chạy toàn bộ** là:
 
 ```bash
-python run_pipeline.py --status
-python -m unittest discover -s tests -v
-python -m unittest discover -s tests -p test_qa.py -v
-python -m unittest discover -s tests -p test_manual_labels.py -v
-```
-
-Khi import thông, `--status` liệt kê từng module/owner và READY/TODO.
-Không dùng kết quả 11 tests của starter cũ làm trạng thái hiện tại.
-Xem [phạm vi kiểm chứng](docs/VERIFICATION.md) và checklist mới.
-
-## Dataset và phạm vi nhóm
-
-Nguồn: [Inside Airbnb Toronto](https://data.insideairbnb.com/canada/on/toronto/) (CC BY 4.0).
-Mã dữ liệu **DSE2049-C01-G10-toronto**, tiền tệ **CAD**. Theo workbook được giao cho nhóm:
-**2025-09-11, 2025-12-12, 2026-03-19, 2026-06-15**.
-Giá chỉ phân tích ở mốc cuối. Calendar không dùng để phân tích giá; unavailable không đồng nghĩa booked.
-
-Trang đề hiện liệt kê mốc thứ hai Toronto là `2025-11-11`, khác `2025-12-12` trong workbook
-của nhóm. Config hiện theo workbook; không tự đổi ngày để khớp ví dụ trên trang.
-Giữ mã/ngày đúng phân công và ghi rõ nguồn này trong báo cáo.
-
-| Mốc | Listings | Calendar | Reviews | Neighbourhoods |
-|---|---|---|---|---|
-| 2025-09-11 | [listings.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/data/listings.csv.gz) | [calendar.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/data/calendar.csv.gz) | [reviews.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/data/reviews.csv.gz) | [neighbourhoods.geojson](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/visualisations/neighbourhoods.geojson) |
-| 2025-12-12 | [listings.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/data/listings.csv.gz) | [calendar.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/data/calendar.csv.gz) | [reviews.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/data/reviews.csv.gz) | [neighbourhoods.geojson](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/visualisations/neighbourhoods.geojson) |
-| 2026-03-19 | [listings.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/listings.csv.gz) | [calendar.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/calendar.csv.gz) | [reviews.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/reviews.csv.gz) | [neighbourhoods.geojson](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/visualisations/neighbourhoods.geojson) |
-| 2026-06-15 | [listings.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/listings.csv.gz) | [calendar.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/calendar.csv.gz) | [reviews.csv.gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/reviews.csv.gz) | [neighbourhoods.geojson](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/visualisations/neighbourhoods.geojson) |
-
-Downloader: `python scripts/download_data.py configs/toronto.yaml`.
-Raw ở `data/raw/<ngày>/`; workbook giữ nguyên ở `data/assignments/assignment.xlsx`.
-Cả hai thư mục đều gitignore; không commit raw/workbook/key và không mở rồi lưu lại bằng Excel.
-Nếu đã tải dữ liệu, đặt đúng tên/path theo [data/README.md](data/README.md); không phải tải lại.
-Chép workbook gốc vào path trên; hoặc dùng `--assignment` cho data check và sửa
-`assignment.path` trong config khi chạy phân tích. Người mới phải tự chuẩn bị raw/workbook,
-vì pull Git chỉ lấy file đã commit.
-ID dài giữ dạng chuỗi/số nguyên chính xác, không qua float.
-Vùng `analysis_area` là 8 hình chữ nhật từ workbook, không phải neighbourhood hành chính.
-Danh sách cố định 1.000 listing không đo được entry/exit hay quy mô toàn thị trường Toronto.
-
-## Luồng data check đã hoàn thành và giữ nguyên
-
-[Hướng dẫn đầy đủ](docs/DATA_CHECK_WORKFLOW.md). Các lệnh sau tự xuất CSV/notes/diagnostics
-vào `reports/checks/`; dữ liệu gốc không bị sửa.
-
-| Người | Lệnh |
-|---|---|
-| Đức | `python scripts/check_data.py --part listings` |
-| Hiếu | `python scripts/check_data.py --part listing-details` |
-| Nam | `python scripts/check_data.py --part calendar` |
-| Phan Huy | `python scripts/check_data.py --part reviews` |
-| Nhóm trưởng | `python scripts/check_data.py --part merge` |
-
-Hoặc `python scripts/check_data.py --part all` để kiểm chứng lại trước khi nộp.
-Phần reviews lọc bằng **review_id**, 5.000/mốc. Câu 2 lấy trực tiếp hai cột workbook **1.000/100**.
-Merge tạo `check_DSE2049-C01-G10-toronto.csv` có 16 cột và 4 dòng; có lỗi thì tạo `.draft.csv`.
-Bản `report_answers.md` tự sinh là gợi ý, cần nhóm trưởng đọc trước khi nộp.
-Script `scripts/check_calendar.py` và `reports/check_calendar.csv` do Nam đã đóng góp được giữ nguyên;
-script/kết quả listings của Đức cũng giữ nguyên. Luồng data check chung tiếp tục dùng
-`scripts/check_data.py`; đây là lệnh được hướng dẫn cho mọi máy và không cần pandas.
-
-## Luồng phân tích để các thành viên tự làm
-
-```bash
-python run_pipeline.py --status
-python -m unittest discover -s tests -v
-```
-
-`--status` liệt kê module/owner còn TODO, không đọc raw hay gọi API.
-CI hiện kiểm data check và đường nối giữa module bằng test doubles; CI xanh **không có nghĩa**
-thuật toán của các thành viên hoặc bài cả kỳ đã hoàn thành.
-
-Sau khi tất cả module cần thiết đã triển khai/test/review và đặt `READY = True`:
-
-```bash
-# Phân tích, tạm bỏ LLM/evaluation/guest KPI/hình LLM:
-python run_pipeline.py --config configs/toronto.yaml --skip-llm
-# Nếu raw đã đủ cả CSV và GeoJSON, thêm --no-download để dùng file local:
-python run_pipeline.py --config configs/toronto.yaml --skip-llm --no-download
-# Khi đã đủ phần LLM và nhãn sentiment thật:
-export GEMINI_API_KEY='YOUR_API_KEY'
 python run_pipeline.py --config configs/toronto.yaml
 ```
 
-PowerShell: `$env:GEMINI_API_KEY='YOUR_API_KEY'`. `.env.example` chỉ mô tả biến, không tự load `.env`.
-Model/seed/taxonomy/paths nằm trong config. `assignment` chỉ workbook của nhóm; loader kiểm
-ngày/mã/tiền tệ khớp config và lọc IDs trước khi gọi module.
-LLM nhận 1.000 ID được đánh dấu; 100 dấu x nhãn tay là danh sách cần gán nhãn, chưa phải sentiment.
-Phiếu đã chia sẵn 20/người; TV5 chạy `python scripts/label_reviews.py merge` chỉ khi đủ nhãn
-và đã giải quyết ca khó. Nhóm trưởng duyệt CSV cuối qua PR, không chạy lệnh này để tạo nhãn tự động.
+Lệnh tải những raw file còn thiếu theo config, đọc tập ID chính thức, QA → KPI → baseline → cache LLM →
+đánh giá trên 100 nhãn tay → xuất CSV và hình. Không đọc `.env`, không gọi Gemini.
+Nếu raw đã đủ, thêm `--no-download` để không dùng mạng tải dữ liệu.
 
-Hiện pipeline chưa import được vì calendar. Sau khi Nam sửa, guard tiếp tục dừng nếu còn TODO.
-`--demo --skip-llm` cũng cần các module được triển khai. Demo là dữ liệu giả, không dùng trong báo cáo.
+Trong lúc chưa có cache, chạy phần không LLM:
 
-Output sau khi triển khai: `data/processed/real/` chứa cleaned, baseline, LLM và kpi_*.csv;
-`reports/generated/real/` chứa QA, EDA, evaluation; `figures/real/` chứa hình của từng người.
-QA thật còn được xuất vào `reports/qa_report.csv`. Terminal báo trạng thái và đường dẫn;
-CSV/hình là đầu ra để đối chiếu, không cần chụp terminal hoặc chép kết quả vào notebook.
-[Hợp đồng hàm và bảng](docs/CONTRACTS.md).
+```bash
+python run_pipeline.py --config configs/toronto.yaml --skip-llm --no-download
+python run_pipeline.py --demo --skip-llm
+python run_pipeline.py --status
+python -m pytest -q
+```
 
-## Quy trình đóng góp
+Demo là dữ liệu giả để kiểm thử, không dùng số liệu đó cho báo cáo thật. Test không gọi Gemini.
+Các lỗi dữ liệu, cache hoặc thiếu thư viện phải được xử lý; không dùng ảnh thay thế không có dữ liệu.
 
-1. Pull `main` sau khi commit/lưu công việc đang làm; tạo branch cho một task.
-2. Đọc file được giao và `CONTRACTS.md`; triển khai TODO trong `src/airbnb/`.
-3. Test riêng phần mình trước, kể cả khi pipeline chung còn bị chặn bởi TODO của bạn khác.
-4. Bổ sung test, phần báo cáo `reports/sections/tvN.md`, tài liệu và AI_USAGE nếu có dùng AI.
-5. Kiểm diff, chỉ stage file liên quan, commit bằng tài khoản mình, push branch và mở PR.
-6. Reviewer kiểm logic/số liệu; nhóm trưởng merge rồi mọi người pull `main`.
+## Thành viên và module
 
-Không chỉ đổi `READY` hoặc xóa comment để coi là hoàn thành. Khi giữ đúng hàm và schema,
-import sẵn có tự dùng code mới; nhóm trưởng chỉ sửa luồng nếu thêm bước hoặc đổi giao diện.
-Code không chạy download/API ở cấp module. [Ví dụ làm module](docs/IMPLEMENTATION_GUIDE.md)
-· [Lệnh Git và xử lý conflict](docs/GIT_WORKFLOW.md).
+| Người | Phần phụ trách trong `src/airbnb/` | Bàn giao |
+|---|---|---|
+| TV1 — Dương Nhật Huy, nhóm trưởng | `pipeline.py`, loading/config/download, `analysis.py`, `viz_market.py` | Tích hợp, coverage cohort, biến động host/room, báo cáo chung |
+| TV2 — Mai Anh Đức | `qa.py`, `eda.py`, `viz_qa.py` | QA, dữ liệu thiếu, schema/category drift, tác động trước/sau QA |
+| TV3 — Nguyễn Quốc Hiếu | `kpi.py`, `viz_spatial.py` | KPI nguồn cung/giá/phòng/host và không gian |
+| TV4 — Vũ Phạm Khánh Nam | `calendar.py`, `viz_calendar.py` | Availability và coverage lịch theo thời gian/vùng |
+| TV5 — Phan Ngọc Huy | `reviews.py`, `baseline.py`, `llm.py`, `evaluate.py`, `review_kpi.py`, `viz_reviews.py` | Review, cache Gemini, đánh giá, guest KPI |
 
-Đầu ra phân tích tự sinh đang gitignore; ghi lệnh, số liệu chính và giới hạn trong PR/phần báo cáo.
-Data check có quy ước commit CSV/notes nhỏ riêng. Ảnh có thể minh họa nhưng không thay code,
-test và file kết quả. Không dùng `git add .` để gom cả file của người khác.
+Mỗi người xử lý phần mình trên **cả các mốc**, không chia mỗi người một snapshot.
+Code chung nằm trong package; không tạo bản sao source theo tên người rồi chép vào `main`.
+Các file `viz_*` là module vẽ của từng mảng; giữ chúng để chia trách nhiệm và tránh xung đột.
+`viz.py` chỉ gọi các module này, không chứa bản sao công thức KPI.
 
-## Trước khi nộp bài cuối
+```text
+run_pipeline.py                 CLI: nhận tham số, gọi luồng chung
+src/airbnb/pipeline.py           Điều phối module, kiểm tra, xuất kết quả
+src/airbnb/outputs.py            Hợp đồng CSV dùng chung
+src/airbnb/labels.py             Chỉ đọc/kiểm nhãn tay
+src/airbnb/{qa,kpi,calendar,...}  Thuật toán theo phần việc
+configs/                        Thành phố, mốc, đường dẫn, giá, taxonomy
+scripts/                        Các lệnh độc lập, tải dữ liệu, data check, tạo cache
+notebooks/                      Khám phá tùy chọn, không thay luồng chung
+tests/                          Fixture giả + kiểm thử tích hợp không API
+data/reference/assignment.json  Chỉ phạm vi nhóm xuất từ workbook, ID dạng chuỗi
+data/assignments/assignment.xlsx Workbook gốc cục bộ, gitignore
+data/raw/YYYY-MM-DD/            File nguồn, gitignore, không sửa
+data/processed/                 Cache cần commit; các CSV sinh ra được gitignore
+reports/checks/                 Báo cáo kiểm tra đầu vào ban đầu, giữ nguyên
+reports/generated/              QA, đánh giá, metadata của các lần chạy
+reports/sections/               Phần báo cáo của từng thành viên
+figures/                        Hình sinh tự động
+```
 
-AI tạo khung/data check được ghi trong [AI_USAGE.md](AI_USAGE.md); mỗi thành viên cập nhật khi dùng AI.
-Nhóm cần chốt bên nhận phân tích, hoàn thiện QA và 5–8 KPI, hình không gian/thời gian/LLM,
-baseline và đánh giá trên 100 nhãn thật. KPI theo `analysis_area` hiện chưa thay thế được
-yêu cầu neighbourhood: Hiếu và nhóm trưởng xác minh cột/coverage thực tế từng mốc, đối chiếu
-GeoJSON và ghi rõ phương án. Không mặc định cột thiếu theo ghi chú starter cũ.
-Cohort cố định cũng chưa đủ để suy luận entry/exit toàn thị trường.
+`reports/data_dictionary.csv` và `reports/qa_rule_catalog.csv` là bản mô tả chuẩn duy nhất.
+Các script cũ `check_calendar.py`/`check_listings.py` chuyển tiếp sang data check chung;
+không còn đường dẫn máy cá nhân hoặc danh sách 1.000 ID ghi cứng trong code.
 
-Sau khi hoàn thành: clone sạch, chạy đầy đủ có LLM bằng khóa môi trường, tái tạo số liệu/hình,
-ghép `reports/report.pdf` tối đa 10 trang và ghi mã commit. Hạn ghi trong đề là
-22/11/2026, tag `final`; thao tác tag nằm trong [GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md).
-Data check đạt và CI xanh hiện tại chưa có nghĩa bài phân tích cuối đã hoàn thành.
+## Dữ liệu và quy tắc phạm vi
+
+Bốn mốc **trong workbook của nhóm**:
+
+| Mốc | Ngày | Listings | Calendar | Reviews | GeoJSON |
+|---|---|---|---|---|---|
+| 1 | 2025-09-11 | [gz](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/data/listings.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/data/calendar.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/data/reviews.csv.gz) | [json](https://data.insideairbnb.com/canada/on/toronto/2025-09-11/visualisations/neighbourhoods.geojson) |
+| 2 | 2025-12-12 | [gz](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/data/listings.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/data/calendar.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/data/reviews.csv.gz) | [json](https://data.insideairbnb.com/canada/on/toronto/2025-12-12/visualisations/neighbourhoods.geojson) |
+| 3 | 2026-03-19 | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/listings.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/calendar.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/reviews.csv.gz) | [json](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/visualisations/neighbourhoods.geojson) |
+| 4 | 2026-06-15 | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/listings.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/calendar.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/reviews.csv.gz) | [json](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/visualisations/neighbourhoods.geojson) |
+
+**Chênh lệch cần xác nhận khi chốt bài:** trang đề hiện ghi mốc Toronto thứ hai là `2025-11-11`,
+workbook và báo cáo đầu vào của nhóm ghi `2025-12-12`. Repo giữ ngày được giao để bảo toàn dữ liệu ban đầu;
+nhóm trưởng cần xác nhận với giảng viên hoặc bổ sung mốc tháng 11 theo hướng dẫn dưới đây.
+
+- Listings và calendar lọc theo **1.000 listing_id**. Calendar đọc streaming, không nạp cả thành phố vào RAM.
+- Reviews lọc độc lập theo **5.000 review_id/mốc**, không dùng listing_id để lọc reviews.
+- Tập LLM **1.000**, tập nhãn tay **100** lấy trực tiếp dấu trong workbook, không lấy mẫu lại.
+- ID luôn là chuỗi; không mở rồi lưu workbook/CSV nguồn bằng Excel vì có ID dài 18–19 chữ số.
+- Nếu có workbook cục bộ, pipeline đọc workbook; nếu không có, đọc manifest phạm vi nhóm đã commit.
+  Manifest có mã băm workbook gốc; không chứa dữ liệu của các nhóm khác. Không tự sửa danh sách ID.
+- Giá phân tích chỉ dùng `price_snapshot=2026-06-15` từ **listings**. Giá thiếu ở các mốc trước không
+  phải lý do xin cấp lại dữ liệu. Calendar không có giá; unavailable không đồng nghĩa đã có khách đặt.
+- `analysis_area` A01–A08 là vùng chữ nhật của bài giao, khác `neighbourhood_cleansed` từ Inside Airbnb.
+- Review trùng qua các mốc giữ một ID; `first_seen_snapshot` và `date` review có ý nghĩa khác nhau.
+- Nguồn Inside Airbnb, CC BY 4.0. Ghi ngày từng mốc và nguồn trong báo cáo.
+
+Để chạy thêm mốc **không LLM**, sửa danh sách `snapshots` trong config (ngày ISO, tăng dần), giữ mã nhóm,
+ID và `price_snapshot`, rồi chạy lại `--skip-llm`. Có thể thêm `2025-11-11` giữa hai mốc đầu hoặc dùng config
+chỉ chứa mốc mới để kiểm tra. Đổi `paths.raw` nếu dữ liệu ở ổ khác. Không cần sửa source/GeoJSON path.
+Giữ đủ bốn mốc được giao trong config dùng để tạo cache và chạy đánh giá cuối cùng.
+
+## Kết quả sau khi chạy
+
+| Chế độ | CSV dữ liệu/KPI | QA, metadata, đánh giá | Hình |
+|---|---|---|---|
+| Đầy đủ từ cache | `data/processed/real/` | `reports/generated/real/` | `figures/real/` |
+| Không LLM | `data/processed/real/non_llm/` | `reports/generated/real/non_llm/` | `figures/real/non_llm/` |
+| Demo | `data/processed/demo/` | `reports/generated/demo/` | `figures/demo/` |
+
+`--skip-llm` không ghi CSV LLM/evaluation/guest rỗng lên kết quả đầy đủ.
+Các bảng và hình được chuẩn bị tại thư mục tạm; chỉ xuất khi module xử lý và vẽ thành công.
+Metadata ghi config, SHA256 đầu vào, số dòng và danh sách artifact. Dùng các tệp trong metadata của lần chạy đó;
+không trộn hình cũ, CSV từ notebook hoặc hai chế độ vào một báo cáo.
+
+Các bảng chính: `listings.csv`, `calendar_summary.csv`, `reviews.csv`, `baseline.csv`,
+`kpi_market.csv` (mốc × analysis_area), `kpi_neighbourhood.csv` (mốc × neighbourhood),
+`kpi_calendar.csv`, `kpi_cohort.csv`, `kpi_churn.csv`; chế độ đầy đủ thêm `llm_reviews.csv`, `kpi_guest.csv`.
+QA xuất `qa_report.csv`, `qa_missingness.csv`, `qa_kpi_impact.csv`, `eda_flags.csv`;
+đánh giá xuất `evaluation.csv` trên cùng 100 nhãn thật cho baseline và Gemini.
+Bản `reports/qa_report.csv` ở gốc là bản QA của lần chạy thật gần nhất.
+
+KPI trọng tâm: supply, median price/price_n, entire-home share, tỷ lệ listing thuộc host nhiều listing
+trong cohort, availability/coverage lịch, coverage cohort và guest issue rate.
+Giá ngoài mốc được phép dùng để trống; mẫu số 0 được thể hiện là không xác định.
+Guest KPI theo vùng chỉ dùng review nối được với cohort listing và có chỉ số join coverage riêng.
+Bản đồ HTML có thể cần Internet để tải thư viện/nền bản đồ khi mở; CSV và hình PNG/SVG vẫn được sinh cục bộ.
+
+## Tạo cache thật trước khi nộp — TV5/nhóm trưởng
+
+Đọc taxonomy/prompt trong `src/airbnb/llm.py` và config trước khi chạy; đặt `GEMINI_API_KEY` trong môi trường
+cục bộ, không commit khóa hoặc dán vào chat. Script không tự đọc `.env`.
+
+```bash
+python scripts/generate_llm_cache.py --config configs/toronto.yaml
+python scripts/generate_llm_cache.py --config configs/toronto.yaml --check
+python run_pipeline.py --config configs/toronto.yaml --no-download
+```
+
+Lệnh đầu **có gọi Gemini**, sử dụng hạn mức/tính phí của tài khoản. Cache ghi sau từng review để có thể chạy tiếp.
+`--check` và pipeline chính chỉ đọc cache, không gọi API ngay cả khi có key.
+Cache lưu review_id, hash text, model, prompt, taxonomy và kết quả JSON đã kiểm tra schema;
+đổi một trong các yếu tố đó thì cache cũ không được dùng thay thế.
+Sau khi kiểm đủ 1.000 kết quả thật, commit **chỉ** `data/processed/llm_cache.jsonl` (đã có ngoại lệ gitignore).
+Không lấy nhãn tay hoặc baseline đóng giả kết quả Gemini. Không commit CSV raw hay khóa API.
+
+## Data check và nhãn tay
+
+Luồng kiểm tra dữ liệu ban đầu vẫn riêng và dùng workbook gốc:
+
+```bash
+python scripts/check_data.py --part listings
+python scripts/check_data.py --part listing-details
+python scripts/check_data.py --part calendar
+python scripts/check_data.py --part reviews
+python scripts/check_data.py --part merge
+```
+
+Chạy `--part all` nếu nhóm trưởng muốn tạo lại toàn bộ. Lệnh này ghi lại `reports/checks/`;
+khi đối chiếu lịch sử, dùng config có `output` khác. Hai bảng thành phần lịch sử có fingerprint workbook khác
+bản hiện tại; cần chạy lại trước khi merge data check mới. Số liệu và SHA256 file raw đã được so khớp trong biên bản.
+Câu 2 của báo cáo data check là **1.000/100 từ workbook**, khác việc đã chạy Gemini hay chưa.
+
+[Hướng dẫn nhãn tay](docs/MANUAL_LABELING.md) và [phiếu cá nhân](data/samples/labeling/README.md)
+được giữ để truy xuất nguồn gốc. Cả 100 nhãn hiện có đã được kiểm tra; không gán lại hoặc sửa để tăng điểm mô hình.
+
+## Branch → PR → main
+
+```bash
+git switch main
+git pull --ff-only origin main
+git switch -c ten-ban/phan-viec
+# Sửa module được giao và test tương ứng
+python -m pytest -q
+git add <cac-file-da-kiem-tra>
+git commit -m "Mô tả thay đổi và lý do"
+git push -u origin ten-ban/phan-viec
+```
+
+Mở PR vào `main`, ghi cách chạy, kết quả, giới hạn; reviewer kiểm trước khi merge.
+Sau merge, mọi người pull lại `main` để nhận code mới. Không gửi ảnh terminal thay code/CSV;
+không sửa đồng thời file nhãn tay hoặc config chung khi chưa thống nhất.
+Xem [Git workflow](docs/GIT_WORKFLOW.md), [hợp đồng hàm/bảng](docs/CONTRACTS.md),
+[checklist hiện tại](docs/FINAL_CHECKLIST.md), [minh bạch AI](AI_USAGE.md).
+Notebook chỉ phục vụ giải thích/khám phá; sản phẩm nộp phải tái tạo được bằng lệnh chung.

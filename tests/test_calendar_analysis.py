@@ -35,7 +35,7 @@ class CalendarAggregateTests(unittest.TestCase):
         self.assertEqual(row["observed_days"], 3)
         self.assertEqual(row["expected_days"], 30)
         self.assertAlmostEqual(row["availability_rate"], round(2 / 3, 6))
-        self.assertEqual(issues, {"duplicate_calendar": 1})
+        self.assertEqual(issues, {"duplicate_calendar": 1, "missing_calendar_days": 27})
 
     def test_window_90_vs_30_days(self):
         records = [
@@ -75,6 +75,7 @@ class CalendarAggregateTests(unittest.TestCase):
                 "invalid_calendar_date": 1,
                 "orphan_calendar": 1,
                 "invalid_available": 1,
+                "missing_calendar_days": 89,
             },
         )
 

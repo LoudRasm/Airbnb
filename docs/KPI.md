@@ -1,11 +1,9 @@
 # KPI theo phân công
 
-Hiếu/Nam/Phan Huy và nhóm trưởng triển khai theo TEAM.md. TV1 đã có coverage/thay đổi thuộc tính
-cohort và báo cáo kiểm chứng riêng. Các KPI còn lại vẫn cần owner triển khai; không coi bảng
-đề xuất dưới là toàn bộ kết quả đã có. Bên nhận phân tích giả định theo kế hoạch gốc nằm trong config.
-[Hợp đồng hàm/bảng](CONTRACTS.md) · [Việc còn lại](ROADMAP.md).
+KPI đã được nối vào pipeline; còn cần đo phần Gemini thật và chọn 5–8 chỉ số chính cho báo cáo.
+Giá chỉ ở `price_snapshot`; chỉ số phi giá tính cho mọi ngày trong config. [Hợp đồng](CONTRACTS.md).
 
-| KPI đề xuất | Cách tính dự kiến | Owner / phạm vi |
+| KPI | Cách tính | Owner / phạm vi |
 |---|---|---|
 | Listing quan sát | Listing ID duy nhất sau QA trong mỗi mốc | Hiếu; cohort được giao, không phải toàn Toronto |
 | Giá trung vị | Median giá hợp lệ, kèm số listing có giá | Hiếu; chỉ mốc cuối, CAD/đêm |
@@ -31,3 +29,8 @@ Churn/entry/exit dựa trên 1.000 ID cố định không mô tả listing gia n
 Unavailable không đồng nghĩa booked/occupancy. Calendar không có giá; không làm weekend pricing.
 Phần giá ở các mốc trước để trống theo contract. Chỉ số thời gian và không gian do owner bổ sung
 với mẫu số rõ ràng; hình sinh trong viz riêng và dùng số liệu cùng pipeline.
+
+Bảng xuất thêm `kpi_neighbourhood.csv` theo neighbourhood hành chính, dùng cùng công thức với market.
+Supply đếm mọi listing sau QA, `price_n` là mẫu giá hợp lệ riêng. Room/host share có mẫu số giá trị hợp lệ;
+mẫu số rỗng → None. Multi-host share chỉ nói nhiều listing trong cohort quan sát, không đại diện toàn thành phố.
+Calendar coverage = observed_days/expected_days, expected giữ cả listing chưa có dữ liệu hợp lệ.

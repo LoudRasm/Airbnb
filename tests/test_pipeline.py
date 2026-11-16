@@ -17,7 +17,8 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'src'))
-import run_pipeline as pipeline
+import run_pipeline as cli
+from airbnb import pipeline
 from airbnb.loading import snapshot_rows
 
 
@@ -38,7 +39,7 @@ class PipelineIntegrationTests(unittest.TestCase):
     def test_todo_blocks_before_download_or_output_and_status_works_outside_repo(self):
         # Exercise the guard explicitly even after every member has finished their module.
         with patch.object(pipeline.analysis, 'READY', False), patch.object(pipeline, 'download') as download, contextlib.redirect_stderr(io.StringIO()) as errors:
-            self.assertEqual(pipeline.main(['--config', str(self.config)]), 2)
+            self.assertEqual(cli.main(['--config', str(self.config)]), 2)
             download.assert_not_called()
         self.assertIn('TODO', errors.getvalue())
         self.assertFalse((self.root / 'data/processed').exists())
@@ -112,7 +113,8 @@ class PipelineIntegrationTests(unittest.TestCase):
         shutil.copytree(self.root/'data/samples/demo',self.root/'data/raw')
         ids={str(i) for i in range(1,7)}
         assigned=SimpleNamespace(listing_ids=ids,review_ids={'100','101','102'},areas={i:'A01' for i in ids},
-                                 llm_ids={'100'},manual_ids={'100'})
+                                 llm_ids={'100'},manual_ids={'100'},snapshots=self.cfg['snapshots'],fingerprint='fixture')
+        cache=self.root/self.cfg['llm']['cache']; cache.parent.mkdir(parents=True); cache.write_text('test double, not production cache')
         stack,mocks=self.stage_doubles(full=True)
         with stack, patch.object(pipeline,'read_assignment',return_value=assigned), contextlib.redirect_stdout(io.StringIO()):
             pipeline.run(self.config,skip_llm=False,no_download=True)

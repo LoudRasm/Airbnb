@@ -3,12 +3,9 @@
 Thứ tự do nhóm trưởng chốt: TV1 Dương Nhật Huy; TV2 Mai Anh Đức; TV3 Nguyễn Quốc Hiếu;
 TV4 Vũ Phạm Khánh Nam; TV5 Phan Ngọc Huy. Mỗi người phụ trách phần mình ở cả bốn mốc.
 
-**Cập nhật 15/11/2026:** xem [checklist từng người](FINAL_CHECKLIST.md) và
-[hướng dẫn nhãn tay](MANUAL_LABELING.md). Đã chia sẵn 5 phiếu, 20 review/người.
-Đức đã có implementation QA/EDA; calendar của Nam đang lỗi cú pháp sau merge; các phần
-còn thiếu được giao lại đúng owner, không sửa thay trong đợt chuẩn bị hướng dẫn này.
-TV1 đã có analysis/viz_market, 14 tests và runner độc lập xuất bảng/hình trên dữ liệu thật;
-xem checklist TV1 để tách phần code đã xong với nhãn tay, peer review và finalize còn chờ.
+**Cập nhật 2026-11-16:** các module đã tích hợp, 100 nhãn tay đã có và giữ nguyên.
+Xem [checklist hiện tại](FINAL_CHECKLIST.md), [kiểm chứng](VERIFICATION.md) và README.
+Code READY không thay cho peer review kết luận; Gemini thật và báo cáo cuối còn chờ hoàn thiện.
 
 ## Hai giai đoạn
 
@@ -17,16 +14,16 @@ PR/merge đưa thay đổi vào source chung. Không chia folder code theo tên 
 mỗi người một snapshot và không chuyển code thủ công sau khi làm xong.
 
 **Data check đã làm xong:** giữ nguyên `assignment.py`, `data_check.py`, `scripts/check_data.py`,
-config/checks, kết quả CSV/notes và tests. PR calendar của Nam và các script/kết quả listings của Đức đã merge cũng giữ nguyên.
+config/checks, kết quả CSV/notes và tests. Kết quả cũ được giữ nguyên; hai script kiểm tra cá nhân đã chuyển tiếp sang data check chung để bỏ ID/đường dẫn ghi cứng. Lịch sử thuật toán cũ vẫn nằm trong Git.
 Không biến phần này thành TODO và không dùng nó thay cho QA/phân tích cả kỳ.
 
 **Bài phân tích cả kỳ:** bảng dưới là phân công sở hữu module; một số đã có implementation,
-một số còn TODO hoặc cần sửa. Tên/chữ ký thống nhất để nhóm trưởng gọi qua import.
-Theo dõi hoàn thành trong checklist ngày 15/11 thay vì suy ra từ bảng phân công.
+các bước chốt bài theo checklist còn mở. Tên/chữ ký thống nhất để nhóm trưởng gọi qua import.
+Theo dõi hoàn thành trong checklist hiện tại thay vì suy ra từ bảng phân công.
 
 | Người | File trong src/airbnb/ | Nhiệm vụ tự triển khai | Reviewer |
 |---|---|---|---|
-| TV1 — Dương Nhật Huy | loading.py, download.py, io.py, analysis.py, viz_market.py; run_pipeline.py ở gốc | Config/tải/loader/import đã có nền; còn market evolution và hình, tích hợp PR | Nam |
+| TV1 — Dương Nhật Huy | pipeline.py, outputs.py, labels.py, loading.py, download.py, io.py, analysis.py, viz_market.py; run_pipeline.py ở gốc | Config/tải/loader/import đã có nền; còn market evolution và hình, tích hợp PR | Nam |
 | TV2 — Mai Anh Đức | qa.py, eda.py, viz_qa.py | QA rules, cleaning/types/flags/drift, data dictionary, tác động KPI và hình QA | Hiếu |
 | TV3 — Nguyễn Quốc Hiếu | kpi.py, viz_spatial.py | Giá mốc cuối, entire-home/host share, vùng/map, denominator và giới hạn mẫu | Nhóm trưởng |
 | TV4 — Vũ Phạm Khánh Nam | calendar.py, viz_calendar.py | Streaming, availability 30/90 ngày, coverage, temporal; không dùng giá calendar | Phan Huy |
@@ -39,7 +36,7 @@ Không cùng sửa một file viz lớn; mỗi người đã có file riêng. `v
 ## Hợp tác và hoàn thành task
 
 Đức thống nhất cleaned schema để các bạn dùng chung; các bạn có thể phát triển với sample/fixture
-và contract trong lúc QA chưa xong. Đổi chữ ký/cột phải thống nhất nhóm trưởng và downstream.
+và contract để phát triển độc lập. Đổi chữ ký/cột phải thống nhất nhóm trưởng và downstream.
 Mỗi thành viên triển khai logic, kiểm số liệu, thêm test phù hợp, cập nhật AI_USAGE nếu dùng AI,
 push branch và được người khác review trước merge. Chỉ bật module `READY = True` khi logic
 và test đã hoàn thành, reviewer xác nhận trong PR; commit trạng thái này trên branch trước merge.
@@ -64,4 +61,4 @@ do nhóm trưởng quản lý. Ảnh có thể minh họa nhưng không thay cod
 Nhóm trưởng chỉ sửa import/lời gọi khi có bước hoặc giao diện mới; PR giữ đúng hàm hiện tại
 được pipeline dùng ngay sau merge.
 
-[Hướng dẫn TODO/import/PR](IMPLEMENTATION_GUIDE.md) · [Contracts](CONTRACTS.md)
+[Hướng dẫn module/import/PR](IMPLEMENTATION_GUIDE.md) · [Contracts](CONTRACTS.md)

@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.airbnb.kpi import df_kpi, summarize
+from airbnb.kpi import df_kpi, summarize
 
 
 # ---------------------------------------------------------------------------
@@ -140,7 +140,10 @@ def test_multiple_snapshots_filtering(mock_cfg):
     )
 
     df_res = df_kpi(df_listings, mock_cfg)
-    row_a01 = df_res[df_res["analysis_area"] == "A01"].iloc[0]
+    assert set(df_res["snapshot_date"]) == set(mock_cfg["snapshots"])
+    early = df_res[df_res["snapshot_date"] == "2023-09-01"].iloc[0]
+    assert early["supply"] == 2 and pd.isna(early["median_price"]) and early["price_n"] == 0
+    row_a01 = df_res[df_res["snapshot_date"] == "2023-12-01"].iloc[0]
 
     # Chỉ có 1 listing ở mốc cuối '2023-12-01'
     assert row_a01["supply"] == 1
@@ -216,7 +219,7 @@ def test_summarize_contract_with_edge_cases(mock_cfg):
     )
 
     with (
-        patch("src.airbnb.kpi.load_config", return_value=(mock_cfg, Path("."))),
+
         patch("pandas.read_csv", return_value=df_listings),
     ):
         res = summarize(df_listings, mock_cfg)

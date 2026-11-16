@@ -13,7 +13,7 @@ from .reviews import (
 
 OWNER = 'TV5 — Phan Ngọc Huy'
 IMPLEMENTED = True
-READY = False  # Chỉ bật True sau khi triển khai, có test và review.
+READY = True  # Integration validated; see docs/VERIFICATION.md.
 
 BASELINE_FIELDS = ['review_id', 'sentiment', 'source']
 
