@@ -9,10 +9,10 @@ sys.path.insert(0, str(ROOT / 'src'))
 from airbnb.io import load_config, rows, write_csv
 from airbnb.download import download, validate, FILES
 from airbnb.loading import read_assignment, snapshot_rows
-from airbnb import qa, eda, calendar, reviews, kpi, analysis, baseline, llm, evaluate, review_kpi
+from airbnb import my_calendar, qa, eda, reviews, kpi, analysis, baseline, llm, evaluate, review_kpi
 from airbnb import viz, viz_market, viz_qa, viz_spatial, viz_calendar, viz_reviews
 
-CORE_MODULES = (qa, eda, calendar, reviews, kpi, analysis, baseline,
+CORE_MODULES = (qa, eda, my_calendar, reviews, kpi, analysis, baseline,
                 viz_market, viz_qa, viz_spatial, viz_calendar)
 LLM_MODULES = (llm, evaluate, review_kpi, viz_reviews)
 
@@ -75,7 +75,7 @@ def run(config_path, demo=False, skip_llm=False, no_download=False):
         cleaned, report = qa.clean_listings(snapshot_rows(root, cfg, snapshot, 'listings.csv.gz', assignment, demo), snapshot, cfg)
         listings.extend(cleaned)
         qa_report.extend(report)
-        cal, issues = calendar.aggregate(snapshot_rows(root, cfg, snapshot, 'calendar.csv.gz', assignment, demo),
+        cal, issues = my_calendar.aggregate(snapshot_rows(root, cfg, snapshot, 'calendar.csv.gz', assignment, demo),
                                          snapshot, cfg['calendar']['window_days'], {r['listing_id'] for r in cleaned})
         calendars.extend(cal)
         issues.update(reviews.collect(snapshot_rows(root, cfg, snapshot, 'reviews.csv.gz', assignment, demo), snapshot, review_map))
@@ -85,7 +85,7 @@ def run(config_path, demo=False, skip_llm=False, no_download=False):
     tables = {'listings': listings, 'calendar': calendars, 'reviews': list(review_map.values()),
               'qa_report': qa_report, 'eda': eda.profile(listings),
               'market_kpi': kpi.summarize(listings, cfg),
-              'calendar_kpi': calendar.metrics(calendars, listings, cfg),
+              'calendar_kpi': my_calendar.metrics(calendars, listings, cfg),
               'cohort_summary': analysis.cohort_summary(listings, cfg['snapshots'],
                                                        None if assignment is None else assignment.listing_ids),
               'churn_kpi': analysis.churn(listings, cfg['snapshots']),
