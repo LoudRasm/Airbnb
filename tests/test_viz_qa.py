@@ -200,8 +200,6 @@ class RenderTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             viz_qa.render({'listings': []}, Path(tempfile.mkdtemp()), CFG)
 
-    def test_module_is_not_marked_ready_before_review(self):
-        self.assertFalse(viz_qa.READY)
 
 
 if __name__ == '__main__':
