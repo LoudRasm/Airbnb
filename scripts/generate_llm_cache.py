@@ -11,7 +11,6 @@ from airbnb.loading import read_assignment, snapshot_rows
 
 
 def _load_env_if_present(root: Path):
-    """Nạp GEMINI_API_KEY từ file .env nếu có và môi trường chưa thiết lập."""
     if os.environ.get('GEMINI_API_KEY'):
         return
     env_file = root / '.env'
