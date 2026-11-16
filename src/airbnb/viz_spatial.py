@@ -22,11 +22,6 @@ matplotlib.use("Agg")
 OWNER = 'TV3 — Nguyễn Quốc Hiếu'
 READY = False
 
-listings_demo = pd.read_csv(ROOT/'data/processed/real/listings.csv')
-table_demo ={'listings':listings_demo}
-figure_path_demo = ROOT / 'figures'
-cfg_demo,_ = load_config(ROOT / 'configs/toronto.yaml')
-
 def viz1_median_price(df_listings,df_kpi_summary, gdf_areas,cfg, path):
     FINAL_SNAPSHOT = cfg['snapshots'][-1]
     CURRENCY= cfg['currency']
@@ -213,4 +208,8 @@ def render(tables, figures, cfg):
     
         
 if __name__ == '__main__':
-    print(render(table_demo,figure_path_demo ,cfg_demo))
+    listings_demo = pd.read_csv(ROOT / 'data/processed/real/listings.csv')
+    table_demo = {'listings': listings_demo}
+    figure_path_demo = ROOT / 'figures'
+    cfg_demo, _ = load_config(ROOT / 'configs/toronto.yaml')
+    print(render(table_demo, figure_path_demo, cfg_demo))

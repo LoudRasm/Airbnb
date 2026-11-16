@@ -17,9 +17,6 @@ from src.airbnb.io import load_config
 OWNER = 'TV3 — Nguyễn Quốc Hiếu'
 READY = False  # Chỉ bật True sau khi triển khai, có test và review.
 
-df_listings_demo = pd.read_csv(ROOT / 'data/processed/real/listings.csv')
-cfg, _ =load_config(ROOT/ "configs/toronto.yaml")
-
 
 def df_kpi(df_listings: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     """Tính toán các chỉ số KPI theo từng vùng analysis_area từ DataFrame listings."""
@@ -134,4 +131,6 @@ def summarize(listings: pd.DataFrame, cfg: dict):
 
 
 if __name__ == '__main__':
-    print(summarize(df_listings_demo,cfg))
+    df_listings_demo = pd.read_csv(ROOT / 'data/processed/real/listings.csv')
+    cfg, _ = load_config(ROOT / "configs/toronto.yaml")
+    print(summarize(df_listings_demo, cfg))
