@@ -286,7 +286,10 @@ def analyze(reviews, cfg, root, review_ids=None, *, allow_api=False):
             except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, json.JSONDecodeError, ValueError) as exc:
                 last_error = exc
                 if attempt < retries:
-                    time.sleep(min(2.0 ** (attempt - 1), 8.0))
+                    wait_sec = min(2.0 ** (attempt - 1), 8.0)
+                    if isinstance(exc, urllib.error.HTTPError) and exc.code == 429:
+                        wait_sec = max(wait_sec, 10.0 * attempt)
+                    time.sleep(wait_sec)
 
         if validated is None:
             raise RuntimeError(
@@ -311,6 +314,8 @@ def analyze(reviews, cfg, root, review_ids=None, *, allow_api=False):
         }
         cache[key] = result_row
         results.append(result_row)
+        if len(results) % 25 == 0 or len(results) == len(selected):
+            print(f'LLM Progress: {len(results)}/{len(selected)} reviews processed...', flush=True)
 
     return results
 
