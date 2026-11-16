@@ -1,2 +1,10 @@
-# Runtime dependencies: none (Python 3.13 standard library).
-# Add exact == pins here when the team introduces third-party libraries.
+# Runtime and testing dependencies
+numpy==2.2.3
+pandas==2.2.3
+pytest==8.3.4
+matplotlib==3.10.1
+shapely==2.0.7
+geopandas==1.0.1
+plotly==5.24.1
+pyogrio>=0.8.0
+pyproj>=3.7.0
