@@ -40,7 +40,7 @@ def run(config_path, out_dir=None):
     generated = Path(out_dir) if out_dir else root / cfg['paths']['reports'] / 'real'
     static = Path(out_dir) if out_dir else root / 'reports'
     processed = Path(out_dir) if out_dir else root / cfg['paths']['processed'] / 'real'
-    figures = Path(out_dir) / 'figures' if out_dir else root / cfg['paths']['figures'] / 'real'
+    figures = Path(out_dir) / 'figures' if out_dir else root / cfg['paths']['figures'] / 'real' / 'tv2'
     raw_by_snapshot, names, no_geojson = {}, {}, []
     for snapshot in cfg['snapshots']:
         raw_by_snapshot[snapshot] = list(snapshot_rows(root, cfg, snapshot, 'listings.csv.gz', assignment))

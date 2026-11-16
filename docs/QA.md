@@ -57,6 +57,7 @@ Nam và Phan Huy triển khai, trả `issue_counts` theo [CONTRACTS](CONTRACTS.m
 | Ngoại lai | `price_outlier`, `min_nights_outlier`, `coordinates_outside_city`; ngưỡng cần Hiếu xác nhận khi review |
 | Danh mục/schema lệch | `room_type_unknown`, `schema_drift` |
 | Bao phủ/join | Phần listings: `neighbourhood_not_in_reference`, `scrape_date_offset`; calendar/reviews do owner trả `issue_counts` |
+| Hình | `viz_qa.render` → `qa_rules.svg` (rule × mốc), `qa_missingness_drift.svg` (thiếu theo cột, cơ cấu `room_type`), `qa_kpi_impact.svg` (supply, median giá trước/sau QA) |
 
 ### Cách chạy
 
@@ -65,8 +66,10 @@ python -m unittest discover -s tests -p test_qa.py -v   # test riêng phần QA
 python scripts/run_qa.py --config configs/toronto.yaml  # chạy trên raw + workbook của nhóm
 ```
 
-`run_qa.py` ghi `reports/data_dictionary.csv`, `reports/qa_rule_catalog.csv` (commit được) và, vào
-`reports/generated/real/` (gitignore), `qa_report_listings.csv`, `qa_kpi_impact.csv`, `qa_missingness.csv`.
+`run_qa.py` ghi bảng sạch `data/processed/real/listings.csv` (gitignore; pipeline chung sẽ ghi đè cùng đường dẫn),
+`reports/data_dictionary.csv`, `reports/qa_rule_catalog.csv` (commit được) và, vào
+`reports/generated/real/` (gitignore), `qa_report_listings.csv`, `qa_kpi_impact.csv`, `qa_missingness.csv`, cùng ba hình SVG vào
+`figures/real/` (gitignore). Chạy riêng phần hình: `python -m unittest discover -s tests -p test_viz_qa.py -v`.
 Pipeline chung gọi `qa.clean_listings(records, snapshot, cfg)` từng mốc; sau 4 mốc cần gọi thêm
 `qa.compare_schemas`, `qa.cross_snapshot_checks` và `qa.check_neighbourhood_reference` (xem
 `qa.run_listings_qa` — gom đúng thứ tự các hàm này) để các dòng tương ứng vào `reports/qa_report.csv`.
