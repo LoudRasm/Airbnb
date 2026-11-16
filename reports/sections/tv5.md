@@ -11,7 +11,7 @@ Toàn bộ phần việc của TV5 được chuẩn hóa trong 6 module tại `s
 |---|---|---|
 | `src/airbnb/reviews.py` | `collect(records, snapshot, existing)` | Lọc theo `review_id` (giữ chuỗi chữ số ASCII chính xác, không lọc thêm theo `listing_id`); kiểm ngày ISO, comment rỗng/chỉ chứa HTML `<br/>`; khử trùng lặp giữa các mốc (`first_seen_snapshot`) và phát hiện xung đột văn bản (`review_text_collision`) để luôn giữ văn bản khớp mốc cuối `2026-06-15`. Kèm các hàm tiền xử lý `clean_comment`, `detect_language_simple`, `extract_aspect_keywords`. |
 | `src/airbnb/baseline.py` | `predict(review)`, `predict_with_aspects(review)` | Phân loại cảm xúc không dùng LLM (`keyword_baseline`) dựa trên từ điển đa ngữ (`en`, `fr`, `es`, `de`), cửa sổ phủ định (`not`, `never`, `didn't`), liên từ đối lập (`but`, `except`, `however`, `only`) và mẫu sự cố nhỏ đã giải quyết (`small problem ... helped us immediately`). Không gán mặc định một nhãn cố định. |
-| `src/airbnb/llm.py` | `validate(obj, aspects)`, `analyze(reviews, cfg, root, review_ids)`, `estimate_cost(...)` | Tích hợp Gemini (`gemini-2.5-flash`) với `responseMimeType: application/json`, kiểm tra nghiêm ngặt `sentiment` $\in \{\text{positive}, \text{mixed}, \text{negative}\}$ và các khía cạnh thuộc đúng 8 nhóm trong `configs/toronto.yaml`. Lưu cache JSONL kèm provenance (`review_id`, `text_sha256`, `model`, `prompt_sha256`, `aspects`), tự động vô hiệu hóa cache cũ nếu đổi prompt/model/taxonomy/text, retry khi lỗi mạng/timeout và không bao giờ biến lỗi API thành nhãn mặc định. |
+| `src/airbnb/llm.py` | `validate(obj, aspects)`, `analyze(reviews, cfg, root, review_ids)`, `estimate_cost(...)` | Tích hợp Gemini (`gemini-3.5-flash-lite`) với `responseMimeType: application/json`, kiểm tra nghiêm ngặt `sentiment` $\in \{\text{positive}, \text{mixed}, \text{negative}\}$ và các khía cạnh thuộc đúng 8 nhóm trong `configs/toronto.yaml`. Lưu cache JSONL kèm provenance (`review_id`, `text_sha256`, `model`, `prompt_sha256`, `aspects`), tự động vô hiệu hóa cache cũ nếu đổi prompt/model/taxonomy/text, retry khi lỗi mạng/timeout và không bao giờ biến lỗi API thành nhãn mặc định. |
 | `src/airbnb/evaluate.py` | `evaluate(predictions, labels, source)`, `evaluate_detailed(...)` | Đối chiếu dự đoán của LLM và Baseline trên cùng tập `review_id` gán nhãn tay; kiểm tra tính duy nhất của `review_id` và báo lỗi `ValueError` ngay nếu thiếu bất kỳ dự đoán nào (không âm thầm thu nhỏ mẫu đánh giá). Xuất `paired_n`, `manual_n`, `accuracy`, `macro_f1`, `meets_100_paired`. |
 | `src/airbnb/review_kpi.py` | `guest_kpi(predictions, listings, cfg)` | Tính **KPI 7 — Guest Experience Issue Rate** $= \frac{N_{\text{mixed}} + N_{\text{negative}}}{N_{\text{sample}}}$, tỷ lệ từng nhãn cảm xúc, tỷ lệ khen/chê theo 8 khía cạnh và tỷ lệ theo `analysis_area` khi ghép `listing_id` (khử trùng lặp `listing_id` giữa 4 snapshot để không nhân bội số review). |
 | `src/airbnb/viz_reviews.py` | `render(tables, figures, cfg)` | Sinh 4 biểu đồ SVG chuẩn (`tv5_sentiment_distribution.svg`, `tv5_negative_aspects.svg`, `tv5_sentiment_over_time.svg`, `tv5_model_comparison.svg`) ghi rõ phạm vi mẫu và kích thước mẫu `n`. |
@@ -49,7 +49,7 @@ Toàn bộ phần việc của TV5 được chuẩn hóa trong 6 module tại `s
 - Trên 20 review đã gán nhãn thủ công của TV5 (`reports/generated/real/tv5/evaluation.csv`):
   - **Accuracy (Keyword Baseline):** `90,0%` (`18/20` review khớp nhãn tay).
   - **Macro-F1 (Keyword Baseline):** `0,7121` (`71,21%`).
-  - Phân tích lỗi: Baseline bắt đúng các mẫu khen rõ ràng, mẫu `negative` (`1454434461842749610`) và mẫu `mixed` có từ khóa `stain`/`drips` (`1470433948828735644`), nhưng dễ nhạy cảm với mệnh đề nhượng bộ hoặc từ vựng mô tả gián tiếp (`kitchen is bit worn out`). Đây chính là ưu thế của LLM (`gemini-2.5-flash`) khi hiểu ngữ cảnh toàn câu và đa ngôn ngữ.
+  - Phân tích lỗi: Baseline bắt đúng các mẫu khen rõ ràng, mẫu `negative` (`1454434461842749610`) và mẫu `mixed` có từ khóa `stain`/`drips` (`1470433948828735644`), nhưng dễ nhạy cảm với mệnh đề nhượng bộ hoặc từ vựng mô tả gián tiếp (`kitchen is bit worn out`). Đây chính là ưu thế của LLM (`gemini-3.5-flash-lite`) khi hiểu ngữ cảnh toàn câu và đa ngôn ngữ.
 
 ### 4.2. Thống kê KPI 7 (Guest Experience Issue Rate) & Khía cạnh (`data/processed/real/tv5/kpi_guest.csv`, `n = 100`)
 - **KPI 7 — Guest Experience Issue Rate (`mixed + negative`):** `13,0%` (`13/100` review ghi nhận vấn đề trải nghiệm, gồm `9,0%` `mixed` và `4,0%` `negative`; `87,0%` `positive`).
@@ -63,13 +63,15 @@ Toàn bộ phần việc của TV5 được chuẩn hóa trong 6 module tại `s
   3. `noise` (`3,0%`) — tiếng ồn giao thông đường lớn hoặc cách âm giữa các phòng.
   4. `location` (`1,0%`), `value` (`1,0%`), `safety` (`1,0%`) — cầu thang trơn hoặc khoảng cách di chuyển xa.
 
-### 4.3. Ước tính Token & Chi phí Gemini API (`gemini-2.5-flash`)
-Dựa trên độ dài trung bình thực tế của review (`~273,3` ký tự/review sau làm sạch) và cấu trúc prompt JSON (`~394,1` input tokens/review, `~45,0` output tokens/review) với đơn giá tham khảo của `gemini-2.5-flash` (\$0,15 / 1M input tokens; \$0,60 / 1M output tokens):
+### 4.3. Ước tính Token & Chi phí Gemini API (`gemini-3.5-flash-lite`)
+Mô hình `gemini-3.5-flash-lite` được chọn để vận hành toàn bộ pipeline nhờ nằm trong **Free Tier** của Google AI Studio (miễn phí sử dụng hoàn toàn khi tuân thủ hạn mức RPM/RPD).
 
-| Phạm vi chạy | Số lượng review (`n`) | Tổng Input Tokens ước tính | Tổng Output Tokens ước tính | Chi phí ước tính (USD) |
-|---|---:|---:|---:|---:|
-| Mẫu LLM theo workbook (`sample_size`) | 1.000 | ~394.082 | ~45.000 | **\$0,0861** (~8,6 cents) |
-| Toàn bộ tập review được giao (`assigned_reviews`) | 5.000 | ~1.970.412 | ~225.000 | **\$0,4306** (~43,1 cents) |
+Nếu tính theo đơn giá thương mại chuẩn ngoài hạn mức (\$0,30 / 1M input tokens; \$2,50 / 1M output tokens) dựa trên độ dài thực tế của review sau làm sạch (`~273,3` ký tự/review, `~394,1` input tokens/review, `~45,0` output tokens/review):
+
+| Phạm vi chạy | Số lượng review (`n`) | Tổng Input Tokens ước tính | Tổng Output Tokens ước tính | Chi phí AI Studio Free Tier | Chi phí Pay-as-you-go tham khảo |
+|---|---:|---:|---:|:---:|---:|
+| Mẫu LLM theo workbook (`sample_size`) | 1.000 | ~394.082 | ~45.000 | **\$0,00 (Free)** | **\$0,2307** (~23,1 cents) |
+| Toàn bộ tập review được giao (`assigned_reviews`) | 5.000 | ~1.970.412 | ~225.000 | **\$0,00 (Free)** | **\$1,1536** (~$1,15) |
 
 Cơ chế lưu cache JSONL (`data/processed/llm_cache.jsonl`) kèm SHA-256 provenance giúp chi phí chạy lại pipeline bằng **\$0,00** cho mọi review không thay đổi nội dung.
 

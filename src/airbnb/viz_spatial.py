@@ -20,6 +20,7 @@ from src.airbnb.io import load_config
 matplotlib.use("Agg")
 
 OWNER = 'TV3 — Nguyễn Quốc Hiếu'
+IMPLEMENTED = True
 READY = False
 
 def viz1_median_price(df_listings,df_kpi_summary, gdf_areas,cfg, path):
@@ -189,8 +190,9 @@ def render(tables, figures, cfg):
         for item in DEFAULT_AREAS
     ]
     gdf_areas = gpd.GeoDataFrame(boxes, crs="EPSG:4326")   
-    df_kpi_summary = df_kpi(tables['listings'], cfg) 
-    df_listings = tables['listings']
+    raw_listings = tables.get('listings', [])
+    df_listings = pd.DataFrame(raw_listings) if isinstance(raw_listings, list) else raw_listings
+    df_kpi_summary = df_kpi(df_listings, cfg)
     
     geojson_path = Path(ROOT / f'data/raw/{FINAL_SNAPSHOT}/neighbourhoods.geojson')
     with open(geojson_path, 'r', encoding='utf-8') as f:

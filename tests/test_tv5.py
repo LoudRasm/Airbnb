@@ -91,7 +91,7 @@ class LlmValidationAndCacheTests(unittest.TestCase):
         self.cfg = {
             'seed': 42,
             'llm': {
-                'model': 'gemini-2.5-flash',
+                'model': 'gemini-3.5-flash-lite',
                 'sample_size': 10,
                 'aspects': TAXONOMY,
                 'cache': 'data/processed/llm_cache.jsonl',
@@ -202,7 +202,7 @@ class EvaluationAndKpiTests(unittest.TestCase):
                 'sentiment': 'positive',
                 'positive_aspects': ['location', 'cleanliness'],
                 'negative_aspects': [],
-                'source': 'gemini-2.5-flash',
+                'source': 'gemini-3.5-flash-lite',
             },
             {
                 'review_id': '11',
@@ -210,7 +210,7 @@ class EvaluationAndKpiTests(unittest.TestCase):
                 'sentiment': 'mixed',
                 'positive_aspects': ['location'],
                 'negative_aspects': ['noise'],
-                'source': 'gemini-2.5-flash',
+                'source': 'gemini-3.5-flash-lite',
             },
         ]
         # Cùng listing 500 xuất hiện ở 4 mốc snapshot
@@ -239,7 +239,7 @@ class VisualizationAndRunnerTests(unittest.TestCase):
                     'language': 'en',
                     'positive_aspects': ['cleanliness', 'host'],
                     'negative_aspects': [],
-                    'source': 'gemini-2.5-flash',
+                    'source': 'gemini-3.5-flash-lite',
                 },
                 {
                     'review_id': '2',
@@ -247,7 +247,7 @@ class VisualizationAndRunnerTests(unittest.TestCase):
                     'language': 'en',
                     'positive_aspects': ['location'],
                     'negative_aspects': ['noise'],
-                    'source': 'gemini-2.5-flash',
+                    'source': 'gemini-3.5-flash-lite',
                 },
             ],
             'evaluation': [

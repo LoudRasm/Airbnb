@@ -28,7 +28,7 @@
     "window_days": 90
   },
   "llm": {
-    "model": "gemini-2.5-flash",
+    "model": "gemini-3.5-flash-lite",
     "sample_size": 1000,
     "aspects": [
       "location",

@@ -312,7 +312,7 @@ def analyze(reviews, cfg, root, review_ids=None):
 def estimate_cost(reviews, cfg, full_dataset_size: int = 5000) -> dict:
     """Ước tính số token và chi phí API (USD) cho mẫu LLM và toàn bộ tập dữ liệu."""
     llm_cfg = cfg.get('llm', {})
-    model = llm_cfg.get('model', 'gemini-2.5-flash')
+    model = llm_cfg.get('model', 'gemini-3.5-flash-lite')
     aspects = list(llm_cfg.get('aspects') or [])
     sample_size = int(llm_cfg.get('sample_size', 1000))
 
@@ -326,9 +326,10 @@ def estimate_cost(reviews, cfg, full_dataset_size: int = 5000) -> dict:
     avg_input_tokens = (prompt_overhead_chars + avg_chars) / 4.0
     avg_output_tokens = 45.0
 
-    # Đơn giá tham khảo chuẩn của Gemini 2.5 Flash (USD / 1M tokens)
-    input_price_per_m = 0.15
-    output_price_per_m = 0.60
+    # Đơn giá tham khảo chuẩn của Gemini 3.5 Flash-Lite (USD / 1M tokens)
+    # Lưu ý: Mô hình này thuộc Free Tier trên Google AI Studio (miễn phí sử dụng với hạn mức RPM/RPD).
+    input_price_per_m = 0.30
+    output_price_per_m = 2.50
 
     def _cost_for_n(n: int) -> dict:
         in_tok = int(round(n * avg_input_tokens))

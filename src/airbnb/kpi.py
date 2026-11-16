@@ -15,11 +15,12 @@ from src.airbnb.io import load_config
 
 
 OWNER = 'TV3 — Nguyễn Quốc Hiếu'
+IMPLEMENTED = True
 READY = False  # Chỉ bật True sau khi triển khai, có test và review.
 
 
 
-def df_kpi(df_listings: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+def df_kpi(df_listings, cfg: dict) -> pd.DataFrame:
     """Tính toán các chỉ số KPI theo từng vùng analysis_area từ DataFrame listings."""
     # 0. Kiểm tra nếu DataFrame đầu vào rỗng
     expected_cols = [
@@ -32,6 +33,8 @@ def df_kpi(df_listings: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         "currency",
         "snapshot_date",
     ]
+    if isinstance(df_listings, list):
+        df_listings = pd.DataFrame(df_listings)
     if df_listings is None or df_listings.empty:
         return pd.DataFrame(columns=expected_cols)
 
@@ -122,7 +125,7 @@ def df_kpi(df_listings: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     return df_kpi_summary
 
 
-def summarize(listings: pd.DataFrame, cfg: dict):
+def summarize(listings, cfg: dict):
     """Trả list[dict]: snapshot_date, analysis_area, supply, median_price, price_n,
 
     currency, entire_home_share, multi_listing_host_share.

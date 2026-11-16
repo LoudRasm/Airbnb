@@ -71,7 +71,7 @@ class PipelineIntegrationTests(unittest.TestCase):
         if bad_kpi: market.pop('currency')
         mocks={}
         operations=[(pipeline.qa,'clean_listings',clean),(pipeline.reviews,'collect',collect),
-                    (pipeline.my_calendar,'aggregate',lambda *a:([],{})),(pipeline.my_calendar,'metrics',lambda *a:[]),
+                    (pipeline.calendar,'aggregate',lambda *a:([],{})),(pipeline.calendar,'metrics',lambda *a:[]),
                     (pipeline.kpi,'summarize',lambda *a:[market]),(pipeline.analysis,'churn',lambda *a:[]),
                     (pipeline.eda,'profile',lambda *a:[]),
                     (pipeline.baseline,'predict',lambda r:{'review_id':r['review_id'],'sentiment':'positive','source':'test_double'})]
