@@ -15,6 +15,18 @@ reports/generated/
 reports/qa_report.csv
 .ipynb_checkpoints/
 .DS_Store
+.vscode/
 
 # Lecturer workbook: keep an unchanged local copy; it includes other teams.
 data/assignments/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+*.bbl
+*.blg

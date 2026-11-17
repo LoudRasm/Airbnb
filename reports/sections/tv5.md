@@ -45,23 +45,27 @@ Toàn bộ phần việc của TV5 được chuẩn hóa trong 6 module tại `s
 
 ## 4. Kết quả Đánh giá, KPI 7 & Ước tính Chi phí API
 
-### 4.1. Hiệu năng Baseline trên tập nhãn TV5 đã chốt (`n = 20`) và tập 100 review trong gói nhãn
-- Trên 20 review đã gán nhãn thủ công của TV5 (`reports/generated/real/tv5/evaluation.csv`):
-  - **Accuracy (Keyword Baseline):** `90,0%` (`18/20` review khớp nhãn tay).
-  - **Macro-F1 (Keyword Baseline):** `0,7121` (`71,21%`).
+### 4.1. Hiệu năng LLM và Baseline trên toàn bộ 100 nhãn tay (`n = 100`)
+- Kết quả đối chuẩn thực tế trên toàn bộ 100 review gán nhãn thủ công (`reports/generated/real/tv5/evaluation.csv`):
+  - **LLM (`gemini-3.5-flash-lite`):**
+    - **Accuracy:** `96,0%` (`96/100` review khớp hoàn toàn nhãn tay).
+    - **Macro-F1:** `0,8594` (`85,94%`), đáp ứng xuất sắc yêu cầu phân loại trên tập dữ liệu mất cân bằng.
+  - **Keyword Baseline:**
+    - **Accuracy:** `95,0%` (`95/100` review khớp nhãn tay).
+    - **Macro-F1:** `0,8278` (`82,78%`).
   - Phân tích lỗi: Baseline bắt đúng các mẫu khen rõ ràng, mẫu `negative` (`1454434461842749610`) và mẫu `mixed` có từ khóa `stain`/`drips` (`1470433948828735644`), nhưng dễ nhạy cảm với mệnh đề nhượng bộ hoặc từ vựng mô tả gián tiếp (`kitchen is bit worn out`). Đây chính là ưu thế của LLM (`gemini-3.5-flash-lite`) khi hiểu ngữ cảnh toàn câu và đa ngôn ngữ.
 
-### 4.2. Thống kê KPI 7 (Guest Experience Issue Rate) & Khía cạnh (`data/processed/real/tv5/kpi_guest.csv`, `n = 100`)
-- **KPI 7 — Guest Experience Issue Rate (`mixed + negative`):** `13,0%` (`13/100` review ghi nhận vấn đề trải nghiệm, gồm `9,0%` `mixed` và `4,0%` `negative`; `87,0%` `positive`).
+### 4.2. Thống kê KPI 7 (Guest Experience Issue Rate) & Khía cạnh (`data/processed/real/tv5/kpi_guest.csv`, `n = 1.000`)
+- **KPI 7 — Guest Experience Issue Rate (`mixed + negative`):** `6,4%` (`64/1.000` review ghi nhận vấn đề trải nghiệm, gồm `5,0%` `mixed` và `1,4%` `negative`; `93,6%` `positive`).
 - **Các khía cạnh được khen nhiều nhất (`positive_aspects`):**
-  1. `host` (`59,0%`) — chủ nhà thân thiện, phản hồi nhanh, hỗ trợ nhiệt tình.
-  2. `location` (`57,0%`) — gần tàu điện ngầm (subway/streetcar), trung tâm Downtown, tiện đi bộ.
-  3. `cleanliness` (`46,0%`) và `amenities` (`29,0%`) — phòng sạch sẽ, bếp và giường đầy đủ tiện nghi.
+  1. `host` (`75,0%`) — chủ nhà thân thiện, phản hồi nhanh, hỗ trợ nhiệt tình.
+  2. `location` (`73,6%`) — gần tàu điện ngầm (subway/streetcar), trung tâm Downtown, tiện đi bộ.
+  3. `amenities` (`66,3%`) và `cleanliness` (`44,5%`) — phòng sạch sẽ, tiện nghi đầy đủ.
 - **Các khía cạnh bị phàn nàn nhiều nhất (`negative_aspects`):**
-  1. `cleanliness` (`5,0%`) — vết bẩn trên ga giường, tóc/rác còn sót lại trong phòng tắm, mùi ẩm.
-  2. `amenities` (`5,0%`) — thiết bị bếp cũ kỹ, bồn rửa mặt nhỏ/rò nước, điều hòa/sưởi hoặc nội thất xuống cấp.
-  3. `noise` (`3,0%`) — tiếng ồn giao thông đường lớn hoặc cách âm giữa các phòng.
-  4. `location` (`1,0%`), `value` (`1,0%`), `safety` (`1,0%`) — cầu thang trơn hoặc khoảng cách di chuyển xa.
+  1. `amenities` (`5,7%`) — thiết bị bếp cũ kỹ, bồn rửa mặt nhỏ/rò nước, điều hòa/sưởi hoặc nội thất xuống cấp.
+  2. `noise` (`3,5%`) — tiếng ồn giao thông đường lớn hoặc cách âm giữa các phòng.
+  3. `cleanliness` (`2,2%`) — vết bẩn trên ga giường, tóc/rác còn sót lại trong phòng tắm, mùi ẩm.
+  4. `check-in` (`1,8%`), `host` (`0,9%`), `value` (`0,8%`), `safety` (`0,5%`), `location` (`0,3%`).
 
 ### 4.3. Ước tính Token & Chi phí Gemini API (`gemini-3.5-flash-lite`)
 Mô hình `gemini-3.5-flash-lite` được chọn để vận hành toàn bộ pipeline nhờ nằm trong **Free Tier** của Google AI Studio (miễn phí sử dụng hoàn toàn khi tuân thủ hạn mức RPM/RPD).
