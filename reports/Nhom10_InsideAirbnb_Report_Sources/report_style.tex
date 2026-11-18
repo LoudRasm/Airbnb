@@ -1,0 +1,34 @@
+% Shared presentation retained from the original report: A4, Times, 11pt, 2.15cm margins.
+\usepackage{fontspec}
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{TeX Gyre Termes}}
+\setmonofont{texgyrecursor-regular.otf}[BoldFont=texgyrecursor-bold.otf,ItalicFont=texgyrecursor-italic.otf,BoldItalicFont=texgyrecursor-bolditalic.otf,Scale=MatchLowercase]
+\usepackage[vietnamese]{babel}
+\usepackage[a4paper,margin=2.15cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb,graphicx,booktabs,tabularx,array,longtable}
+\usepackage{caption,enumitem,xcolor,xurl,hyperref,needspace,titlesec,fvextra}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue!45!black,citecolor=black,pdfauthor={Nhóm 10 UET.DSE2049 1}}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{2.3pt}
+\setlength{\emergencystretch}{2em}
+\linespread{1.035}
+\setlist{nosep,leftmargin=*}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\abstractname}{Tóm tắt}
+\renewcommand{\refname}{Tài liệu tham khảo}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcommand{\code}[1]{{\small\texttt{#1}}}
+\newcommand{\pct}[1]{#1\%}
+\newcommand{\snapshot}[1]{\texttt{#1}}
+\newcommand{\figsource}[1]{\par\vspace{-2pt}{\footnotesize #1}\par}
+\titleformat{\section}{\large\bfseries}{\thesection}{.65em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{.6em}{}
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+\titlespacing*{\subsection}{0pt}{7pt}{3pt}
+\setlength{\textfloatsep}{9pt}
+\setlength{\intextsep}{9pt}
+\newcommand{\mssvblank}{\rule{1.9cm}{0.3pt}}
+\input{generated/report/values.tex}

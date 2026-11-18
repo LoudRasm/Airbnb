@@ -10,13 +10,16 @@ Mã dữ liệu: **DSE2049-C01-G10-toronto**. Tiền tệ: **CAD**.
 ## Trạng thái ngày 2026-11-17
 
 Code của các thành viên đã được nối vào luồng chung; `READY` biểu thị code tích hợp, **không có nghĩa bài đã sẵn sàng nộp**.
-100 nhãn tay đã có và được giữ nguyên. Luồng không LLM chạy trên dữ liệu thật; kết quả kiểm chứng ở
-[VERIFICATION.md](docs/VERIFICATION.md), đối chiếu dữ liệu ở [biên bản](reports/data_alignment_2026-11-16.json).
+100 nhãn tay được giữ nguyên. Cache Gemini thật đã được bàn giao cho đủ **1.000 review**.
+Đã chạy lại pipeline đầy đủ từ cache, chặn mạng/API và kiểm trên cùng **100 nhãn tay**:
+Gemini accuracy 96%, macro-F1 0,8594; baseline 95% và 0,8278. Gemini chỉ nhận đúng 3/7 review mixed,
+nên không dùng riêng accuracy để tuyên bố mô hình vượt trội ở mọi lớp.
 
-**Còn thiếu cache Gemini thật cho 1.000 review.** Nhóm trưởng xác nhận chưa tạo cache.
-Theo đề mới, giảng viên không cần API key và không chạy lại LLM. Vì vậy lệnh pipeline mặc định chỉ đọc cache;
-nếu thiếu hoặc sai ID/text/model/prompt, chương trình dừng, không sinh dự đoán giả.
-Xem [hướng dẫn tạo cache](docs/LLM_CACHE.md). Cần hoàn thành cache, chạy lại toàn bộ, chốt báo cáo PDF ≤10 trang và mã commit trước khi tag `final`.
+[Báo cáo và supplement](reports/README.md) dùng số liệu/hình sinh từ lần chạy đầy đủ.
+Báo cáo chính gồm 9 trang, có trang thông tin nhóm để điền MSSV; chèn một trang bìa riêng sẽ thành 10 trang.
+Mốc **2025-12-12 đã được nhóm trưởng xác nhận với giảng viên**. Chưa tạo tag final;
+cần điền MSSV, bìa và kiểm tra bản nộp trước khi chốt.
+Xem [hướng dẫn cache](docs/LLM_CACHE.md) để biết cách chuẩn bị lại nếu đổi model/prompt/text.
 
 Bên nhận phân tích giả định: nhóm theo dõi lưu trú ngắn hạn và du lịch Toronto. Mục tiêu là theo dõi
 cơ cấu nguồn cung trong cohort được giao, mức giá cuối kỳ, lịch sẵn có và vấn đề trải nghiệm khách.
@@ -110,9 +113,8 @@ Bốn mốc **trong workbook của nhóm**:
 | 3 | 2026-03-19 | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/listings.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/calendar.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/data/reviews.csv.gz) | [json](https://data.insideairbnb.com/canada/on/toronto/2026-03-19/visualisations/neighbourhoods.geojson) |
 | 4 | 2026-06-15 | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/listings.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/calendar.csv.gz) | [gz](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/data/reviews.csv.gz) | [json](https://data.insideairbnb.com/canada/on/toronto/2026-06-15/visualisations/neighbourhoods.geojson) |
 
-**Chênh lệch cần xác nhận khi chốt bài:** trang đề hiện ghi mốc Toronto thứ hai là `2025-11-11`,
-workbook và báo cáo đầu vào của nhóm ghi `2025-12-12`. Repo giữ ngày được giao để bảo toàn dữ liệu ban đầu;
-nhóm trưởng cần xác nhận với giảng viên hoặc bổ sung mốc tháng 11 theo hướng dẫn dưới đây.
+Mốc thứ hai dùng **2025-12-12 theo workbook và xác nhận của giảng viên qua nhóm trưởng**;
+không thay bằng ngày trên danh sách thành phố chung. Bốn mốc được giữ đúng như bảng trên.
 
 - Listings và calendar lọc theo **1.000 listing_id**. Calendar đọc streaming, không nạp cả thành phố vào RAM.
 - Reviews lọc độc lập theo **5.000 review_id/mốc**, không dùng listing_id để lọc reviews.

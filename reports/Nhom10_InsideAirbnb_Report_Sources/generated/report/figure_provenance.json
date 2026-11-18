@@ -1,0 +1,16 @@
+{
+  "source_commit": "983b9253f9297e9c72dbeb54f26a9a564bfa04a2",
+  "pipeline_metadata_sha256": "7d2a5614f161114d98ac40501c5e840b212a0b296ee9a432e565a150d55b2392",
+  "artifacts": {
+    "figures/report/report_confusion.pdf": "f47e2d739e348c6fbef82a77e7e04b8a871d0f79009de22ab79bda2789db7767",
+    "figures/report/report_confusion.png": "79f109010d8c21f6eba340c889db81ef55c7c06b02be7045953863c6e7d5b2ca",
+    "figures/report/report_price.pdf": "4f17469162f861804440e80843e017bf8c4631533824e069f410f9998eb7f3eb",
+    "figures/report/report_price.png": "b3036e7a69f12e1d5f67d90e123901c47d914f7486dd0bd77e074ba25aa92350",
+    "figures/report/report_reviews.pdf": "be202d80b1b09a5aad70ef1f8d7a6a7bfb5dab37d4e49dea5d5bd523a76dcb2c",
+    "figures/report/report_reviews.png": "7d9415022f43bbceb70a38c4d7fec6886c5a121ce8c9a330a009fc6b82d6cc82",
+    "figures/report/report_space.pdf": "56b9c2f28b483f6496bb951fc2639b61af0d3248cec721764dfffc72114a0620",
+    "figures/report/report_space.png": "d47e110ad65835e8d5b64f14a1154fc29521b1f696cc449660b1999ea23709ae",
+    "figures/report/report_time.pdf": "74ef3be8cdcf2f54388ef82d9f1515d53e04aac50e4c0a4fb84dd0bf1564aab0",
+    "figures/report/report_time.png": "2481dd77cc45c5489168474600e0aae25a17859350f367f59df84573fb6cfcbe"
+  }
+}

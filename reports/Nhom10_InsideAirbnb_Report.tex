@@ -1,357 +1,216 @@
 % !TeX program = xelatex
-% Bao cao nhom 10 - Inside Airbnb Toronto - ban du thao gan hoan thien.
-% Bien dich: XeLaTeX (Overleaf: Menu -> Compiler -> XeLaTeX).
-% Cac bieu do duoc ve truc tiep bang PGFPlots, khong can tep hinh ngoai.
-% Truoc khi nop: hoan tat cac muc \pending{...}, xac nhan ngay mốc dữ liệu
-% 2025-12-12 voi giang vien, chay Gemini bộ nhớ đệm/evaluation va cap nhat commit.
-
+% Rebuild: python scripts/build_report.py --no-download
+% The institute cover is inserted by the group; student IDs are filled on the last page.
 \documentclass[11pt,a4paper]{article}
-
-% --- Ngon ngu va font ---
-\usepackage{fontspec}
-\IfFontExistsTF{Times New Roman}{
-  \setmainfont{Times New Roman}
-}{
-  \IfFontExistsTF{TeX Gyre Termes}{
-    \setmainfont{TeX Gyre Termes}
-  }{
-    \setmainfont{Noto Serif}
-  }
-}
-\usepackage[vietnamese]{babel}
-
-% --- Bo cuc va goi ho tro ---
-\usepackage[a4paper,margin=2.15cm,headheight=14pt]{geometry}
-\usepackage{amsmath,amssymb}
-\usepackage{graphicx}
-\usepackage{booktabs,tabularx,array,longtable}
-\usepackage{caption}
-\usepackage{enumitem}
-\usepackage{xcolor}
-\usepackage{hyperref}
-\usepackage{needspace}
-\usepackage{pgfplots}
-\usetikzlibrary{positioning,arrows.meta}
-\pgfplotsset{compat=1.18}
-
-\hypersetup{
-  colorlinks=true,
-  linkcolor=blue!45!black,
-  urlcolor=blue!55!black,
-  citecolor=blue!45!black,
-  pdftitle={Phân tích nhóm mẫu Airbnb tại Toronto - Nhóm 10},
-  pdfauthor={Nhom 10 - UET.DSE2049}
-}
-\setlength{\parindent}{1em}
-\setlength{\parskip}{2pt}
-\setlength{\emergencystretch}{2em}
-\setlist{nosep,leftmargin=*}
-\captionsetup{font=small,labelfont=bf,skip=3pt}
-\renewcommand{\figurename}{Hình}
-\renewcommand{\tablename}{Bảng}
-\renewcommand{\abstractname}{Tóm tắt}
-\renewcommand{\refname}{Tài liệu tham khảo}
-\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
-\newcolumntype{C}{>{\centering\arraybackslash}X}
-\newcommand{\code}[1]{\texttt{\small #1}}
-\newcommand{\pct}[1]{#1\%}
-\newif\ifdraft
-\drafttrue
-\newcommand{\pending}[1]{\ifdraft\textcolor{red!70!black}{\textbf{[CẦN HOÀN THIỆN: #1]}}\else\textbf{[CẦN ĐIỀN]}\fi}
-\newcommand{\snapshot}[1]{\texttt{#1}}
-
-\title{\vspace{-1.5em}\Large\bfseries Phân tích nhóm mẫu chỗ ở Airbnb tại Toronto:\\[-2pt]
-\large Nguồn cung, chất lượng dữ liệu, lịch sẵn có và phản hồi khách lưu trú}
-\author{\textbf{Nhóm 10}\\[-1pt]
-\small Dương Nhật Huy \quad Mai Anh Đức \quad Nguyễn Quốc Hiếu\\[-1pt]
-\small Vũ Phạm Khánh Nam \quad Phan Ngọc Huy\\[-1pt]
-\small Lập trình xử lý dữ liệu (UET.DSE2049 1) -- Học kỳ I, 2026--2027\\[-1pt]
-\small Viện Trí tuệ nhân tạo, Trường Đại học Công nghệ, ĐHQGHN\\[-1pt]
-\small MSSV: \pending{bổ sung MSSV của 5 thành viên}}
-\date{}
-
+\input{report_style.tex}
+\hypersetup{pdftitle={Airbnb Toronto Chất lượng dữ liệu và trải nghiệm khách trong nhóm mẫu được giao}}
 \begin{document}
-\maketitle
-\vspace{-1.6em}
-\noindent\small
-\textbf{Bên nhận phân tích giả định:} Nhóm theo dõi thị trường lưu trú ngắn hạn và du lịch Toronto.\\
-\textbf{Mã dữ liệu:} \code{DSE2049-C01-G10-toronto} \quad
-\textbf{Tiền tệ:} CAD \quad
-\textbf{Thành phố:} Toronto, Canada.\\
-\textbf{Kho mã:} \href{https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10}{GitHub -- Nhóm 10}.\\
-\textbf{Commit mã nguồn dùng để đối chiếu:} \code{d045d55869b76c21b92b8b48bf2f0417a929efca} (nhánh \code{main}; chưa phải tag \code{final}).\\
-\textbf{Trạng thái:} Bản thảo gần hoàn thiện; kết quả Gemini và xác nhận về một mốc dữ liệu vẫn còn chờ.
-\par\normalsize
-
+\begin{center}
+{\Large\bfseries Airbnb Toronto trong nhóm mẫu được giao}\\[3pt]
+{\large Chất lượng dữ liệu, lịch sẵn có và trải nghiệm khách}\\[5pt]
+{\normalsize Nhóm 10 · UET.DSE2049 1 · Học kỳ I năm học 2026--2027}
+\end{center}
+\vspace{-5pt}
 \begin{abstract}
-Báo cáo phân tích 1.000 mã chỗ ở Airbnb được giao cho Nhóm 10 tại Toronto qua bốn mốc dữ liệu từ tháng 9/2025 đến tháng 6/2026. Nhóm kiểm tra 12 tệp dữ liệu dạng bảng, xây dựng quy trình xử lý có thể tái lập và kiểm thử tích hợp trên dữ liệu thật ở chế độ không sử dụng mô hình ngôn ngữ lớn. Cả bốn mốc đều ghi nhận đủ 1.000 chỗ ở; tại mốc cuối có 980 chỗ ở có giá hợp lệ, với giá trung vị 213,55 CAD/đêm. Trong nhóm mẫu, 87,5\% chỗ ở là toàn bộ nhà/căn hộ; 11,6\% chỗ ở thuộc về chủ nhà có nhiều hơn một chỗ ở được quan sát. Mã chủ nhà (\code{host\_id}) thay đổi giữa các mốc liền kề lần lượt là 3, 35 và 37 trên 1.000 cặp. Độ phủ dữ liệu lịch trong cửa sổ 90 ngày đạt từ 99,38\% đến 100\%. Bộ 100 nhãn cảm xúc được gán thủ công đã hoàn tất, nhưng bộ nhớ đệm Gemini cho 1.000 bài đánh giá chưa có; vì vậy báo cáo chưa công bố độ chính xác của mô hình hoặc kết luận về các khía cạnh trải nghiệm khách. Các kết quả chỉ mô tả nhóm mẫu được giao, không đại diện cho toàn bộ thị trường Toronto.
+\noindent\textbf{Nhóm mẫu có nguồn cung ổn định, nhưng lịch sẵn có và phản hồi khách cho thấy những khác biệt cần theo dõi.} Trên 1.000 chỗ ở được giao tại Toronto qua bốn mốc, toàn bộ mã chỗ ở vẫn hiện diện; 87,5\% là toàn bộ nhà/căn hộ. Ở mốc cuối, trung vị giá niêm yết là \GlobalMedian{} CAD/đêm trên 980 chỗ ở có giá. Tỷ lệ lịch sẵn có 90 ngày giảm từ 66,53\% ở mốc tháng 12/2025 xuống 51,59\% ở mốc tháng 6/2026. Gemini gán 64/1.000 review là mixed hoặc negative; tiện nghi là khía cạnh bị chê nhiều nhất. Trên cùng 100 nhãn tay, Gemini đạt accuracy 96\% và macro-F1 0,8594, so với 95\% và 0,8278 của baseline. Tuy vậy, Gemini chỉ nhận đúng 3/7 review mixed. Kết quả mô tả mẫu được giao, không suy rộng thành nguồn cung, mức độ hài lòng hay tỷ lệ lấp đầy của toàn Toronto.
 \end{abstract}
-\noindent\textbf{Từ khóa:} Inside Airbnb; Toronto; nhóm mẫu; kiểm soát chất lượng dữ liệu; lịch sẵn có; phân tích đánh giá; Gemini.
+\vspace{-3pt}
+\noindent\textbf{Từ khóa:} Inside Airbnb, Toronto, QA, lịch sẵn có, cảm xúc review, Gemini.
 
-\section{Giới thiệu và bài toán}
-Airbnb cung cấp dữ liệu quan sát được về các chỗ ở được niêm yết, lịch sẵn có và phản hồi sau lưu trú. Tuy nhiên, dữ liệu nhiều bảng và nhiều thời điểm có thể khác nhau về cấu trúc cột, mức độ thiếu và khóa liên kết. Nếu không kiểm tra trước khi tổng hợp, số lượng chỗ ở, giá trung vị, tỷ lệ sẵn có hoặc chỉ số theo vùng có thể bị sai lệch.
+\section{Bài toán và kết quả chính}
+\textbf{Cần đọc số liệu Airbnb cùng phạm vi và độ tin cậy của chúng.} Bên nhận phân tích giả định là nhóm theo dõi lưu trú ngắn hạn và du lịch Toronto. Nhóm này cần biết các chỗ ở được giao tập trung ở đâu, lịch mở đặt phòng thay đổi ra sao và khách thường phản ánh vấn đề gì. Bảy KPI trong Bảng~\ref{tab:kpi} trả lời các nhu cầu đó; thông tin độ phủ được dùng để kiểm soát cách diễn giải, không thay cho kết quả kinh doanh.
 
-Báo cáo hướng tới một bên nhận phân tích giả định là nhóm theo dõi thị trường lưu trú ngắn hạn và du lịch Toronto. Mục tiêu là chuyển dữ liệu được giao thành các chỉ số có định nghĩa rõ, có thể truy vết về mã và dữ liệu đầu vào, qua đó hỗ trợ đặt câu hỏi tiếp theo về cơ cấu nguồn cung, lịch sẵn có và trải nghiệm khách.
+Ba câu hỏi dẫn dắt báo cáo là: \textbf{RQ1}, cơ cấu không gian và mức giá cuối kỳ khác nhau thế nào; \textbf{RQ2}, các thuộc tính và lịch sẵn có thay đổi ra sao qua bốn mốc; \textbf{RQ3}, phản hồi khách nêu vấn đề gì và Gemini phân loại đáng tin cậy đến mức nào. Phần kết quả trình bày lần lượt phát hiện, bằng chứng và giới hạn; chi tiết kiểm tra, mã và phân tích lỗi được chuyển sang Supplement.
 
-Phạm vi nghiên cứu là nhóm mẫu cố định gồm 1.000 \code{listing\_id} do bảng tính phân công của học phần quy định, không phải toàn bộ chỗ ở tại Toronto. Do nhóm mẫu được cố định theo danh sách mã, việc một mã xuất hiện hoặc vắng mặt trong bảng đầu vào chỉ phản ánh độ phủ dữ liệu; không được diễn giải thành chỗ ở mới gia nhập hoặc rời khỏi thị trường. Tương tự, ngày lịch không còn sẵn không đồng nghĩa chắc chắn đã có khách đặt.
-
-\section{Câu hỏi phân tích và thiết kế nghiên cứu}
-Nghiên cứu tổ chức theo ba câu hỏi:
-
-\noindent\textbf{RQ1 -- Không gian và phân khúc.} Nhóm mẫu được phân bố như thế nào giữa tám vùng phân tích của bảng tính, và cơ cấu loại hình chỗ ở ra sao? Giá niêm yết ở mốc dữ liệu cuối cho thấy mức giá điển hình nào trong phạm vi mẫu?
-
-\noindent\textbf{RQ2 -- Biến động theo thời gian.} Độ phủ nhóm mẫu, các thuộc tính chỗ ở và mức độ đầy đủ của dữ liệu lịch thay đổi như thế nào qua bốn mốc dữ liệu? Những thay đổi quan sát được có đủ căn cứ để kết luận về biến động của toàn thị trường hay không?
-
-\noindent\textbf{RQ3 -- Phản hồi khách lưu trú.} Các bài đánh giá được giao có phân bố nhãn cảm xúc thủ công như thế nào, và mô hình Gemini có phân loại đáng tin cậy hơn phương pháp đường cơ sở dùng từ khóa hay không? Chỉ kết luận câu hỏi thứ hai sau khi tạo bộ nhớ đệm thật và đánh giá hai phương pháp trên cùng tập 100 nhãn tay.
-
-\section{Dữ liệu và phương pháp xử lý}
-\subsection{Nguồn dữ liệu và phạm vi}
-Nguồn dữ liệu là Inside Airbnb, được phát hành theo giấy phép CC BY 4.0 \cite{inside,snap1,snap2,snap3,snap4}. Theo tệp kê khai phân công của nhóm, bốn mốc dữ liệu được cấu hình là 2025-09-11, 2025-12-12, 2026-03-19 và 2026-06-15. Với mỗi mốc, nhóm kiểm tra một tệp thông tin chỗ ở (listings), một tệp lịch (calendar) và một tệp bài đánh giá (reviews); cả 12/12 tệp dạng bảng này được báo cáo đọc thành công. Tệp GeoJSON được lưu riêng để hỗ trợ đối chiếu không gian; tài liệu kiểm chứng hiện chỉ xác nhận việc đối chiếu tệp này ở mốc 2025-09-11. Quy mô dữ liệu theo từng mốc được tóm tắt tại Bảng~\ref{tab:data}.
-
-\begin{table}[htbp]
-\centering\small
-\caption{Quy mô dữ liệu đầu vào theo các mốc được giao.}\label{tab:data}
-\begin{tabularx}{\linewidth}{@{}lCCCCY@{}}
-\toprule
-Mốc dữ liệu & Chỗ ở & Lịch & Bài đánh giá & GeoJSON & Ghi chú\\
-\midrule
-\snapshot{2025-09-11} & 1.000 & 365.000 & 5.000 & 1 tệp & Đọc thành công\\
-\snapshot{2025-12-12} & 1.000 & 365.000 & 5.000 & 1 tệp & Ngày cần xác nhận\\
-\snapshot{2026-03-19} & 1.000 & 365.000 & 5.000 & 1 tệp & Đọc thành công\\
-\snapshot{2026-06-15} & 1.000 & 365.000 & 5.000 & 1 tệp & Mốc tính giá\\
-\bottomrule
+\begin{table}[htbp]\centering\small
+\caption{Bảy KPI chính sau QA. Giá dùng CAD/đêm; tỷ lệ tính trên mẫu số hợp lệ tương ứng.}\label{tab:kpi}
+\begin{tabularx}{\linewidth}{@{}P{3.7cm}YP{4.15cm}@{}}\toprule
+KPI & Công thức và ý nghĩa & Kết quả chính\\\midrule
+Nguồn cung quan sát & Số mã chỗ ở duy nhất theo mốc/khu vực & 1.000/mốc; Waterfront 209/1.000 ở mốc cuối\\
+Giá niêm yết trung vị & Trung vị giá hợp lệ ở mốc cuối & \GlobalMedian{} CAD/đêm; n=980\\
+Tỷ lệ toàn bộ nhà/căn hộ & Entire home/apt / chỗ ở có loại phòng & 875/1.000 = 87,5\%\\
+Tỷ lệ chỗ ở thuộc host nhiều listing & Listing thuộc host có hơn một listing trong mẫu / listing có host ID & 116/1.000 = 11,6\% ở mốc cuối\\
+Tỷ lệ lịch sẵn có & Ngày available=t / ngày quan sát t,f trong cửa sổ 90 ngày & 66,53\% $\rightarrow$ 51,59\% từ mốc 12/2025 đến 6/2026\\
+Tỷ lệ đổi host ID & Cặp cùng listing đổi host ID / cặp so sánh hợp lệ & 0,3\%; 3,5\%; 3,7\% qua ba chuyển tiếp\\
+Tỷ lệ review có vấn đề theo LLM & (Mixed + negative) / review mẫu LLM & 64/1.000 = 6,4\%\\\bottomrule
 \end{tabularx}
 \end{table}
 
-Bảng thông tin chỗ ở (listings) và bảng lịch (calendar) được lọc theo 1.000 \code{listing\_id} trong bảng tính phân công. Bảng bài đánh giá (reviews) được lọc độc lập theo 5.000 \code{review\_id} được giao ở mỗi mốc, không lọc thêm theo \code{listing\_id}; sau khi loại các bài đánh giá trùng giữa các mốc, quy trình xử lý ghi nhận 5.000 bài đánh giá duy nhất. Trong đó, 1.000 bài thuộc mẫu phân tích bằng mô hình ngôn ngữ lớn và 100 bài thuộc tập gán nhãn thủ công. Mã định danh được giữ dưới dạng chuỗi để tránh mất độ chính xác với các mã dài.
+\clearpage
+\section{Dữ liệu và phương pháp}
+\subsection{Phạm vi được cố định trước khi phân tích}
+\textbf{Danh sách mã được giao quyết định mẫu phân tích.} Dữ liệu lấy từ Inside Airbnb, giấy phép CC BY 4.0~\cite{inside}. Bốn ngày trong Bảng~\ref{tab:data} theo workbook của lớp và đã được nhóm trưởng xác nhận với giảng viên. Mã dữ liệu là \code{DSE2049-C01-G10-toronto}; ID được đọc dưới dạng chuỗi để giữ chính xác các mã dài.
 
-\textbf{Lưu ý về ngày mốc dữ liệu.} Tệp kê khai và bảng tính phân công của nhóm ghi ngày thứ hai là \snapshot{2025-12-12}, trong khi trang đề bài hiện được nhóm ghi nhận là \snapshot{2025-11-11}. Nhóm giữ nguyên ngày trong bảng tính phân công và dữ liệu đã tải để bảo toàn phạm vi được giao; \pending{nhóm trưởng xác nhận với giảng viên ngày đúng và cập nhật nếu cần}. Không tự thay ngày mốc trong báo cáo nếu chưa có xác nhận.
-
-\subsection{Cấu trúc và liên kết bảng}
-Một dòng trong bảng thông tin chỗ ở (listings) đại diện cho một chỗ ở tại một mốc dữ liệu, với khóa \code{(snapshot\_date, listing\_id)}. Bảng lịch có đơn vị quan sát là từng chỗ ở--ngày, dùng khóa \code{(snapshot\_date, listing\_id, date)} trước khi tổng hợp. Bảng bài đánh giá (reviews) có khóa \code{review\_id}; bài đánh giá trùng giữa các mốc được loại trùng khi phân tích, đồng thời lưu \code{first\_seen\_snapshot}. GeoJSON cung cấp ranh giới khu vực hành chính để liên kết dữ liệu không gian.
-
-Bảng tính phân công định nghĩa tám vùng chữ nhật \code{analysis\_area} từ A01 đến A08. Đây là các vùng phân tích của bài tập, không phải ranh giới hành chính \code{neighbourhood\_cleansed}. Vì vậy, kết quả theo A01--A08 và kết quả theo khu vực hành chính được giữ thành hai chiều không gian riêng. Quy trình hiện xuất 500 dòng KPI theo khu vực hành chính, tương ứng 125 khu vực qua bốn mốc dữ liệu.
-
-\subsection{Quy trình xử lý có thể tái lập}
-Quy trình xử lý chung gồm các bước: đọc cấu hình và tệp kê khai; kiểm tra/tải dữ liệu đầu vào; lọc đúng phạm vi; kiểm soát chất lượng bảng listings; tổng hợp bảng lịch và bảng bài đánh giá; tính KPI; chạy phương pháp đường cơ sở; đọc bộ nhớ đệm Gemini (ở chế độ đầy đủ); đánh giá bằng nhãn thủ công; cuối cùng xuất CSV, siêu dữ liệu và hình. Các mô-đun được tách theo trách nhiệm thành viên trong \code{src/airbnb/}. Dữ liệu gốc và bảng tính phân công không bị sửa. Siêu dữ liệu của mỗi lần chạy lưu cấu hình, mã băm kiểm tra đầu vào, phiên bản Python, số dòng và danh sách tệp kết quả.
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[node distance=4mm and 4mm, every node/.style={font=\small,align=center},
-  procbox/.style={draw,rounded corners,fill=blue!4,minimum height=8mm,text width=2.6cm},
-  finalbox/.style={draw,rounded corners,fill=green!5,minimum height=8mm,text width=2.7cm},
-  flowarrow/.style={->,>=stealth,thick}]
-\node[procbox] (src) {Nguồn Inside Airbnb\\+ danh sách mã được giao};
-\node[procbox,right=of src] (load) {Đọc, kiểm tra\\và lọc phạm vi};
-\node[procbox,right=of load] (qa) {Kiểm soát chất lượng\\bảng chỗ ở và lịch};
-\node[procbox,right=of qa] (kpi) {Chỉ số, nhóm mẫu\\và phương pháp cơ sở};
-\node[finalbox,right=of kpi] (out) {CSV, siêu dữ liệu\\và hình};
-\draw[flowarrow] (src)--(load); \draw[flowarrow] (load)--(qa); \draw[flowarrow] (qa)--(kpi); \draw[flowarrow] (kpi)--(out);
-\node[procbox,below=7mm of kpi,text width=4.3cm] (llm) {Bộ nhớ đệm Gemini đã kiểm tra nguồn gốc\\+ đánh giá cùng 100 nhãn tay};
-\draw[flowarrow] (qa.south) |- (llm.west);
-\draw[flowarrow] (llm.east) -| (out.south);
-\end{tikzpicture}
-\caption{Kiến trúc xử lý ở mức tổng quan. Nhánh Gemini chỉ được kích hoạt khi bộ nhớ đệm thật có đủ 1.000 bài đánh giá; chế độ không dùng mô hình xuất kết quả vào thư mục riêng.}
-\label{fig:pipeline}
-\end{figure}
-
-\subsection{Kiểm soát chất lượng dữ liệu}
-Nhóm áp dụng nguyên tắc ưu tiên gắn cờ thay vì xóa dữ liệu. Dòng chỉ bị loại khi không có mã chỗ ở hợp lệ hoặc trùng khóa trong cùng một mốc dữ liệu. Giá không hợp lệ được đặt thiếu để không tham gia phép tính giá, nhưng chỗ ở vẫn được giữ trong mẫu số nguồn cung. Cách làm này tránh làm giảm nguồn cung chỉ vì một dòng thiếu giá.
-
-Bộ kiểm soát chất lượng bảng listings có 19 quy tắc, bao gồm thiếu trường, sai kiểu, trùng khóa, ngoại lai, sai ngày, lệch cấu trúc cột, sai danh mục và kiểm tra giữa các mốc dữ liệu. Ngưỡng cấu hình gồm giá tối đa 10.000 CAD/đêm và \code{minimum\_nights} tối đa 365. Đối với nhóm mẫu được giao, bước kiểm soát chất lượng không loại dòng: 4.000/4.000 bản ghi chỗ ở vẫn được giữ; mốc cuối có 20 chỗ ở thiếu giá và 980 chỗ ở có giá hợp lệ. Báo cáo kiểm soát chất lượng ghi nhận 20 dòng bị gắn cờ do thiếu giá ở mốc cuối; không dùng giá thiếu để tính trung vị.
-
-\begin{table}[htbp]
-\centering\small
-\caption{Các phép kiểm tra trọng yếu và hành động xử lý.}\label{tab:qa}
-\begin{tabularx}{\linewidth}{@{}lYY@{}}
-\toprule
-Nhóm kiểm tra & Điều kiện/ý nghĩa & Hành động và kết quả quan sát\\
-\midrule
-Khóa và trùng & Mã định danh rỗng, sai định dạng hoặc trùng trong cùng một mốc dữ liệu & Kiểm tra đầu vào không ghi nhận ID thiếu/trùng; không làm giảm quy mô 1.000 chỗ ở/mốc.\\
-Trường quan trọng & Thiếu \code{host\_id}, \code{room\_type} hoặc vùng phân tích & Gắn cờ theo trường; không tự điền giá trị không có căn cứ.\\
-Giá & Thiếu, không chuyển đổi được sang số, không dương hoặc vượt ngưỡng & Chỉ phân tích giá tại 2026-06-15; 20/1.000 giá thiếu, giữ chỗ ở và loại giá khỏi thống kê.\\
-Danh mục và cấu trúc cột & Loại phòng ngoài danh mục; số/tên cột thay đổi & Ghi nhận cấu trúc cột tăng 79 $\rightarrow$ 85 $\rightarrow$ 90 $\rightarrow$ 90 cột; không tự đồng nhất cột khác nghĩa.\\
-Ngày và tọa độ & Ngày không hợp lệ, quét lệch, tọa độ ngoài phạm vi hoặc dịch chuyển lớn & Gắn cờ/ghi nhận; không tự sửa tọa độ. Các mốc dữ liệu có độ trễ quét quan sát 0--2 ngày.\\
-So sánh liên mốc & Cùng chỗ ở đổi chủ nhà, loại phòng, khu vực hành chính hoặc tọa độ & Báo cáo số cặp thay đổi; không diễn giải tự động thành đổi chủ hay thay đổi thị trường.\\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Số chỗ ở thiếu giá trong dữ liệu nguồn theo bốn mốc lần lượt là 69/1.000, 1.000/1.000, 28/1.000 và 20/1.000. Do đó nhóm chỉ dùng giá tại mốc cuối theo cấu hình \code{price\_snapshot}. Bước kiểm soát chất lượng không làm thay đổi số lượng chỗ ở hoặc giá trung vị trước và sau xử lý trong nhóm mẫu được báo cáo; giá trung vị ở mốc cuối là khoảng 213,55 CAD/đêm. Đây là giá niêm yết, không phải giá giao dịch thực tế.
-
-\section{Chỉ số và phương pháp phân tích}
-\subsection{Bộ KPI sử dụng}
-Các KPI được tính trên dữ liệu sau QA, kèm mẫu số và phạm vi. Với mẫu số bằng 0, kết quả được ghi là không xác định thay vì gán bằng 0.
-
-\begin{table}[htbp]
-\centering\small
-\caption{Các chỉ số định lượng chính trong phạm vi nhóm mẫu.}\label{tab:kpi}
-\begin{tabularx}{\linewidth}{@{}lYY@{}}
-\toprule
-KPI & Định nghĩa & Kết quả đã có căn cứ\\
-\midrule
-Nguồn cung quan sát & Số \code{listing\_id} duy nhất sau kiểm soát chất lượng ở mỗi mốc & 1.000 chỗ ở tại mỗi mốc; độ phủ nhóm mẫu đạt 100\%.\\
-Mẫu giá hợp lệ & Số chỗ ở có giá dương và chuyển đổi được sang dạng số tại mốc tính giá & 980/1.000 chỗ ở tại 2026-06-15.\\
-Giá trung vị & Trung vị giá niêm yết hợp lệ tại mốc tính giá & 213,55 CAD/đêm (n = 980).\\
-Tỷ trọng toàn bộ nhà/căn hộ & Chỗ ở có loại \code{Entire home/apt} chia cho số chỗ ở có loại phòng hợp lệ & 87,5\% trong nhóm mẫu.\\
-Tỷ trọng chỗ ở thuộc chủ nhà nhiều chỗ ở & Chỗ ở thuộc chủ nhà có hơn một chỗ ở trong nhóm mẫu, chia cho số chỗ ở có mã chủ nhà hợp lệ & 11,6\% tại mốc cuối; không đại diện cho các chỗ ở ngoài nhóm mẫu.\\
-Thay đổi chủ nhà giữa các mốc & Số chỗ ở được giữ lại nhưng đổi \code{host\_id}, chia cho số cặp so sánh hợp lệ & 3/1.000 (0,3\%), 35/1.000 (3,5\%), 37/1.000 (3,7\%).\\
-Độ phủ lịch 90 ngày & Số ngày--chỗ ở có trạng thái hợp lệ chia cho $1.000\times 90$ ngày & 99,78\%; 99,38\%; 100\%; 100\% theo bốn mốc dữ liệu.\\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Với vùng $g$ và mốc dữ liệu $t$, nguồn cung là $N_{g,t}=|L_{g,t}|$; giá trung vị được tính trên tập giá hợp lệ $P_{g,t}$ tại mốc cuối. Tỷ trọng toàn bộ nhà/căn hộ và tỷ trọng chủ nhà nhiều chỗ ở dùng mẫu số là các dòng có trường tương ứng hợp lệ. Tỷ lệ lịch còn sẵn (availability) được tính bằng số ngày có trạng thái mở chia cho số ngày có trạng thái quan sát được (mở hoặc không mở); độ phủ lịch là số ngày quan sát được chia cho số ngày kỳ vọng. \textbf{Tỷ lệ lịch còn sẵn không phải tỷ lệ lấp đầy thực tế.}
-
-\subsection{Thiết kế phân tích bài đánh giá và mô hình ngôn ngữ lớn (LLM)}
-Các bài đánh giá được loại trùng theo \code{review\_id} giữa các mốc dữ liệu. Bộ 100 nhãn tay được gán độc lập theo hướng dẫn chung, mỗi thành viên gán 20 bài đánh giá. Phân bố nhãn trong tệp CSV đã chốt là 90 positive (tích cực), 7 mixed (hỗn hợp) và 3 negative (tiêu cực). Phân bố nghiêng mạnh về nhãn positive (tích cực); đây là đặc điểm của tập nhãn được giao, không thể suy rộng thành tỷ lệ hài lòng của toàn bộ khách Airbnb Toronto.
-
-Phương pháp đường cơ sở sử dụng từ khóa đa ngữ, ngữ cảnh phủ định, liên từ đối lập và một số mẫu diễn đạt sự cố nhỏ đã được xử lý. Cấu hình Gemini hiện sử dụng mô hình \code{gemini-3.5-flash-lite}, nhiệt độ 0, đầu ra JSON và tám khía cạnh: location, cleanliness, host, value, amenities, noise, safety và check-in. Bộ nhớ đệm lưu mã bài đánh giá, mã băm văn bản, tên mô hình, phiên bản câu lệnh và danh mục khía cạnh để ngăn dùng nhầm dự đoán khi đầu vào thay đổi.
-
-\begin{equation*}
-\text{Độ chính xác}=\frac{\text{số dự đoán đúng}}{n},\qquad
-F_{1,c}=\frac{2P_cR_c}{P_c+R_c},\qquad
-F_{1,\mathrm{macro}}=\frac{1}{K}\sum_{c=1}^{K}F_{1,c}.
-\end{equation*}
-
-Phương pháp đường cơ sở và Gemini cần được đánh giá trên cùng 100 \code{review\_id} có nhãn tay; báo cáo cần kèm ma trận nhầm lẫn, F1 theo từng lớp và ví dụ dự đoán sai. Tại thời điểm kiểm tra repo, bộ nhớ đệm Gemini thật cho 1.000 bài đánh giá chưa được tạo. Vì vậy, quy trình đầy đủ dừng khi thiếu bộ nhớ đệm và chưa có chỉ số độ chính xác/F1 vĩ mô của Gemini đã được xác minh. Không sử dụng bộ nhớ đệm giả trong kiểm thử hoặc số liệu của bản nháp cũ của TV5 làm kết quả thật.
-
-\section{Kết quả và phân tích}
-\subsection{RQ1: Cấu trúc mẫu được phân bổ trên tám vùng phân tích}
-Tám vùng A01--A08 là các hình chữ nhật phân tích được xác định trong bảng tính phân công. Số chỗ ở được giao ở mỗi vùng dao động từ 120 đến 130; tổng cộng đúng 1.000 chỗ ở. Hình~\ref{fig:areas} mô tả quy mô mẫu chứ không phải mật độ toàn thị trường.
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  ybar,bar width=13pt,width=0.88\linewidth,height=5.0cm,
-  ymin=0,ymax=145,ylabel={Số chỗ ở trong nhóm mẫu},
-  symbolic x coords={A01,A02,A03,A04,A05,A06,A07,A08},xtick=data,
-  x tick label style={font=\small},ymajorgrids=true,grid style={gray!20},
-  nodes near coords,nodes near coords style={font=\scriptsize},
-  title={Quy mô nhóm mẫu theo vùng phân tích}]
-\addplot[fill=blue!35,draw=blue!60!black] coordinates
- {(A01,130)(A02,130)(A03,126)(A04,121)(A05,120)(A06,121)(A07,130)(A08,122)};
-\end{axis}
-\end{tikzpicture}
-\caption{Phân bổ 1.000 chỗ ở theo tám vùng A01--A08; số liệu lấy từ tệp kê khai phân công của nhóm.}
-\label{fig:areas}
-\end{figure}
-
-\needspace{8\baselineskip}
-Trong nhóm mẫu, 87,5\% chỗ ở có loại phòng \code{Entire home/apt}; tỷ lệ này không đại diện cho toàn Toronto. Ở mốc 2026-06-15, có 980 chỗ ở có giá hợp lệ và giá trung vị là 213,55 CAD/đêm. Dù quy trình xuất KPI theo tám vùng và 125 khu vực hành chính, bảng/biểu đồ giá của lần chạy đầy đủ gần nhất chưa được lưu trong kho mã; vì vậy, chưa đủ căn cứ xếp hạng khu vực đắt/rẻ. \pending{TV3/TV1 bổ sung bảng và biểu đồ không gian từ lần chạy chốt, kèm số quan sát và độ phủ.}
-
-\subsection{RQ2: Số lượng chỗ ở trong nhóm mẫu ổn định nhưng mã chủ nhà có thay đổi}
-Mỗi mốc dữ liệu đều có đủ 1.000 chỗ ở trong danh sách được giao; không ghi nhận mã mới hoặc vắng mặt trong ba khoảng so sánh liền kề. Tuy nhiên, mã chủ nhà của cùng một chỗ ở có thay đổi. Số cặp thay đổi lần lượt là 3, 35 và 37 trên 1.000 cặp có thể so sánh; loại phòng không thay đổi trong các cặp được báo cáo.
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  ybar,bar width=22pt,width=0.72\linewidth,height=4.5cm,
-  ymin=0,ymax=4.5,ylabel={Chỗ ở đổi mã chủ nhà (\%)},
-  symbolic x coords={P1,P2,P3},xtick=data,
-  xticklabels={09--12/2025,12/2025--03/2026,03--06/2026},
-  x tick label style={font=\scriptsize},ymajorgrids=true,grid style={gray!20},
-  nodes near coords={\pgfmathprintnumber[fixed,precision=1,use comma]{\pgfplotspointmeta}},nodes near coords style={font=\small},
-  title={Tỷ lệ thay đổi mã chủ nhà giữa hai mốc liền kề}]
-\addplot[fill=orange!45,draw=orange!70!black] coordinates
- {(P1,0.3)(P2,3.5)(P3,3.7)};
-\end{axis}
-\end{tikzpicture}
-\caption{Tỷ lệ mã chủ nhà thay đổi trên 1.000 chỗ ở được giữ lại ở mỗi khoảng.}
-\label{fig:host}
-\end{figure}
-
-Mức thay đổi tăng từ 0,3\% ở khoảng đầu lên 3,5\% và 3,7\% ở hai khoảng sau. Đây là dấu hiệu cần thận trọng khi nối KPI chủ nhà qua thời gian: tỷ lệ chủ nhà nhiều chỗ ở nên được tính theo từng mốc dữ liệu, không giả định mã chủ nhà bất biến. Việc mã chủ nhà đổi có thể do cập nhật tài khoản hoặc ghi nhận dữ liệu; dữ liệu hiện có không chứng minh chuyển quyền sở hữu hay nguyên nhân pháp lý.
-
-Đối với bảng lịch, mẫu số kỳ vọng của cửa sổ 90 ngày là 90.000 ngày--chỗ ở tại mỗi mốc. Số ngày thiếu lần lượt là 200, 560, 0 và 0; tương ứng độ phủ 99,78\%, 99,38\%, 100\% và 100\%.
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  ybar,bar width=22pt,width=0.72\linewidth,height=4.4cm,
-  ymin=99,ymax=100.15,ylabel={Độ phủ quan sát (\%)},
-  symbolic x coords={D1,D2,D3,D4},xtick=data,
-  xticklabels={09/2025,12/2025,03/2026,06/2026},
-  x tick label style={font=\scriptsize},ymajorgrids=true,grid style={gray!20},
-  yticklabel={\pgfmathprintnumber[fixed,precision=1,use comma]{\tick}},
-  nodes near coords={\pgfmathprintnumber[fixed,precision=2,use comma]{\pgfplotspointmeta}},nodes near coords style={font=\scriptsize},
-  title={Độ phủ dữ liệu lịch trong cửa sổ 90 ngày}]
-\addplot[fill=teal!35,draw=teal!65!black] coordinates
- {(D1,99.78)(D2,99.38)(D3,100)(D4,100)};
-\end{axis}
-\end{tikzpicture}
-\caption{Độ phủ = số ngày--chỗ ở quan sát được / 90.000 ngày--chỗ ở kỳ vọng; không phải tỷ lệ lấp đầy.}
-\label{fig:calendar}
-\end{figure}
-
-Độ phủ cao cho thấy dữ liệu lịch gần đầy đủ trong cửa sổ phân tích, nhưng trạng thái \code{available = f} gộp cả ngày đã được đặt và ngày chủ nhà chủ động khóa. Do đó, không thể dùng $1-\text{tỷ lệ sẵn có}$ để suy ra tỷ lệ lấp đầy thực tế. Các giá trị tỷ lệ lịch còn sẵn trong 30/90 ngày và phân tách ngày thường/cuối tuần cần được xuất lại từ đúng lần chạy quy trình cuối trước khi đưa vào bản nộp. \pending{TV4 xuất và đối chiếu tỷ lệ lịch còn sẵn 30/90 ngày; không thay chỉ số này bằng độ phủ quan sát.}
-
-\subsection{RQ3: Bộ nhãn tay đã hoàn thành, nhưng đánh giá mô hình ngôn ngữ lớn còn chờ}
-Bộ nhãn thủ công có đủ 100 \code{review\_id} được đánh dấu trong bảng tính phân công, gồm 90 nhãn positive (tích cực), 7 nhãn mixed (hỗn hợp) và 3 nhãn negative (tiêu cực). Phân bố này cho thấy tập kiểm chứng có mất cân bằng lớp; F1 vĩ mô (Macro-F1) và F1 theo từng lớp cần được báo cáo song song với độ chính xác để tránh chỉ số tổng thể che khuất hiệu năng trên hai lớp mixed và negative.
-
-\begin{table}[htbp]
-\centering\small
-\caption{Phân bố 100 nhãn cảm xúc thủ công đã chốt.}\label{tab:labels}
-\begin{tabular}{@{}lrr@{}}
-\toprule
-Nhãn & Số bài đánh giá & Tỷ lệ\\
-\midrule
-Positive & 90 & 90,0\%\\
-Mixed & 7 & 7,0\%\\
-Negative & 3 & 3,0\%\\
-\midrule
-Tổng & 100 & 100,0\%\\
-\bottomrule
+\begin{table}[htbp]\centering\small
+\caption{Đối chiếu đầu vào trong phạm vi nhóm trước QA. Cột thiếu là cột có ít nhất 90\% giá trị rỗng.}\label{tab:data}
+\begin{tabular}{@{}lrrrrrr@{}}\toprule
+Ngày & Listings & Calendar & Reviews & Số cột & Cột thiếu & Giá rỗng\\\midrule
+\input{generated/report/data_rows.tex}
 \end{tabular}
 \end{table}
 
-Kho mã có phương pháp đường cơ sở dựa trên từ khóa, mã tích hợp và kiểm tra Gemini, cơ chế bộ nhớ đệm có lưu thông tin nguồn gốc và hàm đánh giá dự đoán so với nhãn chuẩn. Tuy nhiên, ở phiên bản mã nguồn nêu đầu báo cáo, bộ nhớ đệm Gemini thật cho 1.000 bài đánh giá chưa có; chưa có bảng so sánh mô hình ngôn ngữ lớn với phương pháp đường cơ sở trên 100 nhãn đã chốt. Vì thế, các tỷ lệ khen/chê theo tám khía cạnh và chỉ số trải nghiệm khách lưu trú chưa được xem là kết quả thực nghiệm. \pending{TV5 tạo bộ nhớ đệm thật và kiểm tra đủ 1.000 mã bài đánh giá; chạy quy trình đầy đủ, bổ sung độ chính xác, F1 vĩ mô, phân tích lỗi, số lượng token và chi phí thực tế hoặc ước tính có căn cứ.}
+Listings và calendar được lọc theo 1.000 listing ID. Reviews được lọc \textbf{độc lập theo 5.000 review ID/mốc}, sau đó khử trùng giữa các mốc còn 5.000 review. Trong đó, 1.000 ID có dấu ở cột Mẫu LLM và 100 ID có dấu ở cột Nhãn tay được dùng đúng như workbook; không lấy mẫu lại trong pipeline. Ở bước KPI vùng, 1.000/1.000 review LLM nối được với cohort listings, nhưng kết quả nối không được dùng để lọc ngược đầu vào reviews.
 
-\section{Thảo luận và kết luận}
-Kết quả hiện có cho thấy ba điểm chính. Thứ nhất, quy trình xử lý giữ được toàn bộ 1.000 chỗ ở trong nhóm mẫu ở cả bốn mốc, và bước kiểm soát chất lượng không làm giảm số lượng chỗ ở; các trường hợp thiếu giá ở mốc cuối vẫn được giữ trong nhóm nhưng không tham gia phép tính giá. Thứ hai, mã chủ nhà thay đổi nhiều hơn ở hai khoảng sau, vì vậy các chỉ số chủ nhà cần được tính riêng theo từng mốc và không được diễn giải thành thay đổi chủ sở hữu. Thứ ba, độ phủ dữ liệu lịch 90 ngày ở mức 99,38--100\%, nhưng độ phủ lịch không đồng nghĩa với công suất khai thác thực tế.
+\subsection{QA giữ dòng chỗ ở nhưng loại giá không dùng được}
+\textbf{Bước QA không làm mất nguồn cung chỉ vì thiếu giá.} Listings dùng khóa (mốc, listing ID); chỉ thiếu/sai ID hoặc trùng khóa mới bị loại. Các trường quan trọng thiếu được gắn cờ; giá sai kiểu, không dương hoặc vượt 10.000 CAD được đặt thiếu. Ngưỡng minimum\_nights là 365. Các phép kiểm schema, loại phòng, tọa độ, ngày và tham chiếu neighbourhood được chạy trước khi tổng hợp. Thay đổi host ID, loại phòng và vị trí giữa các mốc chỉ được ghi nhận, không tự sửa.
 
-Với bên nhận phân tích giả định, các chỉ số này phù hợp để theo dõi quy mô nhóm mẫu, cơ cấu loại phòng, giá niêm yết cuối kỳ và chất lượng quan sát. Trước khi đưa ra khuyến nghị về khác biệt giữa khu vực hoặc trải nghiệm khách, nhóm cần hoàn tất bảng KPI/hình theo vùng từ lần chạy cuối và đánh giá Gemini trên bộ nhãn tay. Không có căn cứ trong dữ liệu hiện tại để suy ra doanh thu thực, tỷ lệ lấp đầy, nhu cầu du lịch hoặc quan hệ nhân quả.
+Trên dữ liệu thật, QA giữ đủ 4.000/4.000 dòng listings, không làm đổi supply. Mốc cuối có 20 giá rỗng và 980 giá hợp lệ; trung vị trước/sau QA đều là \GlobalMedian{} CAD. Schema thay đổi 79 $\rightarrow$ 85 $\rightarrow$ 90 $\rightarrow$ 90 cột. Danh sách cột thiếu và tác động từng rule nằm trong Supplement cùng các CSV QA. Giá ở các mốc trước chỉ được đếm thiếu để kiểm đầu vào; \textbf{không dùng để phân tích biến động giá} và không phải lý do xin cấp lại dữ liệu.
 
-\section{Hạn chế}
-\begin{enumerate}
-  \item \textbf{Phạm vi nhóm mẫu:} Kết quả chỉ mô tả 1.000 mã chỗ ở và 5.000 mã bài đánh giá được giao; không đại diện toàn bộ Airbnb tại Toronto.
-  \item \textbf{Các mốc dữ liệu:} Bốn mốc rời rạc không mô tả liên tục mọi biến động. Ngày 2025-12-12 trong bảng tính phân công khác 2025-11-11 trên trang đề; cần xác nhận trước khi nộp \cite{project}.
-  \item \textbf{Giá:} Chỉ dùng giá trong bảng listings tại 2026-06-15; 20 chỗ ở thiếu giá và giá trung vị chỉ đại diện 980 chỗ ở có giá hợp lệ. Giá niêm yết không phải giá giao dịch.
-  \item \textbf{Không gian:} A01--A08 là vùng chữ nhật theo bảng tính phân công, không phải đơn vị hành chính. Phân tích theo khu vực hành chính phải báo riêng độ phủ và số quan sát.
-  \item \textbf{Dữ liệu lịch:} Ngày không còn sẵn có thể đã được đặt hoặc bị chủ nhà khóa; tỷ lệ lịch còn sẵn không thay thế tỷ lệ lấp đầy.
-  \item \textbf{Bài đánh giá và mô hình ngôn ngữ lớn:} Bài đánh giá có thiên lệch tự chọn; 100 nhãn tay mất cân bằng lớp. Bộ nhớ đệm Gemini và đánh giá mô hình chưa hoàn tất, nên chưa thể kết luận về chất lượng phân loại cảm xúc hoặc trích xuất khía cạnh.
-\end{enumerate}
+\subsection{Mẫu số được giữ rõ cho lịch và đánh giá văn bản}
+Calendar chỉ dùng date và available, không dùng giá. Với mốc $t$, cửa sổ là $[t,t+90)$; mỗi listing có 90 ngày kỳ vọng dù không có quan sát hợp lệ. Ngày sai định dạng, available ngoài t/f và khóa trùng bị kiểm tra trước tổng hợp. Tỷ lệ sẵn có bằng tổng ngày t chia tổng ngày t/f; độ phủ bằng ngày quan sát chia ngày kỳ vọng. Giá trị không xác định được để trống, không thay bằng 0.
 
-\section{Khả năng tái lập, minh bạch AI và đóng góp}
-\textbf{Môi trường.} Kho mã ghi nhận Python 3.13.7, các thư viện được cố định phiên bản trong \code{requirements.txt}; bộ kiểm thử hiện tại có 139 phép thử đạt. Lệnh chạy phần dữ liệu thật không dùng mô hình ngôn ngữ lớn:
+Gemini \code{gemini-3.5-flash-lite} nhận văn bản review và trả JSON gồm sentiment, language, positive\_aspects và negative\_aspects theo tám khía cạnh cố định. Nhiệt độ là 0; không truyền nhãn tay vào prompt. Baseline dùng từ khóa đa ngữ, phủ định và ngữ cảnh đối lập. Mỗi thành viên gán 20 review; 100 nhãn tay có phân bố 90 positive, 7 mixed, 3 negative. Hai phương pháp được chấm trên cùng 100 ID bằng accuracy và macro-F1; chưa có nhãn chuẩn để đo chất lượng language hoặc aspects.
+
+\clearpage
+\section{Kết quả}
+\subsection{RQ1 Waterfront chiếm một phần năm mẫu và giá khác nhau giữa các vùng}
+\textbf{Waterfront Communities--The Island tập trung 209/1.000 chỗ ở trong mẫu, tương đương 20,9\%.} Quy mô này gấp khoảng 4,4 lần Niagara (47 chỗ ở), khu vực đứng tiếp theo. Hình~\ref{fig:space} dùng đúng neighbourhood từ GeoJSON và CSV KPI; phần còn lại được gộp nhưng vẫn giữ tổng mẫu 1.000. Tám vùng chữ nhật A01--A08 của workbook là một cách chia khác, không phải neighbourhood hành chính.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/report/report_space.pdf}
+\caption{Nguồn cung trong cohort tại 2026-06-15. Bản đồ tô theo số listing được giao; xám là khu vực không có listing trong mẫu, không có nghĩa không có Airbnb. Thanh cuối gộp 119 khu vực còn lại.}\label{fig:space}
+\end{figure}
+
+\textbf{Trung vị giá ở A05 cao gấp 2,56 lần A08 trong mốc cuối.} A05 có trung vị 350,00 CAD/đêm trên 115 giá hợp lệ, so với 136,71 CAD ở A08 trên 119 giá; trung vị chung là \GlobalMedian{} CAD trên 980 giá. Hình~\ref{fig:price} ghi mẫu giá ở từng vùng để tránh xếp hạng từ nhóm quá nhỏ. Các khác biệt cũng đi cùng cơ cấu phòng khác nhau: entire-home chiếm 97,5\% tại A05 và 78,7\% tại A08, nên chưa thể quy toàn bộ chênh lệch cho vị trí.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=.95\linewidth]{figures/report/report_price.pdf}
+\caption{Giá niêm yết ở tám vùng chữ nhật ngày 2026-06-15; đường đứt là trung vị chung. Supply vẫn gồm cả 20 listing thiếu giá. Không suy ra giá giao dịch hoặc mức sinh lời.}\label{fig:price}
+\end{figure}
+\figsource{Nguồn hình: \path{data/processed/real/kpi_neighbourhood.csv}, \path{kpi_market.csv}, listings sau QA và GeoJSON mốc cuối; sinh tự động bằng script báo cáo.}
+
+\clearpage
+\subsection{RQ2 Lịch sẵn có giảm trong khi cohort vẫn đủ 1.000 mã}
+\textbf{Tỷ lệ lịch sẵn có giảm 14,94 điểm phần trăm từ mốc tháng 12/2025 đến tháng 6/2026.} Tỷ lệ theo các mốc lần lượt là 58,62\%, 66,53\%, 59,89\% và 51,59\%, tính bằng tổng ngày sẵn có chia tổng ngày quan sát. Không lấy trung bình đơn giản các tỷ lệ vùng có mẫu số khác nhau. Những đường xám ở Hình~\ref{fig:time} cung cấp bối cảnh tám vùng; đường đậm là kết quả toàn cohort.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/report/report_time.pdf}
+\caption{Trái: lịch sẵn có trong cửa sổ 90 ngày kể từ từng mốc, trục 0--100\%. Phải: số cặp cùng listing đổi host ID ở hai mốc liền kề. Đây là hai phép đo riêng, không dùng trục kép hoặc suy luận nhân quả.}\label{fig:time}
+\end{figure}
+
+\begin{table}[htbp]\centering\small
+\caption{Ngày sẵn có và độ phủ quan sát. Mỗi mốc có 90.000 listing-ngày kỳ vọng.}\label{tab:calendar}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Mốc & Ngày sẵn có & Ngày quan sát & Độ phủ & Tỷ lệ sẵn có\\\midrule
+\input{generated/report/calendar_rows.tex}
+\end{tabular}
+\end{table}
+
+\textbf{Thiếu ngày không làm đảo ngược chiều giảm quan sát được.} Độ phủ mốc cuối là 98,48\%, thấp hơn 99,38\% ở tháng 12. Nếu gán toàn bộ 1.372 ngày thiếu ở mốc cuối lần lượt là không sẵn hoặc sẵn, tỷ lệ trên 90.000 ngày kỳ vọng nằm trong khoảng 50,80--52,33\%. Khoảng tương ứng của mốc tháng 12 là 66,12--66,74\%. Đây là kiểm tra độ nhạy đối với phần thiếu, không phải khoảng tin cậy thống kê.
+
+\textbf{Số listing ổn định là đặc điểm của cohort, không chứng minh thị trường đứng yên.} Cả bốn mốc đều có 1.000/1.000 mã được giao và giữ cơ cấu 875 entire-home, 125 private-room. Số host quan sát là 930, 930, 937 và 930; số cặp đổi host ID tăng từ 3 lên 35 rồi 37 trên 1.000 cặp hợp lệ, trong khi loại phòng không đổi. Host ID đổi có thể phản ánh cập nhật tài khoản; dữ liệu này không xác nhận chuyển quyền sở hữu.
+
+Ngày available=f có thể là đã đặt hoặc chủ nhà chủ động khóa. Vì vậy, mức giảm lịch sẵn có không đủ chứng minh nhu cầu hay tỷ lệ lấp đầy tăng; bốn cửa sổ rời rạc cũng chưa đủ để kết luận tính mùa vụ.
+\figsource{Nguồn: \path{calendar_summary.csv}, \path{kpi_calendar.csv}, \path{kpi_churn.csv}, \path{kpi_cohort.csv} trong đầu ra real.}
+
+\clearpage
+\subsection{RQ3 Tiện nghi là điểm cần đọc sâu trong 1.000 review}
+\textbf{Gemini gán 64/1.000 review là mixed hoặc negative, nhưng các phàn nàn không chỉ xuất hiện trong 64 review này.} Trong mẫu có 936 positive, 50 mixed và 14 negative. Với định nghĩa guest issue rate bằng $(50+14)/1.000$, KPI trải nghiệm là 6,4\%. Chỉ số phản ánh nhãn cảm xúc tổng thể do mô hình gán, không phải tỷ lệ mọi khách gặp sự cố hay mọi review có lời chê.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/report/report_reviews.pdf}
+\caption{Cảm xúc và các khía cạnh chê do Gemini trích xuất trên cùng 1.000 review. Một review có thể nhắc nhiều khía cạnh, nên các tỷ lệ ở bên phải không cộng thành 100\% và không phải phân hoạch của biểu đồ cảm xúc.}\label{fig:reviews}
+\end{figure}
+
+\textbf{Tiện nghi được nhắc chê nhiều nhất, với 57/1.000 review, tiếp theo là tiếng ồn với 35/1.000.} Các khía cạnh còn lại gồm vệ sinh (22), nhận phòng (18), chủ nhà (9), giá trị (8), an toàn (5) và vị trí (3). Ở chiều khen, host và location xuất hiện trong 750 và 736 review. Những số này cho thấy chủ đề mà nhóm theo dõi có thể ưu tiên đọc thủ công; chúng chưa phải tỷ lệ khuyết điểm đã được kiểm định.
+
+Có 120 review chứa ít nhất một negative aspect, trong đó 56 review vẫn được gán positive. Hai đầu ra không nhất thiết mâu thuẫn: prompt cho phép đánh giá tổng thể tích cực khi sự cố nhỏ đã được xử lý, trong khi aspects giữ chi tiết khen/chê. Do chưa có nhãn tay cho aspects, không thể dùng độ chính xác sentiment để xác nhận rằng 57 phàn nàn về tiện nghi đều được trích xuất đúng.
+
+\begin{table}[htbp]\centering\small
+\caption{So sánh trên cùng 100 nhãn tay, không phải trên toàn bộ 1.000 dự đoán.}\label{tab:evaluation}
+\begin{tabular}{@{}lrrr@{}}\toprule
+Phương pháp & Accuracy & Macro-F1 & Số cặp nhãn\\\midrule
+\input{generated/report/evaluation_rows.tex}
+\end{tabular}
+\end{table}
+
+\textbf{Lợi thế tổng thể của Gemini nhỏ và không đồng đều giữa các lớp.} Accuracy tăng 1 điểm phần trăm, tương ứng một dự đoán đúng ròng; macro-F1 tăng 0,0316. Baseline nhận đúng mixed tốt hơn, trong khi Gemini nhận đúng cả ba negative. Với 90 nhãn positive, chỉ dự đoán positive cho mọi review đã đạt accuracy 90\%; vì vậy cần đọc thêm ma trận nhầm lẫn ở trang sau, thay vì chỉ nhìn con số 96\%.
+\figsource{Nguồn: \path{llm_reviews.csv}, \path{kpi_guest.csv}, \path{reports/generated/real/evaluation.csv}; nhãn tay được giữ nguyên.}
+
+\clearpage
+\subsection{Accuracy 96\% vẫn đi cùng bốn review mixed bị bỏ sót}
+\textbf{Sai số đáng chú ý nhất của Gemini nằm ở ranh giới giữa positive và mixed.} Ma trận trong Hình~\ref{fig:confusion} cho thấy cả bốn lỗi của Gemini đều là mixed bị chuyển thành positive. Recall mixed chỉ đạt 3/7 = 42,9\%, thấp hơn 6/7 = 85,7\% của baseline. Bảng~\ref{tab:classes} giữ riêng support để không xem F1=1,000 trên ba negative là bằng chứng ổn định cho một quần thể lớn.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=.88\linewidth]{figures/report/report_confusion.pdf}
+\caption{Nhãn tay theo hàng, dự đoán theo cột; cùng thang màu 0--90 và cùng 100 ID. Gemini không nhầm positive/negative nhưng bỏ sót bốn mixed.}\label{fig:confusion}
+\end{figure}
+
+\begin{table}[htbp]\centering\small
+\caption{Đánh giá theo lớp. Precision, recall và F1 ở thang 0--1.}\label{tab:classes}
+\begin{tabular}{@{}llrrrr@{}}\toprule
+Phương pháp & Lớp & Support & Precision & Recall & F1\\\midrule
+\input{generated/report/class_rows.tex}
+\end{tabular}
+\end{table}
+
+\textbf{Các ví dụ sai cho thấy mô hình có thể xem nhẹ nhược điểm khi phần khen chiếm ưu thế.} Review \code{1503006261195439072} khen chỗ ở và chủ nhà nhưng nêu bếp ``a bit worn out''; nhãn tay là mixed, Gemini là positive. Review \code{552444484} khuyến nghị chỗ ở nhưng nhắc tiếng ồn từ tầng trên; Gemini cũng trả positive thay vì mixed. Đây là quan sát trên các ca sai, chưa phải kết luận về cơ chế bên trong mô hình.
+
+Baseline cũng có lỗi ngữ cảnh: review \code{694889599772385509} có câu ``Didn't really have much issues'' được con người gán positive nhưng baseline dự đoán mixed. Kết quả phù hợp với giới hạn của luật từ khóa khi xử lý phủ định và kết hợp nhiều cụm; không có nghĩa Gemini vượt baseline ở mọi trường hợp. Danh sách đủ chín lỗi của hai phương pháp, ID và văn bản nguồn được giữ trong Supplement/CSV lỗi để truy vết.
+
+Tập nhãn có 90 positive, 7 mixed và 3 negative; mỗi review do một thành viên gán, chưa có đo đồng thuận liên giám khảo hoặc nhãn chuẩn cho khía cạnh/ngôn ngữ. Vì vậy, báo cáo không tuyên bố cải thiện có ý nghĩa thống kê hay độ chính xác trích xuất khía cạnh. Không sửa nhãn tay sau khi xem kết quả mô hình.
+
+\clearpage
+\section{Thảo luận và giới hạn}
+\textbf{Giá trị của kết quả nằm ở xác định việc cần kiểm tra tiếp, không ở khuyến nghị vượt quá dữ liệu.} Trong mẫu, Waterfront chiếm tỷ trọng lớn, A05 có giá trung vị cao hơn A08 và tiện nghi là chủ đề chê nổi bật. Bên nhận phân tích có thể ưu tiên đọc review về tiện nghi và kiểm tra các ca mixed bị mô hình bỏ sót. Chưa có căn cứ từ các kết quả này để đề xuất mức giá tối ưu, dự báo doanh thu, khẳng định nhu cầu tăng hoặc quy nguyên nhân cho chất lượng quản lý.
+
+Ba giới hạn chi phối mọi kết luận. \textbf{Thứ nhất}, cohort 1.000 listing và mẫu 1.000 review là phạm vi phân công, không được mô tả là mẫu ngẫu nhiên đại diện toàn thành phố; review cũng có thiên lệch tự chọn. \textbf{Thứ hai}, giá chỉ được dùng ở ngày 2026-06-15 và còn thiếu 20/1.000; các mốc rời rạc, thay đổi host ID và trạng thái lịch không xác nhận giao dịch hoặc quyền sở hữu. \textbf{Thứ ba}, đánh giá 100 nhãn mất cân bằng, chưa có đo đồng thuận và chưa kiểm định aspects/language; accuracy của sentiment không chuyển thành chứng nhận cho mọi đầu ra LLM.
+
+\subsection{Chi phí được ước tính cho cả tập thành phố, không nhầm với 5.000 review được giao}
+\textbf{Tệp reviews toàn Toronto ở mốc cuối có \CityReviewCount{} ID duy nhất.} Với đơn giá Standard của Gemini 3.5 Flash-Lite là 0,30 USD/triệu token vào và 2,50 USD/triệu token ra~\cite{pricing}, ước tính phần văn bản nhìn thấy là \SampleCost{} USD cho 1.000 review và \CityCost{} USD cho toàn tệp thành phố. Công thức quy đổi bốn ký tự/token dùng độ dài thực tế của văn bản nguồn, prompt và JSON cache; không phải usage do API đo, không gồm thinking token chưa lưu và không phải hóa đơn. Supplement trình bày đầy đủ phép tính và giả định. Không kết luận chi phí thực trả bằng 0 chỉ từ việc mô hình có Free Tier.
+
+\subsection{Quy trình có thể tái tạo từ cùng cache và nhãn tay}
+Kết quả trong báo cáo lấy từ lần chạy đầy đủ của mã nguồn \code{\SourceCommit}, Python 3.13.7 và dependencies ghim phiên bản. Lần kiểm chứng chặn mọi kết nối mạng/API nhưng vẫn hoàn thành 1.000 dự đoán từ cache và hai bảng đánh giá. Các tệp đầu ra và mã băm cache được ghi trong Supplement; dữ liệu nguồn, workbook và 100 nhãn tay không bị sửa.
 \begin{quote}\small\ttfamily
-python run\_pipeline.py --config configs/toronto.yaml --skip-llm --no-download
+python run\_pipeline.py --config configs/toronto.yaml --no-download\\
+python scripts/build\_report.py --no-download
 \end{quote}
-Lệnh chạy toàn bộ quy trình sau khi có bộ nhớ đệm:
-\begin{quote}\small\ttfamily
-python run\_pipeline.py --config configs/toronto.yaml --no-download
-\end{quote}
-Lệnh thứ hai hiện chưa thể hoàn tất do chưa có bộ nhớ đệm Gemini. Kiểm thử bằng dữ liệu mẫu và bộ nhớ đệm giả chỉ xác nhận hoạt động của phần mềm, không chứng minh chất lượng dự đoán của Gemini. Nhóm chưa tạo thẻ phiên bản \code{final}; mã SHA nêu ở đầu báo cáo chỉ xác định phiên bản mã nguồn dùng để đối chiếu bản thảo.
+Lệnh đầu tái tạo CSV/hình phân tích. Lệnh sau tái tạo tài sản báo cáo và hai PDF, cần XeLaTeX ngoài môi trường Python. Nếu raw chưa có, bỏ \code{--no-download} để tải theo config. Cache có sẵn được đọc, không gọi lại Gemini. OpenAI Codex hỗ trợ tích hợp, kiểm chứng và biên tập; Gemini tạo dự đoán, còn nhãn chuẩn do các thành viên gán. Vai trò AI và cách nhóm kiểm tra được công khai trong \path{AI_USAGE.md}.
 
-\textbf{Minh bạch AI.} Theo \code{AI\_USAGE.md}, OpenAI Codex được dùng để hỗ trợ dựng khung kho mã, tích hợp, kiểm tra và biên tập tài liệu/mã. Gemini được thiết kế cho bước phân tích bài đánh giá nhưng chưa được gọi trong lần kiểm chứng dữ liệu thật gần nhất và chưa có bộ nhớ đệm kết quả thật. 100 nhãn cảm xúc thủ công được con người gán và giữ nguyên; không dùng AI để tạo nhãn chuẩn. Các số liệu trong báo cáo được đối chiếu với tệp README, cấu hình, tệp kê khai, báo cáo kiểm chứng và phần bàn giao của các thành viên \cite{repo}.
+\section{Kết luận}
+\textbf{Nhóm tái tạo được bảy KPI và phần phân tích LLM, đồng thời chỉ ra nơi kết quả cần được đọc thận trọng.} Trên cohort được giao, số listing không đổi nhưng lịch sẵn có giảm, giá cuối kỳ khác nhau giữa các vùng và tiện nghi nổi bật trong lời chê. Gemini đạt 96\% accuracy trên 100 nhãn tay song bỏ sót phần lớn mixed trong tập này. Giữ mẫu số, phạm vi và sai số cạnh từng kết luận giúp kết quả có thể kiểm tra lại; các bước tiếp theo nên ưu tiên thẩm định ca sai và nhãn khía cạnh, thay vì suy rộng thành kết luận toàn thị trường.
 
-\textbf{Đóng góp.} TV1 -- Dương Nhật Huy: điều phối quy trình xử lý, phân tích nhóm mẫu và biến động thuộc tính; TV2 -- Mai Anh Đức: kiểm soát chất lượng, phân tích khám phá và đánh giá tác động chất lượng dữ liệu; TV3 -- Nguyễn Quốc Hiếu: chỉ số nguồn cung/giá/loại phòng và phân tích không gian; TV4 -- Vũ Phạm Khánh Nam: xử lý dữ liệu lịch và tỷ lệ sẵn có; TV5 -- Phan Ngọc Huy: xử lý bài đánh giá, phương pháp đường cơ sở, mô hình ngôn ngữ lớn, đánh giá và chỉ số trải nghiệm khách. \pending{các thành viên xác nhận lại mô tả đóng góp và bổ sung MSSV trước khi nộp.}
-
-\begin{thebibliography}{9}\footnotesize\sloppy
-\setlength{\itemsep}{0pt}
-\bibitem{inside} Inside Airbnb. \textit{Get the Data}. Dữ liệu Toronto, Canada, giấy phép CC BY 4.0. \href{https://insideairbnb.com/get-the-data/}{Trang dữ liệu}. Truy cập ngày 17/11/2026.
-\bibitem{snap1} Inside Airbnb. Dữ liệu Toronto, mốc 2025-09-11. \href{https://data.insideairbnb.com/canada/on/toronto/2025-09-11/}{Trang dữ liệu mốc 2025-09-11}.
-\bibitem{snap2} Inside Airbnb. Dữ liệu Toronto, mốc 2025-12-12 theo bảng tính phân công nhóm (chờ xác nhận). \href{https://data.insideairbnb.com/canada/on/toronto/2025-12-12/}{Trang dữ liệu mốc 2025-12-12}.
-\bibitem{snap3} Inside Airbnb. Dữ liệu Toronto, mốc 2026-03-19. \href{https://data.insideairbnb.com/canada/on/toronto/2026-03-19/}{Trang dữ liệu mốc 2026-03-19}.
-\bibitem{snap4} Inside Airbnb. Dữ liệu Toronto, mốc 2026-06-15. \href{https://data.insideairbnb.com/canada/on/toronto/2026-06-15/}{Trang dữ liệu mốc 2026-06-15}.
-\bibitem{project} Viện Trí tuệ nhân tạo, Trường Đại học Công nghệ, ĐHQGHN. \textit{Bài tập lớn Inside Airbnb -- UET.DSE2049, năm học 2026--2027}. \href{https://courses.iaidev.com/programming-for-data-processing/2627-1/projects/project_airbnb.html}{Trang đề bài}.
-\bibitem{repo} Nhóm 10. \textit{Mã nguồn, cấu hình và hồ sơ kiểm chứng dự án Inside Airbnb Toronto}. GitHub, nhánh \code{main}, commit \code{d045d55869b76c21b92b8b48bf2f0417a929efca}. \href{https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10}{Kho mã Nhóm 10}.
+\clearpage
+\begin{thebibliography}{9}\small\sloppy
+\setlength{\itemsep}{5pt}
+\bibitem{inside} Inside Airbnb. \textit{Toronto data}, CC BY 4.0. Bốn mốc: 2025-09-11, 2025-12-12, 2026-03-19, 2026-06-15 theo workbook được giao. \url{https://data.insideairbnb.com/canada/on/toronto/}. Truy cập 17/11/2026.
+\bibitem{repo} Nhóm 10. \textit{Mã nguồn, cache và hồ sơ kiểm chứng}. Commit phân tích \code{\SourceCommitFull}. \url{https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10}.
+\bibitem{project} Viện Trí tuệ nhân tạo, Trường ĐH Công nghệ, ĐHQGHN. \textit{Bài tập lớn Inside Airbnb}, UET.DSE2049, 2026--2027. \url{https://courses.iaidev.com/programming-for-data-processing/2627-1/projects/project_airbnb.html}.
+\bibitem{story} Viện Trí tuệ nhân tạo. \textit{Bài 14 Kể chuyện bằng dữ liệu và thẩm định bản phân tích do AI viết}. \url{https://courses.iaidev.com/programming-for-data-processing/2627-1/lecture-14-ke-chuyen-bang-du-lieu.html}.
+\bibitem{viz} Viện Trí tuệ nhân tạo. \textit{Bài 13 Trực quan hóa nâng cao và phản biện biểu đồ}. \url{https://courses.iaidev.com/programming-for-data-processing/2627-1/lecture-13-truc-quan-hoa-nang-cao.html}.
+\bibitem{model} Google. \textit{Gemini 3.5 Flash-Lite model documentation}. \url{https://aistudio.google.com/docs/models/gemini-3.5-flash-lite}. Truy cập 17/11/2026.
+\bibitem{pricing} Google. \textit{Gemini Developer API pricing}, Standard, Gemini 3.5 Flash-Lite. \url{https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite}. Truy cập 17/11/2026.
 \end{thebibliography}
 
-\vspace{2pt}
-% Checklist biên tập nội bộ: hoàn tất bộ nhớ đệm Gemini và kết quả đánh giá; cập nhật các bảng/hình; xác nhận mốc 2025-12-12; bổ sung MSSV; cập nhật mã SHA.
+\paragraph{Tài liệu bổ sung} Supplement đi kèm giữ bảng KPI theo vùng, QA, prompt/taxonomy, phân tích lỗi, ước tính chi phí và giải thích các đoạn mã quan trọng. Hai tài liệu dùng cùng một bộ CSV, nhãn tay và cache; không lấy số liệu từ ảnh terminal hoặc biểu đồ minh họa. Cách trình bày kết luận trước, bằng chứng và giới hạn theo định hướng Bài 13--14~\cite{story,viz}; thông số mô hình theo tài liệu nhà cung cấp~\cite{model}.
 
+\clearpage
+\thispagestyle{plain}
+\begin{center}
+{\Large\bfseries Thông tin nhóm và đóng góp}\\[6pt]
+{\normalsize Nhóm 10 · UET.DSE2049 1}\\[3pt]
+{\normalsize Bài tập lớn Inside Airbnb Toronto · Học kỳ I năm học 2026--2027}
+\end{center}
+\vspace{8pt}
+\begin{table}[htbp]\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{}P{3.65cm}P{2.25cm}YP{1.05cm}@{}}\toprule
+Thành viên & MSSV & Phần việc chính & Đóng góp\\\midrule
+Dương Nhật Huy & \mssvblank & Điều phối, tích hợp, cohort và báo cáo chung & 20\%\\
+Mai Anh Đức & \mssvblank & QA, EDA, kiểm tra dữ liệu thiếu và tác động KPI & 20\%\\
+Nguyễn Quốc Hiếu & \mssvblank & KPI listing/host/giá và trực quan hóa không gian & 20\%\\
+Vũ Phạm Khánh Nam & \mssvblank & Calendar, availability, coverage và phân tích thời gian & 20\%\\
+Phan Ngọc Huy & \mssvblank & Reviews, baseline, Gemini, đánh giá và guest KPI & 20\%\\\midrule
+\multicolumn{3}{r}{Tổng cộng} & 100\%\\\bottomrule
+\end{tabularx}
+\end{table}
+
+Mỗi thành viên gán 20 review trong bộ 100 nhãn tay, tham gia kiểm tra phần được phân công và cùng chịu trách nhiệm giải thích sản phẩm nộp. Tỷ lệ đóng góp được nhóm chia đều theo phân công; vai trò chính ở bảng trên không loại trừ việc phối hợp giữa các thành viên.
+
+\vspace{8pt}
+\noindent\textbf{Mã dữ liệu:} \code{DSE2049-C01-G10-toronto}.\\
+\textbf{Thành phố và tiền tệ:} Toronto, Canada; CAD.\\
+\textbf{Mốc dữ liệu:} 2025-09-11; 2025-12-12; 2026-03-19; 2026-06-15.\\
+\textbf{Phiên bản mã phân tích:} \code{\SourceCommit}.\\
+\textbf{Kho mã:} \href{https://github.com/uet-iai-notebook-labs-2026/2627-LTXLDL-Airbnb-dse2049_1-nhom10}{GitHub Nhóm 10}.
 \end{document}

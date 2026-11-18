@@ -129,3 +129,18 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
   với data check ban đầu; xem docs/VERIFICATION.md và reports/data_alignment_2026-11-16.json.
 - 100 nhãn tay/phiếu được giữ nguyên từng byte; AI không gán lại nhãn. Các cache giả dùng trong test
   chỉ nằm ở thư mục tạm. Không gọi Gemini thật, không chỉnh tác giả commit cũ, không tag final.
+
+## Cập nhật 2026-11-17 — báo cáo và tài liệu bổ sung từ kết quả thật
+
+- Yêu cầu: hoàn thiện báo cáo có sẵn theo cấu trúc kết luận → bằng chứng → giới hạn, giữ kiểu trình bày,
+  dùng số liệu/hình thật, mỗi thành viên 20%, để MSSV tự điền; chuyển code/bảng dài sang supplement.
+- Người dùng xác nhận mốc 2025-12-12 đã được giảng viên đồng ý. Báo cáo dùng ngày theo workbook.
+- Codex chạy lại pipeline đầy đủ từ cache thật, chặn mọi kết nối mạng/API; kiểm đủ 1.000 dự đoán và 100 nhãn tay.
+  Không sửa nhãn tay, cache, raw hoặc thuật toán đúng của các thành viên.
+- Viết lại báo cáo LaTeX, sinh hình từ CSV/GeoJSON, dùng cùng số đo cho bảng/hình; thêm script tái tạo,
+  supplement và source để chỉnh sửa. Giữ phần bàn giao cá nhân trong reports/sections làm lịch sử.
+- Sửa nhận định cũ: calendar hai mốc cuối có coverage 99,20%/98,48%; Gemini 96% accuracy nhưng recall mixed 3/7;
+  120 review có negative aspect khác KPI 64 mixed/negative. Không gọi model “xuất sắc” từ accuracy tổng thể.
+- Đếm 679.139 review duy nhất ở raw toàn thành phố mốc cuối cho ước tính chi phí; không gọi 5.000 review được giao là toàn Toronto.
+  Ước tính ký tự/token không gồm thinking token và không phải hóa đơn.
+- Các PDF được render và kiểm tra từng trang; số liệu được đối chiếu lại với CSV, ma trận nhầm lẫn và mã băm nguồn.
