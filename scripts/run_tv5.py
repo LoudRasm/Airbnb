@@ -3,6 +3,7 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -10,7 +11,22 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 from airbnb import baseline, evaluate, llm, review_kpi, reviews, viz_reviews
 from airbnb.io import load_config, rows, write_csv
+from airbnb.labels import manual_labels
 from airbnb.loading import read_assignment, snapshot_rows
+
+
+def _load_env_if_present(root: Path):
+    if os.environ.get('GEMINI_API_KEY'):
+        return
+    env_file = root / '.env'
+    if env_file.is_file():
+        for line in env_file.read_text(encoding='utf-8').splitlines():
+            line = line.strip()
+            if line.startswith('GEMINI_API_KEY=') and not line.startswith('#'):
+                val = line.split('=', 1)[1].strip().strip('"\'')
+                if val:
+                    os.environ['GEMINI_API_KEY'] = val
+                    break
 
 
 def digest(path):
@@ -21,38 +37,13 @@ def digest(path):
     return result.hexdigest()
 
 
-def load_tv5_labels(root: Path) -> list[dict]:
-    packet_path = root / 'data/samples/labeling/tv5.json'
-    if not packet_path.exists():
-        return []
-    packet = json.loads(packet_path.read_text(encoding='utf-8'))
-    return [
-        row for row in packet.get('labels', [])
-        if row.get('sentiment') in llm.SENTIMENTS and not row.get('needs_review')
-    ]
-
-
-def load_manifest_records(root: Path) -> list[dict]:
-    directory = root / 'data/samples/labeling'
-    records = []
-    for member in ('tv1', 'tv2', 'tv3', 'tv4', 'tv5'):
-        p = directory / f'{member}.json'
-        if p.exists():
-            data = json.loads(p.read_text(encoding='utf-8'))
-            records.extend(data.get('labels', []))
-    return records
-
-
 def run(config_path, demo=False, skip_llm=True):
     cfg, root = load_config(config_path)
+    _load_env_if_present(root)
     assignment = None
-    stage = 'synthetic_demo' if demo else 'committed_packets_and_raw'
-
+    stage = 'synthetic_demo' if demo else 'assigned_workbook_or_manifest_raw'
     if not demo:
-        workbook_path = root / cfg['assignment']['path']
-        if workbook_path.exists():
-            assignment = read_assignment(cfg, root, demo=False)
-            stage = 'assigned_workbook_raw'
+        assignment = read_assignment(cfg, root)
 
     deduped_reviews = {}
     qa_rows = []
@@ -76,14 +67,8 @@ def run(config_path, demo=False, skip_llm=True):
             )
             for rule, affected in sorted(issues.items()):
                 qa_rows.append({'snapshot_date': snapshot, 'table': 'reviews', 'rule': rule, 'affected_rows': affected})
-        manual_csv = root / cfg['paths']['manual_labels']
-        labels = list(rows(manual_csv)) if manual_csv.exists() and list(rows(manual_csv)) else load_tv5_labels(root)
-    else:
-        manifest_rows = load_manifest_records(root)
-        issues = reviews.collect(manifest_rows, cfg['snapshots'][-1], deduped_reviews)
-        for rule, affected in sorted(issues.items()):
-            qa_rows.append({'snapshot_date': cfg['snapshots'][-1], 'table': 'reviews', 'rule': rule, 'affected_rows': affected})
-        labels = load_tv5_labels(root)
+        manual_csv = root / cfg['paths'].get('manual_labels', 'data/samples/manual_labels.csv')
+        labels = manual_labels(root, assignment, path=str(manual_csv))
 
     review_list = sorted(deduped_reviews.values(), key=lambda r: int(r['review_id']))
     baseline_rows = [baseline.predict(r) for r in review_list]
@@ -105,7 +90,7 @@ def run(config_path, demo=False, skip_llm=True):
     kpi_rows = review_kpi.guest_kpi(active_preds, [], cfg)
     cost_info = llm.estimate_cost(review_list, cfg)
 
-    suffix = 'demo' if demo else 'real'
+    suffix = 'demo' if demo else ('real/non_llm' if skip_llm else 'real')
     processed = root / cfg['paths']['processed'] / suffix / 'tv5'
     reports_dir = root / cfg['paths']['reports'] / suffix / 'tv5'
     figures_dir = root / cfg['paths']['figures'] / suffix / 'tv5'
@@ -113,6 +98,8 @@ def run(config_path, demo=False, skip_llm=True):
     write_csv(processed / 'reviews.csv', review_list, reviews.REVIEW_FIELDS)
     write_csv(processed / 'baseline.csv', baseline_rows, baseline.BASELINE_FIELDS)
     write_csv(processed / 'kpi_guest.csv', kpi_rows, review_kpi.GUEST_KPI_FIELDS)
+    if not skip_llm:
+        write_csv(processed / 'llm_reviews.csv', llm_rows, llm.LLM_FIELDS)
     if eval_rows:
         write_csv(reports_dir / 'evaluation.csv', eval_rows, evaluate.EVALUATION_FIELDS)
 
@@ -155,7 +142,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', default=str(ROOT / 'configs/toronto.yaml'))
     parser.add_argument('--demo', action='store_true', help='Run on synthetic demo fixture')
-    parser.add_argument('--with-llm', action='store_true', help='Call Gemini API or cache for LLM predictions')
+    parser.add_argument('--with-llm', action='store_true', help='Read validated Gemini cache only (no API call)')
     args = parser.parse_args(argv)
     try:
         run(args.config, demo=args.demo, skip_llm=not args.with_llm)

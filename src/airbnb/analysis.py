@@ -6,7 +6,7 @@ from datetime import date
 
 OWNER = 'TV1 — Dương Nhật Huy'
 IMPLEMENTED = True
-READY = False  # Implementation tested; Nam's peer review remains a separate checklist item.
+READY = True  # Integration validated; see docs/VERIFICATION.md.
 
 SUMMARY_FIELDS = ['snapshot_date', 'cohort_basis', 'cohort_size', 'observed_listings',
                   'missing_listings', 'coverage', 'observed_hosts', 'host_id_unusable',

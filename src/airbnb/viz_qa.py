@@ -194,7 +194,7 @@ def headline_rules(matrix, sizes):
         title = f'Không rule nào trong {len(clean)} rule của mỗi mốc tìm thấy dòng lỗi ({n_total:,} dòng)'
     else:
         top = max(totals, key=totals.get)
-        title = f'QA gắn cờ {flagged:,}/{n_total:,} dòng ({flagged / max(n_total, 1) * 100:.1f}%), nhiều nhất ở {top}'
+        title = f'QA ghi nhận {flagged:,} lượt vi phạm trên {n_total:,} dòng; nhiều nhất ở {top}'
     cross = {r: sum(v for (_, rule), v in matrix.items() if rule == r) for r in qa.CROSS_RULES}
     cross = {r: v for r, v in cross.items() if v > 0}
     extra = ''
@@ -254,7 +254,7 @@ def figure_rules(qa_report, snapshots, sizes=None, context=None):
     vmax = max([v for v in matrix.values()] + [1])
     left, group_x, cell_x, cell_w, cell_h, top = 24, 250, 410, 124, 24, 126
     width = cell_x + cell_w * len(snapshots) + 24
-    body = [_heading(title, f'Mỗi ô: số dòng bị ảnh hưởng theo rule và mốc (đơn vị: listing){cross_note}')]
+    body = [_heading(title, f'Mỗi ô: số dòng bị ảnh hưởng theo rule và mốc (đơn vị theo rule: listing, cặp hoặc cột){cross_note}')]
     body.append(_text(left, top - 10, 'Rule', 12, INK_2, weight='600'))
     body.append(_text(group_x, top - 10, 'Nhóm', 12, INK_2, weight='600'))
     for j, snapshot in enumerate(snapshots):
@@ -292,14 +292,20 @@ def figure_rules(qa_report, snapshots, sizes=None, context=None):
 
 # ---------- Hình 2: thiếu dữ liệu và category drift ----------
 
-def figure_missingness_drift(listings, snapshots, room_types, sizes=None, context=None):
+def figure_missingness_drift(listings, snapshots, room_types, sizes=None, context=None, raw_missingness=None):
     rates = missing_rates(listings, snapshots)
+    if raw_missingness is not None:
+        rates.update({(r['snapshot_date'], r['column']): r['missing_rate']
+                      for r in raw_missingness if r['column'] in MISSING_COLUMNS})
     shares, labels = room_type_shares(listings, snapshots, room_types)
     sizes = sizes or snapshot_sizes([], listings, snapshots)
     title = headline_missingness(rates, shares)
     left, cell_x, cell_w, cell_h, top = 24, 214, 92, 32, 128
-    width = 1000
-    body = [_heading(title, 'Trái: tỷ lệ dòng rỗng theo cột (%) · Phải: cơ cấu room_type (% listing) · bảng đã làm sạch')]
+    px = max(700, cell_x + len(snapshots) * cell_w + 90)
+    width = max(1000, px + len(snapshots) * 72 + 40)
+    subtitle = ('Trái: thiếu trước QA (analysis_area từ phân công) · Phải: cơ cấu room_type sau QA'
+                if raw_missingness is not None else 'Trái: tỷ lệ dòng rỗng theo cột (%) · Phải: cơ cấu room_type (% listing) · bảng đã làm sạch')
+    body = [_heading(title, subtitle)]
     body.append(_text(left, top - 40, 'Tỷ lệ thiếu theo cột (%)', 14, INK, weight='600'))
     for j, snapshot in enumerate(snapshots):
         body.append(_snapshot_header(cell_x + j * cell_w + cell_w / 2 - 1, top - 8, snapshot, sizes.get(snapshot, 0), 11))
@@ -320,7 +326,7 @@ def figure_missingness_drift(listings, snapshots, room_types, sizes=None, contex
                               'middle', '400' if rate == 0 else '600'))
     grid_bottom = top + len(MISSING_COLUMNS) * (cell_h + 2)
 
-    px, py, ph, bar_w, gap = 700, top, grid_bottom - top - 2, 58, 14
+    py, ph, bar_w, gap = top, grid_bottom - top - 2, 58, 14
     body.append(_text(px - 40, top - 40, 'Cơ cấu room_type (% listing)', 14, INK, weight='600'))
     for tick in (0, 50, 100):
         y = py + ph - ph * tick / 100
@@ -344,7 +350,9 @@ def figure_missingness_drift(listings, snapshots, room_types, sizes=None, contex
     legend_y = grid_bottom + 48
     for k, name in enumerate(labels):
         body.append(_legend_swatch(px - 40 + (k % 2) * 160, legend_y + (k // 2) * 20, colors[name], name))
-    note = ('Thiếu = giá trị rỗng/None trong bảng listings đã làm sạch. price rỗng ở mốc không phải mốc cuối không bị '
+    basis_note = ('Thiếu = giá trị rỗng trước QA; analysis_area từ phân công. Toàn bộ cột nguồn: qa_missingness.csv. '
+                  if raw_missingness is not None else 'Thiếu = giá trị rỗng/None trong bảng listings đã làm sạch. ')
+    note = (basis_note + 'price rỗng ở mốc không phải mốc cuối không bị '
             'coi là lỗi vì giá chỉ phân tích ở mốc cuối; mốc cuối là price_missing_final. Cơ cấu room_type đổi giữa '
             'các snapshot là dấu hiệu category drift (rule room_type_unknown, cross_category_changed). '
             + _source_note(snapshots, sizes, context))
@@ -416,7 +424,7 @@ def figure_kpi_impact(qa_report, snapshots, listings=(), sizes=None, context=Non
     body.append(_legend_swatch(130, legend_y, AFTER_COLOR, 'Sau QA'))
     note = (f'Chênh lệch lớn nhất sau QA: supply {supply_delta:,} listing, median giá {median_delta:,.2f} CAD. '
             'Median tính trên các dòng có giá (n có giá); trục y bắt đầu từ 0. Theo contract giá chỉ dùng phân tích '
-            'ở mốc cuối, các mốc trước hiển thị để kiểm chứng QA. ' + _source_note(snapshots, sizes, context))
+            'ở mốc giá trong config; các mốc trước để N/A trong luồng chung. ' + _source_note(snapshots, sizes, context))
     paragraph, used = _paragraph(24, legend_y + 30, note, 140)
     body.append(paragraph)
     height = legend_y + 30 + used + 16
@@ -441,7 +449,7 @@ def render(tables, figures, cfg):
     sizes = snapshot_sizes(tables['qa_report'], tables['listings'], snapshots)
     context = {'city': str(cfg.get('city', '')).title(), 'group': cfg.get('assignment', {}).get('group')}
     contents = (figure_rules(tables['qa_report'], snapshots, sizes, context),
-                figure_missingness_drift(tables['listings'], snapshots, room_types, sizes, context),
+                figure_missingness_drift(tables['listings'], snapshots, room_types, sizes, context, tables.get('missingness')),
                 figure_kpi_impact(tables['qa_report'], snapshots, tables['listings'], sizes, context))
     paths = []
     for name, svg in zip(FIGURES, contents):

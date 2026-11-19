@@ -26,9 +26,11 @@ Không chỉnh sửa raw để làm số đếm khớp kỳ vọng. Data check d
 ## Samples và đầu ra
 
 - `samples/demo/`: fixture giả bốn mốc, chỉ dùng test/demo; không dùng số liệu trong bài nộp.
-- `samples/manual_labels.csv`: hiện chỉ header `review_id,sentiment`, chờ 100 nhãn thật theo workbook.
+- `samples/manual_labels.csv`: đã có 100 nhãn thật theo workbook; giữ nguyên các nhãn đã chốt.
   Giá trị nhãn là positive/mixed/negative; dấu x trong workbook chưa phải sentiment.
-- `processed/demo/` và `processed/real/`: output do pipeline sinh, mặc định gitignore.
+- `reference/assignment.json`: phạm vi riêng nhóm xuất từ workbook, ID dạng chuỗi, có SHA256 nguồn; dùng khi clone không có workbook.
+- `processed/llm_cache.jsonl`: cache Gemini thật cần tạo và commit; file được mở ngoại lệ trong .gitignore.
+- `processed/demo/`, `processed/real/`, `processed/real/non_llm/`: CSV tự sinh, gitignore.
 - `reports/checks/`: thống kê/chẩn đoán data check nhỏ được bàn giao qua PR.
 - `reports/generated/real/`, `figures/real/`: báo cáo thống kê/hình phân tích tự sinh, gitignore.
 

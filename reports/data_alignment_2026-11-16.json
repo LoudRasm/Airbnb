@@ -1,0 +1,110 @@
+{
+  "date": "2026-11-16",
+  "baseline_commit": "86b609e3a316a3fe4c40a99a226bf65cd073ac8e",
+  "data_code": "DSE2049-C01-G10-toronto",
+  "exact_csv_comparison": {
+    "calendar_summary.csv": false,
+    "listing_details.csv": false,
+    "reviews_summary.csv": true,
+    "missing_columns.csv": true,
+    "check_DSE2049-C01-G10-toronto.csv": true,
+    "review_sample_counts.csv": true,
+    "listings_summary.csv": true
+  },
+  "all_measurements_and_raw_sha256_match": true,
+  "historical_workbook_fingerprint_differences": {
+    "calendar_summary.csv": [
+      {
+        "date": "2025-09-11",
+        "fields": {
+          "assignment_sha256": {
+            "before": "ab3c7af199e05de805bb15ca588901069332d569ce6c438697a6822973083959",
+            "now": "08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351"
+          }
+        }
+      },
+      {
+        "date": "2025-12-12",
+        "fields": {
+          "assignment_sha256": {
+            "before": "ab3c7af199e05de805bb15ca588901069332d569ce6c438697a6822973083959",
+            "now": "08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351"
+          }
+        }
+      },
+      {
+        "date": "2026-03-19",
+        "fields": {
+          "assignment_sha256": {
+            "before": "ab3c7af199e05de805bb15ca588901069332d569ce6c438697a6822973083959",
+            "now": "08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351"
+          }
+        }
+      },
+      {
+        "date": "2026-06-15",
+        "fields": {
+          "assignment_sha256": {
+            "before": "ab3c7af199e05de805bb15ca588901069332d569ce6c438697a6822973083959",
+            "now": "08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351"
+          }
+        }
+      }
+    ],
+    "listing_details.csv": [
+      {
+        "date": "2025-09-11",
+        "fields": {
+          "assignment_sha256": {
+            "before": "a0d50a69ee1ff9c553d47284cf302aa8b15f445fc07ee1e30c828c42d0596810",
+            "now": "08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351"
+          }
+        }
+      },
+      {
+        "date": "2025-12-12",
+        "fields": {
+          "assignment_sha256": {
+            "before": "a0d50a69ee1ff9c553d47284cf302aa8b15f445fc07ee1e30c828c42d0596810",
+            "now": "08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351"
+          }
+        }
+      },
+      {
+        "date": "2026-03-19",
+        "fields": {
+          "assignment_sha256": {
+            "before": "a0d50a69ee1ff9c553d47284cf302aa8b15f445fc07ee1e30c828c42d0596810",
+            "now": "08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351"
+          }
+        }
+      },
+      {
+        "date": "2026-06-15",
+        "fields": {
+          "assignment_sha256": {
+            "before": "a0d50a69ee1ff9c553d47284cf302aa8b15f445fc07ee1e30c828c42d0596810",
+            "now": "08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351"
+          }
+        }
+      }
+    ]
+  },
+  "current_workbook_sha256": "08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351",
+  "labels_unchanged_sha256": {
+    "data/samples/labeling/tv1.json": "8014a6bf9317c2d56c0a9ddb9003ac89d22d1f7bbaaf7e14376656b862d9d329",
+    "data/samples/labeling/README.md": "d8f97a0f7fd1cdc6fb1b764c11df7c756d3c5b0e5294f014f8f2d5b64f11657e",
+    "data/samples/labeling/tv2.json": "9c6396844bacedf996ac996187663b75427a3efbed0f1c174d9e0b288205bbb8",
+    "data/samples/labeling/tv3.json": "3e9ea38807b31d02521679b1fe72ea564e2a199062bba2404aa411dcf48e8ac5",
+    "data/samples/labeling/manifest.json": "8c8967db413125d5a95f6405988179495386171856b8c249bf291a62bb99c7cd",
+    "data/samples/labeling/tv4.json": "a3e97399eab43738e6afae38422aa78fb1c571eaed972a0a8b6bd6920ebad36a",
+    "data/samples/labeling/tv5.json": "230e74a326ec32a43f5eba44fbdbcd9bcfa791c0e712763d7bf7cd6a43ef0277",
+    "data/samples/manual_labels.csv": "d18dc05ae946a11ec17d8df1c7e8c45acbe023c0185b96c8f08459a76d2e504b"
+  },
+  "notes": [
+    "Historical check files were preserved. Current workbook hash differs in calendar_summary and listing_details; values and raw hashes match. Rerun those parts before a new merge.",
+    "Original final check CSV matches all 4 rows and 16 columns.",
+    "Synthetic tests verify contracts, not real-data counts.",
+    "Workbook date 2025-12-12 differs from current course page 2025-11-11. Assigned dates preserved pending confirmation."
+  ]
+}

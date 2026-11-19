@@ -17,7 +17,7 @@ Xử lý bảng `calendar.csv.gz` theo luồng streaming (`io.rows` / `loading.s
 ```bash
 python -m unittest discover -s tests -p test_calendar_analysis.py -v   # 6 unit test cho calendar & viz
 python -m unittest discover -s tests -v                                # 59 test toàn repo
-python scripts/check_calendar.py --config configs/toronto.yaml         # Data check calendar
+python scripts/check_data.py --part calendar --config configs/data_check.json         # Data check calendar
 ```
 
 | File | Nội dung |

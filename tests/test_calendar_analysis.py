@@ -6,7 +6,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from airbnb import my_calendar, viz_calendar
+from airbnb import calendar, viz_calendar
 
 
 LARGE_ID = "1502977270045215452"
@@ -25,7 +25,7 @@ class CalendarAggregateTests(unittest.TestCase):
             {"listing_id": LARGE_ID, "date": "2025-10-11", "available": "t"},  # ngày thứ 31 (ngoài window=30)
         ])
 
-        summary, issues = my_calendar.aggregate(records, SNAP, window_days=30, listing_ids={LARGE_ID})
+        summary, issues = calendar.aggregate(records, SNAP, window_days=30, listing_ids={LARGE_ID})
 
         self.assertEqual(len(summary), 1)
         row = summary[0]
@@ -35,7 +35,7 @@ class CalendarAggregateTests(unittest.TestCase):
         self.assertEqual(row["observed_days"], 3)
         self.assertEqual(row["expected_days"], 30)
         self.assertAlmostEqual(row["availability_rate"], round(2 / 3, 6))
-        self.assertEqual(issues, {"duplicate_calendar": 1})
+        self.assertEqual(issues, {"duplicate_calendar": 1, "missing_calendar_days": 27})
 
     def test_window_90_vs_30_days(self):
         records = [
@@ -44,8 +44,8 @@ class CalendarAggregateTests(unittest.TestCase):
             {"listing_id": "10", "date": "2025-12-10", "available": "t"},  # ngày thứ 90 -> nằm ngoài [start, start+90)
         ]
 
-        sum_30, _ = my_calendar.aggregate(records, SNAP, window_days=30, listing_ids={"10"})
-        sum_90, _ = my_calendar.aggregate(records, SNAP, window_days=90, listing_ids={"10"})
+        sum_30, _ = calendar.aggregate(records, SNAP, window_days=30, listing_ids={"10"})
+        sum_90, _ = calendar.aggregate(records, SNAP, window_days=90, listing_ids={"10"})
 
         self.assertEqual(sum_30[0]["observed_days"], 1)
         self.assertEqual(sum_30[0]["available_days"], 1)
@@ -64,7 +64,7 @@ class CalendarAggregateTests(unittest.TestCase):
             {"listing_id": "1", "date": "2025-09-13", "available": "T"},       # hợp lệ (không phân biệt hoa/thường)
         ]
 
-        summary, issues = my_calendar.aggregate(records, SNAP, window_days=90, listing_ids={"1"})
+        summary, issues = calendar.aggregate(records, SNAP, window_days=90, listing_ids={"1"})
 
         self.assertEqual(len(summary), 1)
         self.assertEqual(summary[0]["available_days"], 1)
@@ -75,6 +75,7 @@ class CalendarAggregateTests(unittest.TestCase):
                 "invalid_calendar_date": 1,
                 "orphan_calendar": 1,
                 "invalid_available": 1,
+                "missing_calendar_days": 89,
             },
         )
 
@@ -113,7 +114,7 @@ class CalendarMetricsAndBreakdownTests(unittest.TestCase):
             {"snapshot_date": SNAP, "listing_id": "3", "analysis_area": "A02"},
         ]
 
-        kpi = my_calendar.metrics(cal_rows, listings, cfg={})
+        kpi = calendar.metrics(cal_rows, listings, cfg={})
         self.assertEqual(len(kpi), 2)
 
         by_area = {r["analysis_area"]: r for r in kpi}
@@ -135,7 +136,7 @@ class CalendarMetricsAndBreakdownTests(unittest.TestCase):
             {"listing_id": "1", "date": "2025-09-13", "available": "t"},  # Sat -> weekend
             {"listing_id": "1", "date": "2025-09-14", "available": "f"},  # Sun -> weekend
         ]
-        rows = my_calendar.weekday_weekend_breakdown(records, SNAP, window_days=7, listing_ids={"1"})
+        rows = calendar.weekday_weekend_breakdown(records, SNAP, window_days=7, listing_ids={"1"})
         self.assertEqual(len(rows), 1)
         self.assertAlmostEqual(rows[0]["weekday_availability_rate"], 0.0)
         self.assertAlmostEqual(rows[0]["weekend_availability_rate"], round(2 / 3, 6))

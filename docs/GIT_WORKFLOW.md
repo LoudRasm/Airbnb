@@ -36,15 +36,15 @@ Tên branch gợi ý; thêm tên task khi một người có nhiều PR:
 Sửa đúng module được giao; viết test riêng và `reports/sections/tvN.md`.
 
 ```bash
-python -m unittest discover -s tests -v
+python -m pytest -q
 python run_pipeline.py --status
 git diff --check
 git diff
 ```
 
-Pipeline còn TODO của người khác thì kiểm thử trực tiếp hàm của mình trên fixture nhỏ.
-Không phải chạy được toàn pipeline mới mở PR. `--status` chỉ đọc trạng thái; CI nền xanh
-chưa xác nhận thuật toán đúng. Demo cũng chưa chạy được khi các module cần thiết còn TODO.
+Có thể test trực tiếp module của mình trên fixture trước khi chạy dữ liệu thật. CI chạy cả test dạng hàm
+và unittest bằng pytest. CI xanh không xác nhận kết luận phân tích hoặc thay thế cache Gemini thật.
+Luồng chung đã tích hợp; demo chạy được với --demo --skip-llm. [Kiểm chứng](VERIFICATION.md).
 
 ## 3. Commit đúng file rồi push branch
 
@@ -100,7 +100,7 @@ Nếu không conflict, Git hoàn tất merge; không cần tự commit thêm. N�
 ```bash
 git add <file-da-giai-quyet>
 git commit
-python -m unittest discover -s tests -v
+python -m pytest -q
 python run_pipeline.py --status
 git push
 ```
@@ -116,7 +116,7 @@ Khi branch không còn thay đổi chưa lưu:
 ```bash
 git switch main
 git pull --ff-only origin main
-python -m unittest discover -s tests -v
+python -m pytest -q
 python run_pipeline.py --status
 ```
 

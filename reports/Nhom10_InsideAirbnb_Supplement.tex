@@ -1,0 +1,194 @@
+% !TeX program = xelatex
+% Technical detail accompanies the main report; this is not part of the 10-page main PDF.
+\documentclass[11pt,a4paper]{article}
+\input{report_style.tex}
+\hypersetup{pdftitle={Tài liệu bổ sung Inside Airbnb Toronto Nhóm 10}}
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\begin{document}
+\begin{center}
+{\Large\bfseries Tài liệu bổ sung}\\[3pt]
+{\large Inside Airbnb Toronto · Nhóm 10 · UET.DSE2049 1}\\[5pt]
+{\normalsize Bảng kiểm, phân tích lỗi và giải thích mã nguồn}
+\end{center}
+
+\section{Phạm vi và quy ước kiểm chứng}
+Tài liệu này bổ sung bằng chứng cho báo cáo chính: giữ các bảng chi tiết và đoạn mã cần để kiểm tra lại kết luận, không mở rộng phạm vi suy luận. Kết quả dùng commit phân tích \code{\SourceCommit}, bốn mốc 2025-09-11, 2025-12-12, 2026-03-19, 2026-06-15, mã dữ liệu \code{DSE2049-C01-G10-toronto}. Mốc tháng 12 theo workbook đã được nhóm trưởng xác nhận với giảng viên. Mọi giá phân tích lấy từ listings ở 2026-06-15, theo CAD/đêm.
+
+\textbf{Đơn vị quan sát khác nhau giữa các bảng.} Listings có khóa (snapshot, listing ID); calendar có khóa (snapshot, listing ID, ngày); reviews dùng review ID độc lập với listing ID. Lọc 5.000 review ID ở mỗi mốc không đồng nghĩa lấy toàn bộ review của 1.000 listing. Trên dữ liệu cụ thể này, phép nối sau dự đoán đạt 100\%; quy tắc chọn review vẫn không thay đổi.
+
+\begin{table}[htbp]\centering\small
+\caption{Quy mô các bảng đầu ra dùng trong báo cáo.}\label{tab:outputs}
+\begin{tabularx}{\linewidth}{@{}P{5.9cm}rY@{}}\toprule
+Bảng & Dòng & Ý nghĩa\\\midrule
+\path{listings.csv} & 4.000 & 1.000 listing tại mỗi mốc\\
+\path{calendar_summary.csv} & 4.000 & Một listing--mốc trong cửa sổ 90 ngày\\
+\path{reviews.csv} & 5.000 & Review duy nhất sau khử trùng giữa mốc\\
+\path{kpi_market.csv} & 32 & 8 vùng chữ nhật $\times$ 4 mốc\\
+\path{kpi_neighbourhood.csv} & 500 & 125 neighbourhood $\times$ 4 mốc\\
+\path{kpi_calendar.csv} & 32 & Tổng hợp theo mốc/vùng, có mẫu số\\
+\path{llm_reviews.csv} & 1.000 & Dự đoán đúng tập Mẫu LLM\\
+\path{manual_labels.csv} & 100 & Nhãn tay positive/mixed/negative\\
+\path{evaluation.csv} & 2 & Baseline và Gemini trên cùng 100 ID\\\bottomrule
+\end{tabularx}\end{table}
+
+\paragraph{Dữ liệu nguồn không bị ghi lại} Pipeline và script báo cáo chỉ đọc raw, workbook, cache và nhãn tay. Sau khi tạo báo cáo, các mã băm nhãn được đối chiếu lại. \path{reports/generated/report/report_metrics.json} lưu số đo, lỗi, số lượng mẫu và các mã băm; \path{figure_provenance.json} gắn tài sản hình với metadata của lần chạy đầy đủ. Không dùng ảnh terminal hoặc số liệu nhập tay làm nguồn hình.
+
+\paragraph{Đối chiếu báo cáo đầu vào} File kiểm tra tổng hợp ban đầu khớp 4 dòng và 16 cột. Hai bảng thành phần lịch sử calendar/listing-details có fingerprint workbook khác bản đang dùng, dù số liệu và hash raw khớp; bản lịch sử được giữ nguyên để truy xuất. Báo cáo hiện tại lấy số từ lần chạy đầy đủ mới, không sửa fingerprint cũ để vượt kiểm tra. Chi tiết ở \path{reports/data_alignment_2026-11-16.json}.
+
+\section{QA và dữ liệu thiếu}
+\textbf{Không cộng số lượt rule vi phạm thành số dòng lỗi duy nhất.} Một dòng có thể cùng thiếu host và giá; schema drift đếm cột, kiểm tra liên mốc đếm cặp, missing calendar days đếm listing-ngày. Vì vậy, tổng các affected\_rows không được dùng làm tỷ lệ dòng lỗi. Bảng quy tắc chuẩn là \path{reports/qa_rule_catalog.csv}, từ điển đầu ra là \path{reports/data_dictionary.csv}.
+
+\begin{table}[htbp]\centering\small
+\caption{Quyết định QA chính và tác động trong mẫu được giao.}
+\begin{tabularx}{\linewidth}{@{}P{3.25cm}YY@{}}\toprule
+Nhóm kiểm tra & Quy tắc xử lý & Kết quả/giới hạn\\\midrule
+ID và duplicate key & ID là chuỗi số; loại dòng thiếu/sai khóa; giữ một dòng khi trùng khóa listing trong mốc & Giữ 1.000 listing/mốc sau QA; không biến ID dài thành float\\
+Thiếu trường & Gắn cờ host, room type, analysis area; không suy đoán giá trị thay thế & Các trường này không làm giảm mẫu số supply\\
+Giá ở mốc cuối & Giá không parse, không dương, trên 10.000 CAD được đặt thiếu; giữ listing & 20/1.000 thiếu; median trên 980 giá là \GlobalMedian{} CAD\\
+Kiểu/ngày/tọa độ & Parse hữu hạn, ngày hợp lệ, điểm trong giới hạn cấu hình & Cờ không chứng minh lỗi cần sửa thủ công trong mọi trường hợp\\
+Danh mục/schema & Kiểm room type và cột thêm/bớt; so sánh schema liên mốc & Thêm 6 cột ở mốc hai; thêm 5 cột ở mốc ba; mốc cuối không đổi\\
+Liên mốc/tham chiếu & Kiểm host, room, neighbourhood, dịch chuyển tọa độ và tên trong GeoJSON & Host ID đổi 3/35/37; neighbourhood đổi 1/1/0 cặp; room type đổi 0\\
+Calendar & Loại ngày/state lỗi, khử trùng khóa trước tổng hợp, giữ listing thiếu trong exposure & Thiếu 200/560/719/1.372 listing-ngày trong cửa sổ 90 ngày\\
+Reviews & Chỉ chọn review ID được giao; làm sạch văn bản; khử trùng giữa các mốc & 5.000 review duy nhất; first\_seen\_snapshot không phải ngày khách viết review\\\bottomrule
+\end{tabularx}
+\end{table}
+
+Các ngưỡng 10.000 CAD và 365 đêm là tham số QA, không phải quy định pháp lý hoặc điểm cắt tối ưu suy ra từ dữ liệu. Kết quả giữ đủ dòng và median không đổi cho thấy tác động của các quyết định này trong mẫu hiện tại; không chứng minh mọi nguồn dữ liệu khác cũng không có ngoại lai. Bảng \path{qa_kpi_impact.csv} ghi trước/sau và delta, \path{qa_missingness.csv} ghi cột có tồn tại hay không, số rỗng, tổng dòng và tỷ lệ.
+
+\subsection{Cột listings có ít nhất 90\% giá trị thiếu}
+Các cột dưới được trích nguyên tên từ \path{reports/checks/missing_columns.csv}, trong phạm vi 1.000 listing của từng mốc. Thiếu giá ở mốc trước không được xem là lý do xin cấp lại; calendar không dùng giá. Không tự điền neighbourhood từ mã A01--A08.
+\input{generated/report/missing_columns.tex}
+
+\clearpage
+\section{Công thức KPI và bảng theo vùng}
+\textbf{Bảy KPI dùng mẫu số khác nhau và không thể thay thế cho nhau.} Gọi $L_{g,t}$ là listings sau QA của vùng $g$ tại mốc $t$, $P_{g,t}$ là giá hợp lệ ở mốc giá được phép dùng. Supply là $|L_{g,t}|$; median giá là $\operatorname{median}(P_{g,t})$, kèm $n_p=|P_{g,t}|$. Tỷ lệ entire-home chỉ chia cho listing có room type hợp lệ. Host nhiều listing được xác định từ số listing của host trong \emph{cohort tại cùng mốc}; tỷ lệ chia cho listing có host hợp lệ. Không gọi đây là toàn bộ danh mục tài sản của host.
+
+Với calendar, đặt $a_{it}$, $o_{it}$ và $e_{it}$ lần lượt là ngày sẵn, ngày quan sát và ngày kỳ vọng của listing $i$ tại mốc $t$:
+\[
+A_{g,t}=\frac{\sum_{i\in L_{g,t}}a_{it}}{\sum_{i\in L_{g,t}}o_{it}},\qquad
+C_{g,t}=\frac{\sum_{i\in L_{g,t}}o_{it}}{\sum_{i\in L_{g,t}}e_{it}},\qquad e_{it}=90.
+\]
+Exposure còn gồm các listing được giao nhưng không có ngày hợp lệ, nên mẫu số độ phủ không tự giảm. $A$ không xác định nếu không có observed day; đó không phải availability bằng 0. Tỷ lệ đổi host ID chỉ dùng cặp cùng listing có host ID hợp lệ ở cả hai mốc; các cặp bị loại khỏi mẫu số được ghi riêng.
+
+\begin{table}[htbp]\centering\small
+\caption{KPI ở tám vùng chữ nhật tại 2026-06-15. Hai cột cuối là tỷ lệ listing, không phải tỷ lệ host.}
+\begin{tabular}{@{}lrrrrr@{}}\toprule
+Vùng & Supply & Có giá & Median CAD & Entire-home & Host nhiều listing\\\midrule
+\input{generated/report/area_rows.tex}
+\end{tabular}
+\end{table}
+
+\textbf{A01--A08 không phải đơn vị hành chính.} Bảng trên phục vụ phân khúc theo workbook; bảng neighbourhood tách riêng và bản đồ trong báo cáo chính dùng GeoJSON thật. Khi so sánh giá, n giá từ 115 đến 129/vùng được ghi cùng kết quả. Tỷ trọng entire-home cũng khác nhau, nên mức giá giữa vùng có thể phản ánh đồng thời khác biệt phân khúc và vị trí. Không có hồi quy hoặc thiết kế nhân quả để tách hai tác động.
+
+\begin{table}[htbp]\centering\small
+\caption{Guest issue rate theo vùng sau khi nối review với listing. Tập LLM vẫn là đúng 1.000 review ID được giao.}
+\begin{tabular}{@{}lrr@{}}\toprule
+Vùng & Số review & Mixed + negative\\\midrule
+\input{generated/report/area_guest_rows.tex}
+\end{tabular}
+\end{table}
+Các vùng có số review khác nhau; tỷ lệ 9,52\% ở A04 dựa trên 84 review, trong khi 3,94\% ở A07 dựa trên 127. Chưa thực hiện kiểm định khác biệt giữa vùng và sai số phân loại còn tồn tại, nên bảng không được dùng để khẳng định vùng nào phục vụ khách tốt/kém hơn một cách chắc chắn.
+
+\clearpage
+\section{Thiết kế Gemini và chất lượng đầu ra}
+\subsection{Prompt taxonomy và cache}
+Gemini \code{gemini-3.5-flash-lite} được gọi ở bước chuẩn bị cache, nhiệt độ 0, JSON MIME type. Tám aspects là location, cleanliness, host, value, amenities, noise, safety và check-in. Prompt yêu cầu positive khi nhìn chung hài lòng, mixed khi vừa khen vừa có nhược điểm đáng kể, negative khi chủ yếu bất mãn; không cho phép lấy mixed làm nhãn dự phòng khi không chắc. Language được chuẩn hóa chữ thường, nhưng code chỉ kiểm nó không rỗng, không xác nhận ISO hay đúng ngôn ngữ thực tế.
+
+Trong 1.000 dự đoán ngôn ngữ, 999 được mô hình gán en và một được gán fr. Đây là kết quả trích xuất, chưa được gán nhãn ngôn ngữ độc lập; mẫu gần như toàn tiếng Anh không đủ để đánh giá khả năng đa ngữ.
+
+Cache lưu ID, SHA256 của text, model, prompt version/hash, taxonomy và dự đoán đã kiểm tra schema. Khi một thành phần provenance thay đổi, kết quả cũ không được dùng. Đúng JSON hoặc đúng taxonomy không đồng nghĩa dự đoán đúng về nghĩa; đó là lý do vẫn cần 100 nhãn tay.
+
+\begin{Verbatim}[fontsize=\footnotesize,breaklines,breakanywhere,frame=single,rulecolor=\color{black!25}]
+{
+  "review_id": "<ID chuoi tu workbook>",
+  "text_sha256": "<SHA256 van ban nguon>",
+  "model": "gemini-3.5-flash-lite",
+  "prompt_version": "tv5-gemini-v1",
+  "prompt_sha256": "<SHA256 prompt va taxonomy>",
+  "aspects": ["location", "cleanliness", "host", "value",
+              "amenities", "noise", "safety", "check-in"],
+  "sentiment": "positive | mixed | negative",
+  "language": "<ngon ngu>",
+  "positive_aspects": [],
+  "negative_aspects": []
+}
+\end{Verbatim}
+Mẫu trên mô tả schema, không phải một dự đoán thật thay thế cache. Cache thật có 1.000 ID duy nhất; SHA256 bắt đầu bằng \code{\CacheShortHash}. Toàn bộ SHA256 và kết quả kiểm nguồn ở \path{report_metrics.json}. Không truyền nhãn tay vào prompt và không thay nhãn tay theo đầu ra mô hình.
+
+\subsection{Phương pháp chấm và các trường hợp sai}
+Với từng lớp $c$, $P_c=TP_c/(TP_c+FP_c)$, $R_c=TP_c/(TP_c+FN_c)$ và $F_{1,c}=2TP_c/(2TP_c+FP_c+FN_c)$. Khi mẫu số bằng 0, implementation gán F1 của lớp bằng 0 và chỉ đưa lớp có mẫu số F1 dương vào trung bình. Trong bộ 100 nhãn đang dùng, cả ba lớp đều xuất hiện, nên macro-F1 ở báo cáo đúng là trung bình ba F1. Accuracy là tổng ô chéo chia 100.
+
+\begin{table}[htbp]\centering\small
+\caption{Toàn bộ lỗi trên 100 nhãn tay. Các ID luôn là chuỗi; văn bản đầy đủ ở CSV lỗi.}
+\begin{tabular}{@{}lp{4.7cm}ll@{}}\toprule
+Phương pháp & Review ID & Nhãn tay & Dự đoán\\\midrule
+\input{generated/report/error_rows.tex}
+\end{tabular}
+\end{table}
+
+\begin{sloppypar}
+Các lỗi Gemini đều chuyển mixed thành positive. Ngoài hai ví dụ ở báo cáo chính, review \code{473122809685247597} vừa khen phòng vừa nhắc Wi-Fi và chỗ đỗ xe; review \code{1256637585478705657} nêu nhiều bất tiện nhỏ như TV/thùng rác/tủ đầu giường. Những mô tả này cho thấy cách hiểu mức độ ``đáng kể'' của nhược điểm là ranh giới cần thẩm định bằng người đọc. Không biết mô hình đã suy luận nội bộ như thế nào chỉ từ một nhãn đầu ra.
+\end{sloppypar}
+
+Baseline nhầm negative thành mixed ở \code{273261312}, văn bản có gián trong phòng và tiếng xe ồn; đồng thời nhầm mixed thành positive ở \code{527574142524768952}, có khen nhưng phản ánh tiệc đến 2 giờ sáng. Baseline còn chuyển ba positive thành mixed. Hai phương pháp không sai cùng tập ID; kiểm tra cặp cho thấy Gemini sửa được năm ca baseline sai, nhưng tạo bốn lỗi khác. Chênh lệch ròng một câu đúng không đủ để tuyên bố ưu thế có ý nghĩa thống kê.
+
+\subsection{Aspects và sentiment phải được đọc riêng}
+Có 120/1.000 review chứa ít nhất một negative aspect, nhưng guest issue rate chỉ dùng 64 mixed/negative. Trong 936 positive có 56 review vẫn giữ negative aspect; các khía cạnh khen/chê là đầu ra đa nhãn. Mỗi tỷ lệ aspect có mẫu số 1.000 và đếm một review tối đa một lần cho mỗi aspect. Chưa gán nhãn chuẩn cho aspects/language, nên chỉ xem đây là thống kê theo trích xuất của mô hình, không phải số đo chất lượng đã được kiểm chứng như sentiment.
+
+\clearpage
+\section{Ước tính chi phí toàn thành phố}
+\textbf{Đơn vị mở rộng là tệp reviews của toàn Toronto tại mốc 2026-06-15.} Script đọc toàn bộ tệp raw mới nhất, giữ ID dạng chuỗi, đếm \CityReviewCount{} ID duy nhất và không có dòng trùng ID. Độ dài trung bình sau làm sạch là khoảng 216,6 ký tự/review. Mẫu 1.000 review có độ dài khác, nên script dùng trung bình riêng cho mỗi phạm vi, không nhân chi phí của 5.000 review được giao rồi gọi là toàn thành phố.
+
+Với $N$ review, độ dài prompt cố định $p$, độ dài review trung bình $r$ và JSON đầu ra nhìn thấy trung bình $s$, phép ước lượng là:
+\[
+T_{in}\approx\frac{N(p+r)}{4},\quad T_{out}\approx\frac{Ns}{4},\quad
+\widehat{C}=\frac{0,30T_{in}+2,50T_{out}}{10^6}\text{ USD}.
+\]
+Đơn giá lấy từ Standard text của Gemini 3.5 Flash-Lite, đối chiếu ngày 17/11/2026: \url{https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite}. Quy đổi ký tự/token là gần đúng; cache không có usageMetadata/thinking token, nên không công bố đây là chi phí thực trả hoặc hóa đơn đã xác nhận.
+
+\begin{table}[htbp]\centering\small
+\caption{Ước tính từ độ dài prompt, văn bản thật và JSON đã lưu; không gồm thinking token chưa biết.}
+\begin{tabularx}{\linewidth}{@{}Yrrrr@{}}\toprule
+Phạm vi & Review & Token vào & Token ra & USD\\\midrule
+\input{generated/report/cost_rows.tex}
+\end{tabularx}
+\end{table}
+
+Ước tính này khác phép tính mặc định ở runner TV5 (giả định 45 output token/review), vì script báo cáo dùng chiều dài JSON nhìn thấy thực tế, khoảng 31,2 token/review theo quy đổi bốn ký tự/token. Hai số đều là ước tính với giả định khác nhau; không chọn số nhỏ hơn để khẳng định tiết kiệm chi phí. Hạn mức Free Tier phụ thuộc tài khoản/thời điểm, không bảo đảm mọi lượng xử lý đều miễn phí. Chạy lại từ cache cục bộ không tạo request API mới.
+
+\section{Những đoạn mã quyết định tính đúng}
+Các trích đoạn sau lấy trực tiếp từ source hiện tại khi build báo cáo. Chúng minh họa ràng buộc dữ liệu, không thay cho toàn bộ source/tests trong GitHub.
+
+\subsection{Chọn review theo review ID độc lập}
+\noindent Nguồn: \path{src/airbnb/loading.py}. Biến key đổi theo loại bảng; reviews dùng id của review, không dùng listing\_id của căn hộ.
+\VerbatimInput[fontsize=\footnotesize,breaklines,breakanywhere,frame=single,rulecolor=\color{black!25}]{generated/report/filter_ids.py}
+
+\subsection{Không gọi API nếu thiếu cache khi chấm}
+\noindent Nguồn: \path{src/airbnb/llm.py}. Cache được đối chiếu bằng ID/text/model/prompt trước khi trả kết quả. allow\_api mặc định False; thiếu record là lỗi, không biến thành nhãn positive dự phòng.
+\VerbatimInput[fontsize=\footnotesize,breaklines,breakanywhere,frame=single,rulecolor=\color{black!25}]{generated/report/cache_guard.py}
+
+\subsection{Listing không có ngày hợp lệ vẫn có exposure}
+\noindent Nguồn: \path{src/airbnb/calendar.py}. Khởi tạo bucket cho toàn bộ ID được giao trước khi đọc dữ liệu ngăn việc bỏ listing vắng khỏi mẫu số độ phủ. Cuối hàm, observed=0 cho availability None, expected vẫn là số ngày cửa sổ.
+\VerbatimInput[fontsize=\footnotesize,breaklines,breakanywhere,frame=single,rulecolor=\color{black!25}]{generated/report/calendar_exposure.py}
+
+\subsection{Nối listing ID từ nguồn sau khi dự đoán}
+\noindent Nguồn: \path{src/airbnb/pipeline.py}. Mô hình không được yêu cầu bịa ID; review map cung cấp listing ID để làm KPI vùng. Nối sau chọn mẫu bảo toàn phạm vi review độc lập.
+\VerbatimInput[fontsize=\footnotesize,breaklines,breakanywhere,frame=single,rulecolor=\color{black!25}]{generated/report/review_join.py}
+
+\subsection{Đánh giá theo lớp để lộ sai số lớp ít}
+\noindent Nguồn: \path{src/airbnb/evaluate.py}. TP/FP/FN được tính trên cùng danh sách nhãn tay; support và recall mixed giúp phát hiện điều accuracy tổng thể che khuất.
+\VerbatimInput[fontsize=\footnotesize,breaklines,breakanywhere,frame=single,rulecolor=\color{black!25}]{generated/report/evaluation.py}
+
+\section{Tái lập và vị trí tệp}
+\begin{enumerate}
+\item Clone repo, tạo môi trường Python 3.13.7, cài \path{requirements.txt}. Raw được tải theo config; manifest phạm vi nhóm và cache thật đã có trong repo. Không commit raw/workbook hoặc khóa API.
+\item Chạy pipeline đầy đủ để tái tạo kết quả: \path{python run_pipeline.py --config configs/toronto.yaml}. Nếu raw đã đủ, thêm \code{--no-download}. Không chạy script generate cache trong quá trình chấm.
+\item Chạy \code{python scripts/build\_report.py --no-download} để tái tạo số liệu, hình vector và hai PDF. Cần XeLaTeX/TeX Live; các thư viện Python dùng lại môi trường dự án. Nếu đã có một lần chạy đầy đủ khớp hash cache, dùng \code{--skip-pipeline} để chỉ build báo cáo.
+\item Điền MSSV tại trang thông tin nhóm trong source LaTeX; chèn bìa theo mẫu viện. Báo cáo chính được giữ không quá chín trang trước bìa để tổng sau chèn bìa không quá mười trang. Supplement là tệp riêng; không gộp tự động vào PDF chính.
+\item Đối chiếu các giá trị trong PDF với \path{reports/generated/report/report_metrics.json}, CSV evaluation và các hình ở \path{figures/report/}. Kiểm thử phần mềm bằng \code{python -m pytest -q}; test fixture không được dùng làm số liệu thật.
+\end{enumerate}
+
+Các tệp chính của bản nộp là \path{reports/Nhom10_InsideAirbnb_Report.pdf} và source tương ứng. Tài liệu này là \path{reports/Nhom10_InsideAirbnb_Supplement.pdf}; \path{report_style.tex} giữ kiểu trình bày dùng chung. \path{reports/generated/report/} và \path{figures/report/} là tài sản tái tạo từ dữ liệu; không sửa tay giá trị để làm hình khớp câu văn. \path{AI_USAGE.md} ghi hỗ trợ của Codex và Gemini; các thành viên vẫn chịu trách nhiệm kiểm số liệu, hoàn thiện bìa/MSSV và giải thích toàn bộ sản phẩm.
+\end{document}

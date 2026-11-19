@@ -110,9 +110,16 @@ python -m unittest discover -s tests -v
 
 ## Phân biệt với pipeline phân tích cả kỳ
 
-`run_pipeline.py` hiện có loader lọc theo workbook và các module phân tích TODO theo owner.
+`run_pipeline.py` gọi các module đã tích hợp, loader đọc workbook hoặc manifest phạm vi nhóm.
 Không dùng output sau QA hoặc kết quả sampling của pipeline để điền bảng kiểm tra đầu vào.
 Luồng trong tài liệu này là `scripts/check_data.py`, đếm từng mốc trước cleaning và đọc
 trực tiếp hai cột Mẫu LLM/Nhãn tay. Data check vẫn chạy dù các module phân tích chưa READY.
 Các quyết định phân tích cả kỳ (KPI, LLM, giá, vùng) do owner triển khai theo CONTRACTS.
 Vùng workbook là 8 hình chữ nhật A01–A08; không đồng nhất với neighbourhood hành chính.
+
+## Đối chiếu 2026-11-17
+
+Lần chạy lại cô lập cho kết quả tổng hợp khớp báo cáo ban đầu. Hai bảng thành phần lịch sử
+calendar_summary.csv và listing_details.csv có fingerprint workbook khác hiện tại; số liệu và SHA256 raw
+vẫn giống nhau. Nếu cần merge data check mới, chạy lại hai phần này bằng cùng workbook hiện tại trước,
+không sửa fingerprint thủ công. Xem reports/data_alignment_2026-11-16.json; bản lịch sử được giữ nguyên.

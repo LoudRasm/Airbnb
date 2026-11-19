@@ -115,3 +115,29 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
   - `viz_reviews.render` sinh 4 biểu đồ SVG chuẩn ghi rõ phạm vi mẫu và `n`.
 - Kiểm chứng: `python scripts/label_reviews.py check --member tv5` đạt 0 lỗi; 10/10 unit tests
   trong `tests/test_tv5.py` đạt; `READY = False`, `IMPLEMENTED = True` chờ TV2 (Đức) review.
+
+## Cập nhật 2026-11-17 — sửa sau rà soát và chuẩn hóa pipeline
+
+- Yêu cầu: sửa lỗi đã rà soát, dọn phần trùng, cập nhật theo đề mới, kiểm dữ liệu trước/sau và đẩy main;
+  giữ nguyên nhãn tay cùng phần code đúng của các thành viên.
+- Codex dùng thuật toán đã có của từng owner, sửa điểm nối QA đầy đủ, market/neighbourhood theo mốc,
+  denominator calendar, guest join và output riêng từng chế độ. Tách runner/schema/reader nhãn;
+  bỏ path/ID ghi cứng trong script cũ và bản sao dictionary/catalog, CSV fallback cá nhân của notebook.
+- Chuyển mặc định sang cache-only để chấm không API key; thêm lệnh tạo/kiểm cache riêng và hướng dẫn.
+  Người dùng xác nhận chưa có cache thật, nên không tạo dự đoán hoặc nhãn giả để hoàn thành bài.
+- Thêm/sửa test cho hợp đồng đã thay đổi, chạy dữ liệu thật không LLM và đối chiếu CSV/raw SHA256
+  với data check ban đầu; xem docs/VERIFICATION.md và reports/data_alignment_2026-11-16.json.
+- 100 nhãn tay/phiếu được giữ nguyên từng byte; AI không gán lại nhãn. Các cache giả dùng trong test
+  chỉ nằm ở thư mục tạm. Không gọi Gemini thật, không chỉnh tác giả commit cũ, không tag final.
+
+## Cập nhật 2026-11-17 — báo cáo và tài liệu bổ sung từ kết quả thật
+
+- Yêu cầu: hoàn thiện báo cáo có sẵn theo cấu trúc kết luận → bằng chứng → giới hạn, giữ kiểu trình bày,
+  dùng số liệu/hình thật, mỗi thành viên 20%, để MSSV tự điền; chuyển code/bảng dài sang supplement.
+- Viết lại báo cáo LaTeX, sinh hình từ CSV/GeoJSON, dùng cùng số đo cho bảng/hình; thêm script tái tạo,
+  supplement và source để chỉnh sửa. Giữ phần bàn giao cá nhân trong reports/sections làm lịch sử.
+- Sửa nhận định cũ: calendar hai mốc cuối có coverage 99,20%/98,48%; Gemini 96% accuracy nhưng recall mixed 3/7;
+  120 review có negative aspect khác KPI 64 mixed/negative. Không gọi model “xuất sắc” từ accuracy tổng thể.
+- Đếm 679.139 review duy nhất ở raw toàn thành phố mốc cuối cho ước tính chi phí; không gọi 5.000 review được giao là toàn Toronto.
+  Ước tính ký tự/token không gồm thinking token và không phải hóa đơn.
+- Các PDF được render và kiểm tra từng trang; số liệu được đối chiếu lại với CSV, ma trận nhầm lẫn và mã băm nguồn.

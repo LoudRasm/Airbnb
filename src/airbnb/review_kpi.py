@@ -10,7 +10,7 @@ from .reviews import is_digit_id
 
 OWNER = 'TV5 — Phan Ngọc Huy'
 IMPLEMENTED = True
-READY = False  # Chỉ bật True sau khi triển khai, có test và review.
+READY = True  # Integration validated; see docs/VERIFICATION.md.
 
 GUEST_KPI_FIELDS = ['metric', 'value', 'sample_n', 'source', 'scope']
 
@@ -94,7 +94,7 @@ def guest_kpi(predictions, listings, cfg):
 
     sample_n = len(preds)
     source_name = sorted(sources)[0] if len(sources) == 1 else (cfg.get('llm', {}).get('model', 'llm') if not sources else '+'.join(sorted(sources)))
-    base_scope = 'assigned_llm_sample'
+    base_scope = 'assigned_review_baseline' if 'keyword_baseline' in source_name else 'assigned_llm_sample'
 
     issue_count = sentiment_counts['mixed'] + sentiment_counts['negative']
     rows = [

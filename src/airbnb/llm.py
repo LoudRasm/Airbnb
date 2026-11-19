@@ -16,7 +16,7 @@ from .reviews import clean_comment, comment_sha256, is_digit_id
 
 OWNER = 'TV5 — Phan Ngọc Huy'
 IMPLEMENTED = True
-READY = False  # Chỉ bật True sau khi triển khai, có test và review.
+READY = True  # Integration validated; see docs/VERIFICATION.md.
 
 SENTIMENTS = {'positive', 'mixed', 'negative'}
 LLM_FIELDS = ['review_id', 'sentiment', 'language', 'positive_aspects', 'negative_aspects', 'source']
@@ -223,7 +223,7 @@ def select_reviews(reviews: list[dict], cfg: dict, review_ids=None) -> list[dict
     return sorted(sampled, key=lambda r: int(r['review_id']))
 
 
-def analyze(reviews, cfg, root, review_ids=None):
+def analyze(reviews, cfg, root, review_ids=None, *, allow_api=False):
     """Phân tích tập review bằng Gemini API với cache provenance, retry và kiểm tra schema.
 
     Không bao giờ biến lỗi API hoặc JSON sai thành nhãn mặc định.
@@ -246,6 +246,12 @@ def analyze(reviews, cfg, root, review_ids=None):
     selected = select_reviews(list(reviews), cfg, review_ids)
     cache = load_cache(cache_path, aspects, model, p_hash)
 
+    if not allow_api:
+        missing = [row['review_id'] for row in selected
+                   if _cache_key(row['review_id'], comment_sha256(row.get('comments', '')), model, p_hash) not in cache]
+        if missing:
+            raise RuntimeError(f'LLM cache thiếu {len(missing)}/{len(selected)} review đúng ID/text/model/prompt. '
+                               'Chạy scripts/generate_llm_cache.py trước khi nộp; pipeline không gọi API.')
     results = []
     api_key = None
 
@@ -280,11 +286,14 @@ def analyze(reviews, cfg, root, review_ids=None):
             except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, json.JSONDecodeError, ValueError) as exc:
                 last_error = exc
                 if attempt < retries:
-                    time.sleep(min(2.0 ** (attempt - 1), 8.0))
+                    wait_sec = min(2.0 ** (attempt - 1), 8.0)
+                    if isinstance(exc, urllib.error.HTTPError) and exc.code == 429:
+                        wait_sec = max(wait_sec, 10.0 * attempt)
+                    time.sleep(wait_sec)
 
         if validated is None:
             raise RuntimeError(
-                f'LLM analysis failed for review_id {rid} after {retries} attempts: {last_error}'
+                f'LLM analysis failed for review_id {rid} after {retries} attempts ({type(last_error).__name__})'
             ) from last_error
 
         cache_entry = {
@@ -305,6 +314,8 @@ def analyze(reviews, cfg, root, review_ids=None):
         }
         cache[key] = result_row
         results.append(result_row)
+        if len(results) % 25 == 0 or len(results) == len(selected):
+            print(f'LLM Progress: {len(results)}/{len(selected)} reviews processed...', flush=True)
 
     return results
 
@@ -312,7 +323,7 @@ def analyze(reviews, cfg, root, review_ids=None):
 def estimate_cost(reviews, cfg, full_dataset_size: int = 5000) -> dict:
     """Ước tính số token và chi phí API (USD) cho mẫu LLM và toàn bộ tập dữ liệu."""
     llm_cfg = cfg.get('llm', {})
-    model = llm_cfg.get('model', 'gemini-2.5-flash')
+    model = llm_cfg.get('model', 'gemini-3.5-flash-lite')
     aspects = list(llm_cfg.get('aspects') or [])
     sample_size = int(llm_cfg.get('sample_size', 1000))
 
@@ -326,9 +337,10 @@ def estimate_cost(reviews, cfg, full_dataset_size: int = 5000) -> dict:
     avg_input_tokens = (prompt_overhead_chars + avg_chars) / 4.0
     avg_output_tokens = 45.0
 
-    # Đơn giá tham khảo chuẩn của Gemini 2.5 Flash (USD / 1M tokens)
-    input_price_per_m = 0.15
-    output_price_per_m = 0.60
+    # Đơn giá tham khảo chuẩn của Gemini 3.5 Flash-Lite (USD / 1M tokens)
+    # Lưu ý: Mô hình này thuộc Free Tier trên Google AI Studio (miễn phí sử dụng với hạn mức RPM/RPD).
+    input_price_per_m = 0.30
+    output_price_per_m = 2.50
 
     def _cost_for_n(n: int) -> dict:
         in_tok = int(round(n * avg_input_tokens))

@@ -91,7 +91,7 @@ class LlmValidationAndCacheTests(unittest.TestCase):
         self.cfg = {
             'seed': 42,
             'llm': {
-                'model': 'gemini-2.5-flash',
+                'model': 'gemini-3.5-flash-lite',
                 'sample_size': 10,
                 'aspects': TAXONOMY,
                 'cache': 'data/processed/llm_cache.jsonl',
@@ -136,7 +136,7 @@ class LlmValidationAndCacheTests(unittest.TestCase):
         with patch.dict(os.environ, {'GEMINI_API_KEY': 'fake-key'}), patch.object(
             llm, 'call_gemini_api', side_effect=responses
         ) as api_mock:
-            out1 = llm.analyze(self.reviews, self.cfg, self.root, {'2001', '2002'})
+            out1 = llm.analyze(self.reviews, self.cfg, self.root, {'2001', '2002'}, allow_api=True)
             self.assertEqual(len(out1), 2)
             self.assertEqual(api_mock.call_count, 2)
 
@@ -155,7 +155,7 @@ class LlmValidationAndCacheTests(unittest.TestCase):
             'call_gemini_api',
             return_value='{"sentiment": "negative", "language": "en", "positive_aspects": [], "negative_aspects": ["cleanliness", "host"]}',
         ) as api_mock2:
-            out3 = llm.analyze(changed_reviews, self.cfg, self.root, {'2001', '2002'})
+            out3 = llm.analyze(changed_reviews, self.cfg, self.root, {'2001', '2002'}, allow_api=True)
             self.assertEqual(api_mock2.call_count, 1)
             self.assertEqual(out3[0]['sentiment'], 'negative')
 
@@ -164,7 +164,7 @@ class LlmValidationAndCacheTests(unittest.TestCase):
             llm, 'call_gemini_api', side_effect=TimeoutError('API timed out')
         ), patch('time.sleep'):
             with self.assertRaises(RuntimeError):
-                llm.analyze(self.reviews[:1], self.cfg, self.root, {'2001'})
+                llm.analyze(self.reviews[:1], self.cfg, self.root, {'2001'}, allow_api=True)
 
 
 class EvaluationAndKpiTests(unittest.TestCase):
@@ -202,7 +202,7 @@ class EvaluationAndKpiTests(unittest.TestCase):
                 'sentiment': 'positive',
                 'positive_aspects': ['location', 'cleanliness'],
                 'negative_aspects': [],
-                'source': 'gemini-2.5-flash',
+                'source': 'gemini-3.5-flash-lite',
             },
             {
                 'review_id': '11',
@@ -210,7 +210,7 @@ class EvaluationAndKpiTests(unittest.TestCase):
                 'sentiment': 'mixed',
                 'positive_aspects': ['location'],
                 'negative_aspects': ['noise'],
-                'source': 'gemini-2.5-flash',
+                'source': 'gemini-3.5-flash-lite',
             },
         ]
         # Cùng listing 500 xuất hiện ở 4 mốc snapshot
@@ -239,7 +239,7 @@ class VisualizationAndRunnerTests(unittest.TestCase):
                     'language': 'en',
                     'positive_aspects': ['cleanliness', 'host'],
                     'negative_aspects': [],
-                    'source': 'gemini-2.5-flash',
+                    'source': 'gemini-3.5-flash-lite',
                 },
                 {
                     'review_id': '2',
@@ -247,7 +247,7 @@ class VisualizationAndRunnerTests(unittest.TestCase):
                     'language': 'en',
                     'positive_aspects': ['location'],
                     'negative_aspects': ['noise'],
-                    'source': 'gemini-2.5-flash',
+                    'source': 'gemini-3.5-flash-lite',
                 },
             ],
             'evaluation': [

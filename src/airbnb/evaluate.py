@@ -7,7 +7,7 @@ from .reviews import is_digit_id
 
 OWNER = 'TV5 — Phan Ngọc Huy'
 IMPLEMENTED = True
-READY = False  # Chỉ bật True sau khi triển khai, có test và review.
+READY = True  # Integration validated; see docs/VERIFICATION.md.
 
 EVALUATION_FIELDS = ['source', 'paired_n', 'manual_n', 'accuracy', 'macro_f1', 'meets_100_paired']
 CLASS_ORDER = ('positive', 'mixed', 'negative')

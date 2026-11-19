@@ -10,8 +10,8 @@ import pandas as pd
 import pytest
 
 
-from src.airbnb.kpi import df_kpi, summarize
-from src.airbnb.viz_spatial import render
+from airbnb.kpi import df_kpi, summarize
+from airbnb.viz_spatial import render
 
 
 # ---------------------------------------------------------------------------
@@ -152,7 +152,7 @@ def test_summarize_return_contract(mock_listings_df, mock_cfg):
     """Kiểm tra hàm summarize trả về list[dict] đúng định dạng hợp đồng."""
     # Patch load_config và read_csv để hàm summarize dùng mock data khi test
     with (
-        patch("src.airbnb.kpi.load_config", return_value=(mock_cfg, Path("."))),
+
         patch("pandas.read_csv", return_value=mock_listings_df),
     ):
         result = summarize(mock_listings_df, mock_cfg)
@@ -171,51 +171,11 @@ def test_summarize_return_contract(mock_listings_df, mock_cfg):
 
 
 # ---------------------------------------------------------------------------
-# TESTS CHO MODULE VIZ SPATIAL (viz_spatial.py)
-# ---------------------------------------------------------------------------
-import json
-from unittest.mock import mock_open, patch
-
-# Lưu lại hàm open gốc của Python
-_real_open = open
-
-
-def custom_open(file, *args, **kwargs):
-    """Chỉ mock khi mở file neighbourhoods.geojson, các file khác (như của Plotly) giữ nguyên."""
-    if "neighbourhoods.geojson" in str(file):
-        # Giả lập nội dung file GeoJSON bằng chuỗi JSON từ mock_geojson_dict
-        return mock_open(read_data=json.dumps(mock_geojson_dict_data))()
-    return _real_open(file, *args, **kwargs)
-
-
-def test_render_output_files(
-    mock_listings_df, mock_cfg, mock_geojson_dict, tmp_path
-):
-    """Kiểm tra hàm render xuất đúng 3 file hình ảnh/html vào thư mục figures."""
-    # Lưu mock_geojson_dict vào biến toàn cục tạm thời để custom_open sử dụng
-    global mock_geojson_dict_data
-    mock_geojson_dict_data = mock_geojson_dict
-
-    tables = {"listings": mock_listings_df}
-    figures_dir = tmp_path / "figures"
-    figures_dir.mkdir(parents=True, exist_ok=True)
-
-    # Bỏ patch("json.load") toàn cục, chỉ chặn open có điều kiện và Path.exists
-    with (
-        patch("builtins.open", side_effect=custom_open),
-        patch("pathlib.Path.exists", return_value=True),
-    ):
-        paths = render(tables, figures_dir, mock_cfg)
-
-    # 1. Kiểm tra danh sách đường dẫn trả về gồm 3 file
-    assert isinstance(paths, list)
+# Spatial integration uses supplied data; no global filesystem mocks.
+def test_render_output_files(mock_listings_df, mock_cfg, mock_geojson_dict, tmp_path):
+    config = json.loads((Path(__file__).resolve().parents[1] / 'configs/toronto.yaml').read_text())
+    mock_cfg['analysis_areas'] = config['analysis_areas']
+    tables = {'listings': mock_listings_df, 'geojson': {'2023-12-01': mock_geojson_dict}}
+    paths = render(tables, tmp_path / 'figures', mock_cfg)
     assert len(paths) == 3
-
-    # 2. Kiểm tra sự tồn tại của 3 file trên đĩa
-    for p in paths:
-        assert Path(p).exists()
-
-    # 3. Kiểm tra đúng định dạng đuôi file xuất ra (.png và .html)
-    extensions = [Path(p).suffix for p in paths]
-    assert ".png" in extensions
-    assert ".html" in extensions
+    assert all(p.exists() and p.stat().st_size > 1000 for p in paths)

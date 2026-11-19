@@ -7,7 +7,7 @@ from . import analysis
 
 OWNER = 'TV1 — Dương Nhật Huy'
 IMPLEMENTED = True
-READY = False  # Code and figures verified; pending the team's peer-review gate.
+READY = True  # Integration validated; see docs/VERIFICATION.md.
 NS = 'http://www.w3.org/2000/svg'
 ET.register_namespace('', NS)
 

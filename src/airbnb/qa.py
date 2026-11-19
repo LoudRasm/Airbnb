@@ -195,7 +195,7 @@ def clean_listings(records, snapshot, cfg):
     qa_cfg = {**DEFAULTS, **cfg.get('qa', {})}
     room_types = set(qa_cfg.get('room_types', ()))
     bbox = qa_cfg.get('bbox')
-    is_final = snapshot == cfg['snapshots'][-1]
+    is_final = snapshot == cfg.get('price_snapshot', cfg['snapshots'][-1])
     snapshot_day = date.fromisoformat(snapshot)
 
     raw = list(records)
@@ -441,7 +441,7 @@ def run_listings_qa(raw_by_snapshot, cfg, names_by_snapshot=None):
         cleaned.extend(rows)
         report.extend(rule_rows)
         impact.extend(kpi_impact(raw, rows, snapshot))
-        missing.extend(missing_rates(raw, snapshot, profile_columns))
+        missing.extend(missing_rates(raw, snapshot, profile_columns or sorted(columns[snapshot])))
     report.extend(compare_schemas(columns))
     report.extend(cross_snapshot_checks(cleaned, cfg))
     if names_by_snapshot:

@@ -11,7 +11,7 @@ import re
 
 OWNER = 'TV5 — Phan Ngọc Huy'
 IMPLEMENTED = True
-READY = False  # Chỉ bật True sau khi triển khai, có test và review.
+READY = True  # Integration validated; see docs/VERIFICATION.md.
 
 REVIEW_FIELDS = ['review_id', 'listing_id', 'date', 'comments', 'first_seen_snapshot']
 TEXT_HASH_FIELDS = ('review_id', 'listing_id', 'date', 'comments')

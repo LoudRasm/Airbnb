@@ -17,10 +17,12 @@ def aggregate(records, snapshot, window_days, listing_ids):
     snap_str = str(snapshot).strip()
     start = date.fromisoformat(snap_str)
     win = int(window_days)
+    if win <= 0:
+        raise ValueError("window_days must be positive")
     stop = start + timedelta(days=win)
     valid_ids = {str(lid).strip() for lid in listing_ids}
 
-    counts: dict[str, list[int]] = {}
+    counts: dict[str, list[int]] = {lid: [0, 0] for lid in valid_ids}
     seen: set[tuple[str, str, date]] = set()
     issues: Counter = Counter()
 
@@ -45,13 +47,12 @@ def aggregate(records, snapshot, window_days, listing_ids):
         if key in seen:
             issues["duplicate_calendar"] += 1
             continue
-        seen.add(key)
-
         state = str(row.get("available", "")).strip().lower()
         if state not in {"t", "f"}:
             issues["invalid_available"] += 1
             continue
 
+        seen.add(key)
         bucket = counts.setdefault(lid, [0, 0])
         bucket[0] += int(state == "t")
         bucket[1] += 1
@@ -63,10 +64,13 @@ def aggregate(records, snapshot, window_days, listing_ids):
             "available_days": c[0],
             "observed_days": c[1],
             "expected_days": win,
-            "availability_rate": round(c[0] / c[1], 6) if c[1] > 0 else 0.0,
+            "availability_rate": round(c[0] / c[1], 6) if c[1] > 0 else None,
         }
         for lid, c in sorted(counts.items())
     ]
+    missing_days = sum(win - c[1] for c in counts.values())
+    if missing_days:
+        issues["missing_calendar_days"] = missing_days
     return summary, dict(issues)
 
 
@@ -108,7 +112,7 @@ def metrics(calendar, listings, cfg):
 
     kpi_rows = []
     for (snap, area), (avail_sum, obs_sum, exp_sum, lids) in sorted(stats.items()):
-        rate = round(avail_sum / obs_sum, 6) if obs_sum > 0 else 0.0
+        rate = round(avail_sum / obs_sum, 6) if obs_sum > 0 else None
         kpi_rows.append(
             {
                 "snapshot_date": snap,
@@ -117,6 +121,7 @@ def metrics(calendar, listings, cfg):
                 "observed_days": obs_sum,
                 "expected_days": exp_sum,
                 "listing_n": len(lids),
+                "coverage_rate": round(obs_sum / exp_sum, 6) if exp_sum else None,
             }
         )
 
@@ -130,6 +135,8 @@ def weekday_weekend_breakdown(records, snapshot, window_days, listing_ids):
     snap_str = str(snapshot).strip()
     start = date.fromisoformat(snap_str)
     win = int(window_days)
+    if win <= 0:
+        raise ValueError("window_days must be positive")
     stop = start + timedelta(days=win)
     valid_ids = {str(lid).strip() for lid in listing_ids}
 
@@ -153,13 +160,12 @@ def weekday_weekend_breakdown(records, snapshot, window_days, listing_ids):
         key = (snap_str, lid, day)
         if key in seen:
             continue
-        seen.add(key)
-
         state = str(row.get("available", "")).strip().lower()
         if state not in {"t", "f"}:
             continue
 
         is_avail = int(state == "t")
+        seen.add(key)
         bucket = counts.setdefault(lid, [0, 0, 0, 0])
         if day.weekday() in {4, 5, 6}:  # Fri, Sat, Sun
             bucket[2] += is_avail
