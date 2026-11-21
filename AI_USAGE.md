@@ -114,9 +114,8 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
   - `review_kpi.guest_kpi` tính KPI 7 (`guest_issue_rate`) và tỷ lệ khía cạnh/khu vực không nhân bội theo snapshot.
   - `viz_reviews.render` sinh 4 biểu đồ SVG chuẩn ghi rõ phạm vi mẫu và `n`.
 - Kiểm chứng: `python scripts/label_reviews.py check --member tv5` đạt 0 lỗi; 10/10 unit tests
-  trong `tests/test_tv5.py` đạt; `READY = False`, `IMPLEMENTED = True` chờ TV2 (Đức) review.
-
-## Cập nhật 2026-11-17 — sửa sau rà soát và chuẩn hóa pipeline
+  trong `tests/test_tv5.py` đạt.
+## Cập nhật 2026/11/17 — sửa sau rà soát và chuẩn hóa pipeline
 
 - Yêu cầu: sửa lỗi đã rà soát, dọn phần trùng, cập nhật theo đề mới, kiểm dữ liệu trước/sau và đẩy main;
   giữ nguyên nhãn tay cùng phần code đúng của các thành viên.
@@ -130,7 +129,7 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
 - 100 nhãn tay/phiếu được giữ nguyên từng byte; AI không gán lại nhãn. Các cache giả dùng trong test
   chỉ nằm ở thư mục tạm. Không gọi Gemini thật, không chỉnh tác giả commit cũ, không tag final.
 
-## Cập nhật 2026-11-17 — báo cáo và tài liệu bổ sung từ kết quả thật
+## Cập nhật 2026/11/17 — báo cáo và tài liệu bổ sung từ kết quả thật
 
 - Yêu cầu: hoàn thiện báo cáo có sẵn theo cấu trúc kết luận → bằng chứng → giới hạn, giữ kiểu trình bày,
   dùng số liệu/hình thật, mỗi thành viên 20%, để MSSV tự điền; chuyển code/bảng dài sang supplement.
@@ -141,3 +140,34 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
 - Đếm 679.139 review duy nhất ở raw toàn thành phố mốc cuối cho ước tính chi phí; không gọi 5.000 review được giao là toàn Toronto.
   Ước tính ký tự/token không gồm thinking token và không phải hóa đơn.
 - Các PDF được render và kiểm tra từng trang; số liệu được đối chiếu lại với CSV, ma trận nhầm lẫn và mã băm nguồn.
+
+## Cập nhật 21/10/2026 — TV2: QA & preprocessing listings
+
+- Công cụ: Claude. Dùng hỗ trợ viết `src/airbnb/qa.py`, `eda.py`, `tests/test_qa.py`, `scripts/run_qa.py`; đọc `docs/`, đề bài, PDF kế hoạch và workbook để bám contract.
+- Prompt chính: (1) bắt đầu triển khai `qa.clean_listings` theo CONTRACTS/QA.md; (2) chạy QA trên 4 file listings thật và lọc đúng
+  1.000 ID của nhóm; (3) hoàn thiện `qa.py`
+- AI sai ở đâu (đã phát hiện):
+  1. `median_price_before` trong QA report tính sau khi giá đã bị sửa tại chỗ nên sai; test `test_price_outlier_nulled_and_median_changes` bắt được, đã sửa bằng cách tính median trước khi áp rule.
+  2. AI nói chưa có workbook dù file đã nằm trong project; sau đó mở workbook và lọc đúng ID nhóm 10.
+  3. AI thêm tham số thứ 4 vào `clean_listings`, trái quy định "không đổi chữ ký âm thầm" của CONTRACTS; đã bỏ, rule tham chiếu geojson chuyển thành hàm riêng `check_neighbourhood_reference`.
+  4. Một số kỳ vọng trong test do AI tính sai (median của 100, 200, 90000, 90000 là 45.100 chứ không phải 145; tỷ lệ host nhiều listing trước QA là 1,0 vì dòng trùng); sai nằm ở test, không phải code, phát hiện khi chạy test.
+- Kiểm chứng: 53 test của repo đạt (`python -m unittest discover -s tests -v`); chạy `scripts/run_qa.py` trên raw 4 mốc với 1.000 ID của nhóm:
+  20 listing thiếu giá ở mốc cuối khớp data check, entire/private 875/125 khớp, 1.000 listing nằm đúng vùng chữ nhật workbook ở cả 4 mốc,
+  số cột 79/85/90/90 khớp `reports/checks`. Số liệu trong `reports/sections/tv2.md` lấy từ các CSV do script sinh.
+
+## Cập nhật 10/11/2026 — TV2: hình QA (`viz_qa.py`)
+
+- Công cụ: Claude. Dùng để viết `src/airbnb/viz_qa.py`, `tests/test_viz_qa.py`, phần hình trong `scripts/run_qa.py`, `docs/QA.md`, `reports/sections/tv2.md`; đọc lại `docs/CONTRACTS.md`, `docs/IMPLEMENTATION_GUIDE.md`, `viz.py`, `run_pipeline.py` trước khi viết.
+- Prompt chính: Hoàn thành viz.py (hình QA: tóm tắt QA, thiếu dữ liệu/drift, tác động lên KPI; chỉ dùng thư viện chuẩn).
+- AI sai ở đâu (đã phát hiện khi chạy và nhìn hình):
+  1. Lần vẽ đầu có chữ cột "Nhóm" đè lên ô, chú giải đè nhãn ngày ở hình thiếu dữ liệu, trục giá có vạch lẻ (62, 125, 188); đã sửa bố cục và đổi cách chọn vạch trục (`_axis`).
+  2. `room_type_shares` ban đầu thêm nhãn "Khác / rỗng" giữa chừng nên các mốc có danh sách nhãn khác nhau; test `test_room_type_shares_fold_unknown_types_into_other` bắt được, đã tính nhãn trước.
+  3. Kỳ vọng `_axis(1100)` trong test do AI tính sai (đúng là 1250 với bước 250); sai nằm ở test, không phải code.
+  4. Sau khi đối chiếu với bài 12–14 (checklist 5 điểm kiểm tra biểu đồ, tiêu đề nêu kết luận, giới hạn cạnh kết luận), phát hiện AI đã viết tiêu đề hình chỉ gọi tên biểu đồ
+     ("Tác động của QA lên KPI"), hình không ghi cỡ mẫu n và mốc chụp, chú thích chỉ ghi `tables[...]` thay vì nguồn dữ liệu, và `tv2.md` đặt phương pháp
+     lên đầu, tiêu đề mục là chủ đề. Đã sửa: tiêu đề hình sinh từ số liệu (`headline_*`), thêm n và nguồn/giới hạn (`_source_note`), viết lại `tv2.md` theo thứ tự
+     kết luận → bằng chứng → giới hạn.
+  5. Câu "Giá thiếu ở mốc cuối không ngẫu nhiên" trong bản nháp của AI vượt quá dữ liệu (chỉ có tương quan với `availability_365`; chưa kiểm nguyên nhân) và có
+     một câu thừa lặp ý; đã đổi thành "trong dữ liệu này, giá thiếu tập trung ở…" và tính lại: 15/15 listing có `availability_365 = 0` đều thiếu giá, 15/20 listing thiếu giá có `availability_365 = 0`, cả 20 là entire-home.
+- Kiểm chứng: 76 test của repo đạt; tự tính lại từ `listings.csv.gz` thô theo ID của workbook (không qua `qa.py`) cho cả 4 mốc: n = 1.000, thiếu giá 69 / 1.000 / 28 / 20, median 174 / n/a / 189,4 / 213,545 CAD, room_type 875/125 mỗi mốc; chạy `scripts/run_qa.py` trên raw 4 mốc, mở cả 3 file SVG kiểm tay: 20 ô `price_missing_final` ở mốc cuối, thiếu giá
+  6,9% / 100% / 2,8% / 2,0%, room_type 87,5% / 12,5% ở cả 4 mốc, supply 1.000 → 1.000 và median giá 174 / n/a / 189,4 / 213,5 CAD trước và sau QA, khớp `qa_report_listings.csv`.
