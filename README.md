@@ -14,9 +14,9 @@ Kết quả trên cùng 100 nhãn tay:
 Gemini accuracy 96%, macro-F1 0,8594; baseline 95% và 0,8278. Gemini chỉ nhận đúng 3/7 review mixed,
 nên không dùng riêng accuracy để tuyên bố mô hình vượt trội ở mọi lớp.
 
-[Tải PDF báo cáo chính](reports/Nhom10_InsideAirbnb_Report.pdf) · [Cách sửa và tái tạo PDF](reports/README.md)
+[Tải PDF báo cáo chính](reports/Nhom10_InsideAirbnb_Report.pdf)
 
-PDF có 9 trang và đã có đủ MSSV của năm thành viên. Nhóm trưởng có thể thêm một trang bìa theo mẫu Viện.
+PDF có 9 trang và đã có đủ MSSV của năm thành viên.
 Mốc **2025-12-12 đã được nhóm trưởng xác nhận với giảng viên**.
 [Checklist nộp](docs/FINAL_CHECKLIST.md) · [Minh bạch sử dụng AI](AI_USAGE.md) · [Hướng dẫn cache](docs/LLM_CACHE.md)
 
