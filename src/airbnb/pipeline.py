@@ -134,16 +134,19 @@ def run(config_path, demo=False, skip_llm=False, no_download=False):
         (stage / 'figures').mkdir(parents=True)
         viz.render_all(tables, stage / 'figures', cfg, skip_llm)
         artifact_paths = []
-        for name, target in [('processed', processed), ('reports', reports), ('figures', figures)]:
-            for path in (stage / name).rglob('*'):
-                if path.is_file():
-                    dest = target / path.relative_to(stage / name)
-                    dest.parent.mkdir(parents=True, exist_ok=True)
-                    # Same-directory temporary file makes replacement atomic per artifact.
-                    part = dest.with_name(dest.name + '.tmp')
-                    part.write_bytes(path.read_bytes())
-                    os.replace(part, dest)
-                    artifact_paths.append(str(dest.relative_to(root)))
+        staged_roots = [(stage / 'processed', processed), (stage / 'reports', reports), (stage / 'figures', figures)]
+        artifacts = [(path, target / path.relative_to(source)) for source, target in staged_roots
+                     for path in source.rglob('*') if path.is_file()]
+        if not demo and not skip_llm:
+            # Grading reads KPI CSVs directly under data/processed; keep run paths for existing consumers.
+            artifacts.extend((path, processed.parent / path.name) for path in (stage / 'processed').glob('kpi_*.csv'))
+        for path, dest in artifacts:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            # Same-directory temporary file makes replacement atomic per artifact.
+            part = dest.with_name(dest.name + '.tmp')
+            part.write_bytes(path.read_bytes())
+            os.replace(part, dest)
+            artifact_paths.append(str(dest.relative_to(root)))
     # Retire artifacts from this same mode that a config change no longer generates.
     # Only paths listed by our previous run and inside the three managed targets qualify.
     for name in previous_artifacts - set(artifact_paths):

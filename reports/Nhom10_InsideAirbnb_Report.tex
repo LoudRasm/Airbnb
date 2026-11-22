@@ -3,11 +3,12 @@
 % The institute cover is inserted by the group; student IDs are filled on the last page.
 \documentclass[11pt,a4paper]{article}
 \input{report_style.tex}
-\hypersetup{pdftitle={Airbnb Toronto Chất lượng dữ liệu và trải nghiệm khách trong nhóm mẫu được giao}}
+\graphicspath{{../figures/report/}{figures/report/}}
+\hypersetup{pdftitle={Báo cáo bài tập lớn Inside Airbnb - Xây dựng quy trình phân tích thị trường Airbnb tại Toronto}}
 \begin{document}
 \begin{center}
-{\Large\bfseries Airbnb Toronto trong nhóm mẫu được giao}\\[3pt]
-{\large Chất lượng dữ liệu, lịch sẵn có và trải nghiệm khách}\\[5pt]
+{\large\bfseries Báo cáo bài tập lớn - Inside Airbnb}\\[3pt]
+{\Large\bfseries Xây dựng quy trình phân tích thị trường Airbnb tại Toronto}\\[5pt]
 {\normalsize Nhóm 10 · UET.DSE2049 1 · Học kỳ I năm học 2026--2027}
 \end{center}
 \vspace{-5pt}
@@ -26,7 +27,7 @@ Ba câu hỏi dẫn dắt báo cáo là: \textbf{RQ1}, cơ cấu không gian và
 \caption{Bảy KPI chính sau QA. Giá dùng CAD/đêm; tỷ lệ tính trên mẫu số hợp lệ tương ứng.}\label{tab:kpi}
 \begin{tabularx}{\linewidth}{@{}P{3.7cm}YP{4.15cm}@{}}\toprule
 KPI & Công thức và ý nghĩa & Kết quả chính\\\midrule
-Nguồn cung quan sát & Số mã chỗ ở duy nhất theo mốc/khu vực & 1.000/mốc; Waterfront 209/1.000 ở mốc cuối\\
+Nguồn cung quan sát & Số mã chỗ ở duy nhất theo mốc/khu vực -> phản ánh quy mô, mức độ tập trung địa lý& 1.000/mốc; Waterfront 209/1.000 ở mốc cuối\\
 Giá niêm yết trung vị & Trung vị giá hợp lệ ở mốc cuối & \GlobalMedian{} CAD/đêm; n=980\\
 Tỷ lệ toàn bộ nhà/căn hộ & Entire home/apt / chỗ ở có loại phòng & 875/1.000 = 87,5\%\\
 Tỷ lệ chỗ ở thuộc host nhiều listing & Listing thuộc host có hơn một listing trong mẫu / listing có host ID & 116/1.000 = 11,6\% ở mốc cuối\\
@@ -52,7 +53,7 @@ Ngày & Listings & Calendar & Reviews & Số cột & Cột thiếu & Giá rỗng
 Listings và calendar được lọc theo 1.000 listing ID. Reviews được lọc \textbf{độc lập theo 5.000 review ID/mốc}, sau đó khử trùng giữa các mốc còn 5.000 review. Trong đó, 1.000 ID có dấu ở cột Mẫu LLM và 100 ID có dấu ở cột Nhãn tay được dùng đúng như workbook; không lấy mẫu lại trong pipeline. Ở bước KPI vùng, 1.000/1.000 review LLM nối được với cohort listings, nhưng kết quả nối không được dùng để lọc ngược đầu vào reviews.
 
 \subsection{QA giữ dòng chỗ ở nhưng loại giá không dùng được}
-\textbf{Bước QA không làm mất nguồn cung chỉ vì thiếu giá.} Listings dùng khóa (mốc, listing ID); chỉ thiếu/sai ID hoặc trùng khóa mới bị loại. Các trường quan trọng thiếu được gắn cờ; giá sai kiểu, không dương hoặc vượt 10.000 CAD được đặt thiếu. Ngưỡng minimum\_nights là 365. Các phép kiểm schema, loại phòng, tọa độ, ngày và tham chiếu neighbourhood được chạy trước khi tổng hợp. Thay đổi host ID, loại phòng và vị trí giữa các mốc chỉ được ghi nhận, không tự sửa.
+\textbf{Bước QA giữ listing có giá thiếu để đếm nguồn cung.} Sau khi lọc theo ID được giao, QA bỏ dòng thiếu khóa hoặc lặp khóa (mốc, listing ID), giữ dòng đầu khi trùng và gắn cờ ID sai định dạng. Các trường quan trọng thiếu được gắn cờ; giá sai kiểu, không dương hoặc vượt 10.000 CAD được đặt thiếu. Ngưỡng minimum\_nights là 365. Các phép kiểm schema, loại phòng, tọa độ, ngày và tham chiếu neighbourhood được chạy trước khi tổng hợp. Thay đổi host ID, loại phòng và vị trí giữa các mốc được ghi nhận để kiểm tra.
 
 Trên dữ liệu thật, QA giữ đủ 4.000/4.000 dòng listings, không làm đổi supply. Mốc cuối có 20 giá rỗng và 980 giá hợp lệ; trung vị trước/sau QA đều là \GlobalMedian{} CAD. Schema thay đổi 79 $\rightarrow$ 85 $\rightarrow$ 90 $\rightarrow$ 90 cột. Danh sách cột thiếu và tác động từng rule nằm trong Supplement cùng các CSV QA. Giá ở các mốc trước chỉ được đếm thiếu để kiểm đầu vào; \textbf{không dùng để phân tích biến động giá} và không phải lý do xin cấp lại dữ liệu.
 
@@ -64,17 +65,22 @@ Gemini \code{gemini-3.5-flash-lite} nhận văn bản review và trả JSON gồ
 \clearpage
 \section{Kết quả}
 \subsection{RQ1 Waterfront chiếm một phần năm mẫu và giá khác nhau giữa các vùng}
-\textbf{Waterfront Communities--The Island tập trung 209/1.000 chỗ ở trong mẫu, tương đương 20,9\%.} Quy mô này gấp khoảng 4,4 lần Niagara (47 chỗ ở), khu vực đứng tiếp theo. Hình~\ref{fig:space} dùng đúng neighbourhood từ GeoJSON và CSV KPI; phần còn lại được gộp nhưng vẫn giữ tổng mẫu 1.000. Tám vùng chữ nhật A01--A08 của workbook là một cách chia khác, không phải neighbourhood hành chính.
+\textbf{Waterfront Communities--The Island tập trung 209/1.000 chỗ ở trong mẫu, tương đương 20,9\%.} Quy mô này gấp khoảng 4,4 lần Niagara (47 chỗ ở), khu vực đứng tiếp theo. Hình~\ref{fig:space} dùng đúng neighbourhood từ GeoJSON và CSV KPI; phần còn lại được gộp nhưng vẫn giữ tổng mẫu 1.000. Tám vùng chữ nhật A01--A08 của workbook là một cách chia khác, không phải neighbourhood hành chính.Điều này phản ánh 
+
+
+Số listing tập trung cao tại phường Waterfront Communities-The Island (209) và Niagara (47) do nằm trực diện hồ Lake Ontario, có cảnh quan đẹp nhất thành phố, dông dân cư, nhiều tiện ích xã hội và là đầu mối giao thông công cộng với các nhà ga, sân bay
+Càng gần khu vực lõi trung tâm (giải mép phía Nam giáp với hồ Lake Ontario), cả số lượng chỗ ở và giá trung vị đều có xu hướng cao hơn. Điều này phản ánh đúng tính chất của khu vực này. Những vùng khác có giá trung vị lớn nằm ngoài vung này trên bản đồ chủ yếu là do số lượng listings quá ít, chưa đủ kết luận.
+
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{figures/report/report_space.pdf}
+\includegraphics[width=\linewidth]{report_space.pdf}
 \caption{Nguồn cung trong cohort tại 2026-06-15. Bản đồ tô theo số listing được giao; xám là khu vực không có listing trong mẫu, không có nghĩa không có Airbnb. Thanh cuối gộp 119 khu vực còn lại.}\label{fig:space}
 \end{figure}
 
 \textbf{Trung vị giá ở A05 cao gấp 2,56 lần A08 trong mốc cuối.} A05 có trung vị 350,00 CAD/đêm trên 115 giá hợp lệ, so với 136,71 CAD ở A08 trên 119 giá; trung vị chung là \GlobalMedian{} CAD trên 980 giá. Hình~\ref{fig:price} ghi mẫu giá ở từng vùng để tránh xếp hạng từ nhóm quá nhỏ. Các khác biệt cũng đi cùng cơ cấu phòng khác nhau: entire-home chiếm 97,5\% tại A05 và 78,7\% tại A08, nên chưa thể quy toàn bộ chênh lệch cho vị trí.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=.95\linewidth]{figures/report/report_price.pdf}
+\includegraphics[width=.95\linewidth]{report_price.pdf}
 \caption{Giá niêm yết ở tám vùng chữ nhật ngày 2026-06-15; đường đứt là trung vị chung. Supply vẫn gồm cả 20 listing thiếu giá. Không suy ra giá giao dịch hoặc mức sinh lời.}\label{fig:price}
 \end{figure}
 \figsource{Nguồn hình: \path{data/processed/real/kpi_neighbourhood.csv}, \path{kpi_market.csv}, listings sau QA và GeoJSON mốc cuối; sinh tự động bằng script báo cáo.}
@@ -84,7 +90,7 @@ Gemini \code{gemini-3.5-flash-lite} nhận văn bản review và trả JSON gồ
 \textbf{Tỷ lệ lịch sẵn có giảm 14,94 điểm phần trăm từ mốc tháng 12/2025 đến tháng 6/2026.} Tỷ lệ theo các mốc lần lượt là 58,62\%, 66,53\%, 59,89\% và 51,59\%, tính bằng tổng ngày sẵn có chia tổng ngày quan sát. Không lấy trung bình đơn giản các tỷ lệ vùng có mẫu số khác nhau. Những đường xám ở Hình~\ref{fig:time} cung cấp bối cảnh tám vùng; đường đậm là kết quả toàn cohort.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{figures/report/report_time.pdf}
+\includegraphics[width=\linewidth]{report_time.pdf}
 \caption{Trái: lịch sẵn có trong cửa sổ 90 ngày kể từ từng mốc, trục 0--100\%. Phải: số cặp cùng listing đổi host ID ở hai mốc liền kề. Đây là hai phép đo riêng, không dùng trục kép hoặc suy luận nhân quả.}\label{fig:time}
 \end{figure}
 
@@ -108,7 +114,7 @@ Ngày available=f có thể là đã đặt hoặc chủ nhà chủ động khó
 \textbf{Gemini gán 64/1.000 review là mixed hoặc negative, nhưng các phàn nàn không chỉ xuất hiện trong 64 review này.} Trong mẫu có 936 positive, 50 mixed và 14 negative. Với định nghĩa guest issue rate bằng $(50+14)/1.000$, KPI trải nghiệm là 6,4\%. Chỉ số phản ánh nhãn cảm xúc tổng thể do mô hình gán, không phải tỷ lệ mọi khách gặp sự cố hay mọi review có lời chê.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{figures/report/report_reviews.pdf}
+\includegraphics[width=\linewidth]{report_reviews.pdf}
 \caption{Cảm xúc và các khía cạnh chê do Gemini trích xuất trên cùng 1.000 review. Một review có thể nhắc nhiều khía cạnh, nên các tỷ lệ ở bên phải không cộng thành 100\% và không phải phân hoạch của biểu đồ cảm xúc.}\label{fig:reviews}
 \end{figure}
 
@@ -132,7 +138,7 @@ Phương pháp & Accuracy & Macro-F1 & Số cặp nhãn\\\midrule
 \textbf{Sai số đáng chú ý nhất của Gemini nằm ở ranh giới giữa positive và mixed.} Ma trận trong Hình~\ref{fig:confusion} cho thấy cả bốn lỗi của Gemini đều là mixed bị chuyển thành positive. Recall mixed chỉ đạt 3/7 = 42,9\%, thấp hơn 6/7 = 85,7\% của baseline. Bảng~\ref{tab:classes} giữ riêng support để không xem F1=1,000 trên ba negative là bằng chứng ổn định cho một quần thể lớn.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=.88\linewidth]{figures/report/report_confusion.pdf}
+\includegraphics[width=.88\linewidth]{report_confusion.pdf}
 \caption{Nhãn tay theo hàng, dự đoán theo cột; cùng thang màu 0--90 và cùng 100 ID. Gemini không nhầm positive/negative nhưng bỏ sót bốn mixed.}\label{fig:confusion}
 \end{figure}
 
@@ -163,9 +169,9 @@ Ba giới hạn chi phối mọi kết luận. \textbf{Thứ nhất}, cohort 1.0
 Kết quả trong báo cáo lấy từ lần chạy đầy đủ của mã nguồn \code{\SourceCommit}, Python 3.13.7 và dependencies ghim phiên bản. Lần kiểm chứng chặn mọi kết nối mạng/API nhưng vẫn hoàn thành 1.000 dự đoán từ cache và hai bảng đánh giá. Các tệp đầu ra và mã băm cache được ghi trong Supplement; dữ liệu nguồn, workbook và 100 nhãn tay không bị sửa.
 \begin{quote}\small\ttfamily
 python run\_pipeline.py --config configs/toronto.yaml --no-download\\
-python scripts/build\_report.py --no-download
+python scripts/build\_report.py --skip-pipeline
 \end{quote}
-Lệnh đầu tái tạo CSV/hình phân tích. Lệnh sau tái tạo tài sản báo cáo và hai PDF, cần XeLaTeX ngoài môi trường Python. Nếu raw chưa có, bỏ \code{--no-download} để tải theo config. Cache có sẵn được đọc, không gọi lại Gemini. OpenAI Codex hỗ trợ tích hợp, kiểm chứng và biên tập; Gemini tạo dự đoán, còn nhãn chuẩn do các thành viên gán. Vai trò AI và cách nhóm kiểm tra được công khai trong \path{AI_USAGE.md}.
+Lệnh đầu tạo lại CSV và hình từ cache Gemini. Nếu còn thiếu raw, bỏ \code{--no-download} để tải theo config. Lệnh sau dùng XeLaTeX để xuất PDF chính từ kết quả vừa chạy. Nhóm dùng 100 nhãn tay để đánh giá dự đoán. Phạm vi AI hỗ trợ và cách nhóm kiểm chứng được ghi trong \path{AI_USAGE.md}.
 
 \section{Kết luận}
 \textbf{Nhóm tái tạo được bảy KPI và phần phân tích LLM, đồng thời chỉ ra nơi kết quả cần được đọc thận trọng.} Trên cohort được giao, số listing không đổi nhưng lịch sẵn có giảm, giá cuối kỳ khác nhau giữa các vùng và tiện nghi nổi bật trong lời chê. Gemini đạt 96\% accuracy trên 100 nhãn tay song bỏ sót phần lớn mixed trong tập này. Giữ mẫu số, phạm vi và sai số cạnh từng kết luận giúp kết quả có thể kiểm tra lại; các bước tiếp theo nên ưu tiên thẩm định ca sai và nhãn khía cạnh, thay vì suy rộng thành kết luận toàn thị trường.
@@ -182,7 +188,7 @@ Lệnh đầu tái tạo CSV/hình phân tích. Lệnh sau tái tạo tài sản
 \bibitem{pricing} Google. \textit{Gemini Developer API pricing}, Standard, Gemini 3.5 Flash-Lite. \url{https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite}. Truy cập 17/11/2026.
 \end{thebibliography}
 
-\paragraph{Tài liệu bổ sung} Supplement đi kèm giữ bảng KPI theo vùng, QA, prompt/taxonomy, phân tích lỗi, ước tính chi phí và giải thích các đoạn mã quan trọng. Hai tài liệu dùng cùng một bộ CSV, nhãn tay và cache; không lấy số liệu từ ảnh terminal hoặc biểu đồ minh họa. Cách trình bày kết luận trước, bằng chứng và giới hạn theo định hướng Bài 13--14~\cite{story,viz}; thông số mô hình theo tài liệu nhà cung cấp~\cite{model}.
+\paragraph{Tài liệu bổ sung} Phụ lục LaTeX chứa bảng KPI theo vùng, chi tiết QA, prompt, phân tích lỗi, ước tính chi phí và giải thích mã. Thêm \code{--supplement} vào lệnh dựng báo cáo để xuất phụ lục từ cùng bộ kết quả. Báo cáo trình bày kết luận, bằng chứng và giới hạn theo Bài 13--14~\cite{story,viz}. Thông số mô hình theo tài liệu nhà cung cấp~\cite{model}.
 
 \clearpage
 \thispagestyle{plain}
@@ -196,11 +202,11 @@ Lệnh đầu tái tạo CSV/hình phân tích. Lệnh sau tái tạo tài sản
 \renewcommand{\arraystretch}{1.5}
 \begin{tabularx}{\linewidth}{@{}P{3.65cm}P{2.25cm}YP{1.05cm}@{}}\toprule
 Thành viên & MSSV & Phần việc chính & Đóng góp\\\midrule
-Dương Nhật Huy & \mssvblank & Điều phối, tích hợp, cohort và báo cáo chung & 20\%\\
-Mai Anh Đức & \mssvblank & QA, EDA, kiểm tra dữ liệu thiếu và tác động KPI & 20\%\\
-Nguyễn Quốc Hiếu & \mssvblank & KPI listing/host/giá và trực quan hóa không gian & 20\%\\
-Vũ Phạm Khánh Nam & \mssvblank & Calendar, availability, coverage và phân tích thời gian & 20\%\\
-Phan Ngọc Huy & \mssvblank & Reviews, baseline, Gemini, đánh giá và guest KPI & 20\%\\\midrule
+Dương Nhật Huy & 25022865 & Điều phối, tích hợp, cohort và báo cáo chung & 20\%\\
+Mai Anh Đức & 25022831 & QA, EDA, kiểm tra dữ liệu thiếu và tác động KPI & 20\%\\
+Nguyễn Quốc Hiếu & 25022853 & KPI listing/host/giá và trực quan hóa không gian & 20\%\\
+Vũ Phạm Khánh Nam & 25022957 & Calendar, availability, coverage và phân tích thời gian & 20\%\\
+Phan Ngọc Huy & 25022875 & Reviews, baseline, Gemini, đánh giá và guest KPI & 20\%\\\midrule
 \multicolumn{3}{r}{Tổng cộng} & 100\%\\\bottomrule
 \end{tabularx}
 \end{table}

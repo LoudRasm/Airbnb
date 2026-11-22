@@ -1,143 +1,35 @@
-# AI usage
+# Minh bạch sử dụng AI
 
-## Công cụ đã dùng (vào việc gì)
-- OpenAI Codex: tạo starter repository từ tài liệu ZIP và đề bài, ngày 06/10/2026.
-- Gemini API: starter cũ từng có adapter AI; hiện `llm.py` là TODO của TV5.
-  Chưa chạy API và chưa có kết quả LLM thật được kiểm chứng trong khung hiện tại.
+## Công cụ và phạm vi
+
+- **OpenAI Codex** hỗ trợ tạo khung repo, thiết lập luồng kiểm dữ liệu và tích hợp pipeline. Với phần TV1, Codex hỗ trợ viết mã phân tích cohort, hình biến động và kiểm thử. Codex cũng hỗ trợ triển khai phần review của TV5, biên tập báo cáo LaTeX và đối chiếu đầu ra trước khi nộp.
+- **Claude** hỗ trợ TV2 viết quy tắc QA, phân tích thiếu dữ liệu, biểu đồ QA và kiểm thử tương ứng.
+- **Gemini 3.5 Flash-Lite** trích xuất cảm xúc, khía cạnh khen/chê và ngôn ngữ cho 1.000 review được giao. Pipeline dùng cache đã lưu. Kết quả Gemini và baseline được đánh giá trên cùng tập 100 nhãn tay của nhóm.
 
 ## Prompt then chốt
-1. Yêu cầu tạo bộ khung repository nhóm 5 người, bốn snapshot Toronto, pipeline và Git workflow (run_pipeline.py, src/, docs/).
-Nhóm bổ sung 5–10 prompt thực tế trong quá trình làm; không tạo prompt giả.
 
-## AI sai ở đâu
-Ví dụ đã xác minh ngày 14/10/2026: docs/ROADMAP.md còn yêu cầu weekend pricing từ calendar
-và 200 nhãn tay; docs/DATA_CHECK_WORKFLOW.md nói script calendar bị xóa và pipeline chưa lọc
-workbook. Những mô tả này không khớp yêu cầu dữ liệu/source hiện tại. Đã bỏ phân tích giá
-calendar, dùng 100 review được đánh dấu và sửa mô tả script/loader. Các ví dụ tiếp theo cần
-ghi lỗi thực tế, cách kiểm chứng và commit; không tạo ví dụ giả.
+Các yêu cầu dưới đây được tóm tắt từ quá trình làm bài.
+
+| Công cụ | Yêu cầu chính | Tệp hoặc bước |
+|---|---|---|
+| Codex | Tạo khung repo cho năm thành viên và bốn mốc Toronto, có một lệnh chạy chung | `run_pipeline.py`, `configs/`, `README.md` |
+| Codex | Đọc đúng danh sách ID từ workbook, tách phần kiểm tra và ghép CSV bàn giao | `scripts/check_data.py`, `src/airbnb/data_check.py` |
+| Codex | Chuẩn bị phiếu gán nhãn, chia 100 ID thành năm phần và kiểm tra khi ghép | `scripts/label_reviews.py`, `docs/MANUAL_LABELING.md` |
+| Codex | Tính mức hiện diện và thay đổi thuộc tính của cohort qua các mốc | `src/airbnb/analysis.py`, `src/airbnb/viz_market.py` |
+| Claude | Làm sạch listings, kiểm quy tắc và vẽ tác động QA trên bốn mốc | `src/airbnb/qa.py`, `src/airbnb/eda.py`, `src/airbnb/viz_qa.py` |
+| Codex | Xây luồng xử lý review, baseline, cache, đánh giá và KPI trải nghiệm | `src/airbnb/reviews.py`, `baseline.py`, `llm.py`, `evaluate.py`, `review_kpi.py` |
+| Gemini | Đọc từng review và trả JSON cho cảm xúc, khía cạnh khen/chê và ngôn ngữ | Prompt trong `src/airbnb/llm.py`, đầu ra trong `data/processed/llm_cache.jsonl` |
+| Codex | Rà pipeline và viết gọn báo cáo bằng bảng, ảnh và số liệu sinh từ lần chạy thật | `src/airbnb/pipeline.py`, `scripts/build_report.py`, `reports/` |
+
+## Sai sót đã phát hiện và sửa
+
+- Bản nháp từng đề xuất phân tích giá từ calendar và dùng 200 nhãn. Nhóm đối chiếu đề và workbook rồi giới hạn phân tích giá ở listings mốc cuối, dùng 100 nhãn tay được giao.
+- Mã QA ban đầu tính trung vị “trước xử lý” sau khi đã sửa giá. Ca kiểm thử có giá ngoại lai phát hiện lỗi và bảng QA được sửa để đo đúng trước và sau.
+- Nhận định “giá thiếu không ngẫu nhiên” vượt quá bằng chứng. Báo cáo giới hạn kết luận ở các đặc điểm quan sát được trong mẫu.
+- Chỉ số accuracy từng che khuất sai số lớp mixed. Trên tập nhãn tay, Gemini đạt 96% accuracy nhưng chỉ nhận đúng 3/7 review mixed. Báo cáo ghi cả hai kết quả và ma trận nhầm lẫn.
 
 ## Nhóm kiểm chứng thế nào
-Starter có kiểm thử trên fixture giả. Nhóm phải kiểm chứng dữ liệu thật, giá trị KPI,
-LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùng số liệu demo trong báo cáo.
 
-## Cập nhật 06/10/2026 — README nhóm 10
-- Codex đối chiếu source local, bản phân công Markdown và đề bài; cập nhật README với
-  remote GitHub nhóm, 16 URL dữ liệu, bảng owner/module và trạng thái phần còn thiếu.
-- Bổ sung lại các dotfile setup/Git/CI đang thiếu trong bản repo Desktop.
-- Prompt: kiểm tra chia code theo phân công, dùng code chung trên main/pull và viết README
-  đúng nhóm, đường dẫn GitHub/dataset đầy đủ.
+Nhóm chốt phạm vi theo workbook, xác nhận lại mốc tháng 12 với giảng viên và giữ nguyên các phiếu gán nhãn tay. Mỗi thành viên phụ trách phần được giao. Nhóm trưởng tích hợp các phần và đối chiếu kết quả với dữ liệu đầu vào.
 
-## Cập nhật 14/10/2026 — luồng xuất kết quả và tổng hợp
-- Codex tạo script kiểm tra chung theo workbook, bốn phần cho TV2–TV5 và lệnh merge của TV1.
-- Tích hợp lại phần calendar của Nam: đọc đúng path, bỏ phụ thuộc pandas/NumPy và ID hard-code,
-  xuất CSV/notes, báo lỗi ngày mà không dừng các mốc còn lại. Lịch sử script gốc còn trong Git.
-- Prompt: tạo luồng chạy kiểm tra → file kết quả → push lên repo để mọi người làm theo.
-- Kiểm chứng: test ID dài, lọc review_id độc lập listing_id, đủ bốn mốc, lỗi ngày,
-  thiếu dữ liệu, kết quả cũ/khác workbook và chặn merge khi chưa đủ phần.
-- Chạy lại kiểm tra trên raw Toronto local; không gọi API LLM, không sửa file gốc hoặc workbook.
-
-## Cập nhật 14/10/2026 — khung TODO theo phân công
-- Theo yêu cầu nhóm trưởng, Codex bỏ implementation AI trong các module phân tích cả kỳ,
-  giữ interface, TODO theo TV1–TV5, owner và trạng thái READY=False để thành viên tự làm.
-- Giữ nguyên data check đã kiểm chứng, script/CSV calendar do Nam merge ở PR #1
-  và script/kết quả listings của Đức ở PR #2/#3.
-- TV1 có loader/orchestration và import các module; mỗi owner tự triển khai logic, test và report section.
-- Prompt: giữ data check, để TODO theo phân công, sau này ghép code thành viên qua import.
-- Kiểm chứng: 11 tests cho data check và integration bằng test doubles; chưa có algorithm/LLM thật trong khung TODO.
-- Implementation AI cũ vẫn ở lịch sử Git; không đổi tác giả commit hoặc coi khung này là code do thành viên tự viết.
-
-## Cập nhật 14/10/2026 — hướng dẫn module và Git workflow
-
-- Prompt: giữ hướng module hiện tại, làm sạch README/hướng dẫn đầy đủ và commit lên Git.
-- Codex chỉnh tài liệu phân công, triển khai, kết quả bàn giao, branch/PR/merge/pull và mẫu PR.
-- Giữ source, TODO/READY, data check và script/kết quả đã merge của thành viên.
-- Sửa tài liệu cũ mâu thuẫn; ghi rõ ngày theo workbook, giới hạn KPI neighbourhood/cohort
-  và việc chạy trên mốc ngoài workbook chưa được xác minh.
-- Kiểm chứng: rà đường dẫn/lệnh/interface trong tài liệu; chạy bộ 11 tests và lệnh --status.
-  Không tải lại raw, không chạy lại API hoặc biến module TODO thành thuật toán đã hoàn thành.
-
-## Cập nhật 15/10/2026 — giải thích các file vẽ trong README
-
-- Prompt: kiểm tra đã ghi đầy đủ note hướng dẫn trong README sau khi giải thích các file viz.
-- Codex bổ sung ý nghĩa viz, bảng file/người phụ trách, luồng render và đường dẫn hình,
-  chữ ký hàm, trạng thái TODO và quy tắc giữ module được sử dụng trong bản final.
-- Kiểm chứng: đối chiếu với `src/airbnb/viz.py` và chữ ký các module vẽ; kiểm diff tài liệu.
-  Không sửa source hoặc chạy lại thuật toán/API cho thay đổi tài liệu này.
-
-## Cập nhật 15/11/2026 — nhãn tay và checklist hoàn thiện
-
-- Prompt: dựa vào status mới, viết hướng dẫn gán nhãn thủ công và checklist từng người;
-  chưa sửa lỗi cá nhân, thành viên tự hoàn thiện/PR rồi nhóm trưởng finalize.
-- Codex đối chiếu main 0df65f5, xác nhận 42 test QA đạt và calendar đang lỗi import/cú pháp.
-- Bổ sung guideline, checklist TV1–TV5, liên kết README và công cụ chuẩn bị/kiểm/ghép nhãn
-  độc lập pipeline. Không sửa source, cờ READY, thuật toán hay test cá nhân của thành viên.
-- Trích đúng 100 ID Nhãn tay từ workbook, text raw mốc 2026-06-15, chia 20/người; mọi sentiment
-  khởi tạo rỗng. AI không gán nhãn các review thật. Workbook/raw chỉ được đọc; CSV nhãn cuối còn header.
-- Test công cụ dùng review/nhãn tổng hợp giả để kiểm ID dài, scope, text/nguồn thay đổi,
-  nhãn trống/sai/ca khó, từ chối ghi đè và ghép đủ 100 dòng; không gọi API LLM.
-- Kết quả: 9 tests nhãn, 42 QA và 6 data check đạt; full discovery có 1 lỗi tải test_pipeline
-  do calendar của Nam (5 case integration chưa chạy). Không sửa/tắt test hoặc CI để che lỗi.
-
-## Cập nhật 15/11/2026 — hoàn thiện phần code riêng TV1
-
-- Prompt: hoàn thành nốt phần của nhóm trưởng, không liên quan phần của thành viên khác.
-- Codex triển khai analysis.cohort_summary/churn và viz_market, giữ tên API legacy nhưng
-  giới hạn ở hiện diện/thay đổi thuộc tính cohort; không coi ID mới/mất là market entry/exit.
-- Thêm runner TV1 độc lập không import module cá nhân khác, SVG bằng stdlib, tests và báo cáo;
-  nối thêm bảng/fields TV1 vào pipeline do TV1 sở hữu. Test double QA trong test_pipeline của
-  TV1 được chỉnh giữ một dòng/ID đúng contract, không thay implementation QA của Đức.
-- Bên nhận phân tích giả định giữ theo kế hoạch gốc, ghi vào config. Đọc raw đúng ID để kiểm
-  chứng riêng; không chạy thuật toán/calendar/LLM của người khác, không đổi raw/workbook.
-- Kết quả thực đo: 1.000 listing mỗi mốc; host khác nhau 930/930/937/930; host_id đổi
-  3/35/37 trên 1.000 cặp, room_type đổi 0/0/0. Không giả làm kết quả toàn pipeline sau QA.
-- Kiểm chứng: 14 tests TV1 đạt; toàn discovery 71 đạt/1 lỗi import calendar có sẵn. Bốn case
-  orchestration đạt khi dùng calendar giả tạm; status với source calendar thật vẫn lỗi.
-  Hai SVG thật đã được render và xem bố cục. Không sửa source/test/READY của thành viên khác.
-- IMPLEMENTED=True nhưng READY=False chờ peer review theo workflow; 20 nhãn tay TV1 giữ
-  trống để con người đọc/chốt, không dùng AI tạo gold labels hoặc ký thay reviewer.
-- Status TV1 phân biệt REVIEW với TODO khi import chung chạy được; guard vẫn chặn module
-  chưa READY. Test guard dùng trạng thái chưa READY tường minh để không phụ thuộc tiến độ thật của nhóm.
-
-## Cập nhật 15/11/2026 — hoàn thiện phần TV5 (Phan Ngọc Huy)
-
-- Prompt: hoàn thành gói nhãn cá nhân `tv5.json`, triển khai các module TV5 (`reviews.py`,
-  `baseline.py`, `llm.py`, `evaluate.py`, `review_kpi.py`, `viz_reviews.py`), script chạy độc lập
-  `scripts/run_tv5.py`, bộ kiểm thử `tests/test_tv5.py`, báo cáo `reports/sections/tv5.md` và review code cho TV4.
-- Triển khai:
-  - `reviews.collect` khử trùng lặp theo `review_id`, giữ nguyên ID chữ số dài, phát hiện xung đột
-    văn bản giữa các mốc (`review_text_collision`) và đảm bảo văn bản khớp mốc cuối `2026-06-15`.
-  - `baseline.predict` và `predict_with_aspects` phân loại đa ngữ theo mệnh đề, phủ định và liên từ đối lập.
-  - `llm.validate`, `llm.analyze` và `llm.estimate_cost` kiểm tra chặt schema/taxonomy 8 khía cạnh,
-    cache JSONL kèm SHA-256 provenance (`review_id`, `text_sha256`, `model`, `prompt_sha256`),
-    retry lỗi mạng/timeout và không biến lỗi API thành nhãn mặc định.
-  - `evaluate.evaluate` tính Accuracy/Macro-F1 và chặn thiếu dự đoán hoặc trùng ID.
-  - `review_kpi.guest_kpi` tính KPI 7 (`guest_issue_rate`) và tỷ lệ khía cạnh/khu vực không nhân bội theo snapshot.
-  - `viz_reviews.render` sinh 4 biểu đồ SVG chuẩn ghi rõ phạm vi mẫu và `n`.
-- Kiểm chứng: `python scripts/label_reviews.py check --member tv5` đạt 0 lỗi; 10/10 unit tests
-  trong `tests/test_tv5.py` đạt; `READY = False`, `IMPLEMENTED = True` chờ TV2 (Đức) review.
-
-## Cập nhật 2026-11-17 — sửa sau rà soát và chuẩn hóa pipeline
-
-- Yêu cầu: sửa lỗi đã rà soát, dọn phần trùng, cập nhật theo đề mới, kiểm dữ liệu trước/sau và đẩy main;
-  giữ nguyên nhãn tay cùng phần code đúng của các thành viên.
-- Codex dùng thuật toán đã có của từng owner, sửa điểm nối QA đầy đủ, market/neighbourhood theo mốc,
-  denominator calendar, guest join và output riêng từng chế độ. Tách runner/schema/reader nhãn;
-  bỏ path/ID ghi cứng trong script cũ và bản sao dictionary/catalog, CSV fallback cá nhân của notebook.
-- Chuyển mặc định sang cache-only để chấm không API key; thêm lệnh tạo/kiểm cache riêng và hướng dẫn.
-  Người dùng xác nhận chưa có cache thật, nên không tạo dự đoán hoặc nhãn giả để hoàn thành bài.
-- Thêm/sửa test cho hợp đồng đã thay đổi, chạy dữ liệu thật không LLM và đối chiếu CSV/raw SHA256
-  với data check ban đầu; xem docs/VERIFICATION.md và reports/data_alignment_2026-11-16.json.
-- 100 nhãn tay/phiếu được giữ nguyên từng byte; AI không gán lại nhãn. Các cache giả dùng trong test
-  chỉ nằm ở thư mục tạm. Không gọi Gemini thật, không chỉnh tác giả commit cũ, không tag final.
-
-## Cập nhật 2026-11-17 — báo cáo và tài liệu bổ sung từ kết quả thật
-
-- Yêu cầu: hoàn thiện báo cáo có sẵn theo cấu trúc kết luận → bằng chứng → giới hạn, giữ kiểu trình bày,
-  dùng số liệu/hình thật, mỗi thành viên 20%, để MSSV tự điền; chuyển code/bảng dài sang supplement.
-- Viết lại báo cáo LaTeX, sinh hình từ CSV/GeoJSON, dùng cùng số đo cho bảng/hình; thêm script tái tạo,
-  supplement và source để chỉnh sửa. Giữ phần bàn giao cá nhân trong reports/sections làm lịch sử.
-- Sửa nhận định cũ: calendar hai mốc cuối có coverage 99,20%/98,48%; Gemini 96% accuracy nhưng recall mixed 3/7;
-  120 review có negative aspect khác KPI 64 mixed/negative. Không gọi model “xuất sắc” từ accuracy tổng thể.
-- Đếm 679.139 review duy nhất ở raw toàn thành phố mốc cuối cho ước tính chi phí; không gọi 5.000 review được giao là toàn Toronto.
-  Ước tính ký tự/token không gồm thinking token và không phải hóa đơn.
-- Các PDF được render và kiểm tra từng trang; số liệu được đối chiếu lại với CSV, ma trận nhầm lẫn và mã băm nguồn.
+Bản nộp được kiểm bằng 139 tests và chạy lại pipeline trên dữ liệu thật. CSV data check khớp bản tổng hợp ban đầu. Số liệu trong PDF được đối chiếu với CSV KPI và bảng đánh giá trên 100 nhãn tay. Xem [hồ sơ kiểm chứng](docs/VERIFICATION.md) và [báo cáo chính](reports/Nhom10_InsideAirbnb_Report.pdf).

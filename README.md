@@ -7,19 +7,18 @@ Mã dữ liệu: **DSE2049-C01-G10-toronto**. Tiền tệ: **CAD**.
 · [Đề bài hiện hành](https://courses.iaidev.com/programming-for-data-processing/2627-1/projects/project_airbnb.html)
 · [Nguồn Toronto](https://data.insideairbnb.com/canada/on/toronto/)
 
-## Trạng thái ngày 2026-11-17
+## Bản nộp cuối
 
-Code của các thành viên đã được nối vào luồng chung; `READY` biểu thị code tích hợp, **không có nghĩa bài đã sẵn sàng nộp**.
-100 nhãn tay được giữ nguyên. Cache Gemini thật đã được bàn giao cho đủ **1.000 review**.
-Đã chạy lại pipeline đầy đủ từ cache, chặn mạng/API và kiểm trên cùng **100 nhãn tay**:
+Pipeline đã tích hợp code của năm thành viên. Repo có cache Gemini cho đủ **1.000 review** và giữ nguyên **100 nhãn tay**.
+Kết quả trên cùng 100 nhãn tay:
 Gemini accuracy 96%, macro-F1 0,8594; baseline 95% và 0,8278. Gemini chỉ nhận đúng 3/7 review mixed,
 nên không dùng riêng accuracy để tuyên bố mô hình vượt trội ở mọi lớp.
 
-[Báo cáo và supplement](reports/README.md) dùng số liệu/hình sinh từ lần chạy đầy đủ.
-Báo cáo chính gồm 9 trang, có trang thông tin nhóm để điền MSSV; chèn một trang bìa riêng sẽ thành 10 trang.
-Mốc **2025-12-12 đã được nhóm trưởng xác nhận với giảng viên**. Chưa tạo tag final;
-cần điền MSSV, bìa và kiểm tra bản nộp trước khi chốt.
-Xem [hướng dẫn cache](docs/LLM_CACHE.md) để biết cách chuẩn bị lại nếu đổi model/prompt/text.
+[Tải PDF báo cáo chính](reports/Nhom10_InsideAirbnb_Report.pdf)
+
+PDF có 9 trang và đã có đủ MSSV của năm thành viên.
+Mốc **2025-12-12 đã được nhóm trưởng xác nhận với giảng viên**.
+[Checklist nộp](docs/FINAL_CHECKLIST.md) · [Minh bạch sử dụng AI](AI_USAGE.md) · [Hướng dẫn cache](docs/LLM_CACHE.md)
 
 Bên nhận phân tích giả định: nhóm theo dõi lưu trú ngắn hạn và du lịch Toronto. Mục tiêu là theo dõi
 cơ cấu nguồn cung trong cohort được giao, mức giá cuối kỳ, lịch sẵn có và vấn đề trải nghiệm khách.
@@ -41,7 +40,7 @@ python -m pip install -r requirements.txt
 Windows PowerShell: `py -3.13 -m venv .venv`, sau đó `.venv\Scripts\Activate.ps1`.
 Repo riêng tư cần quyền truy cập GitHub của nhóm.
 
-Sau khi cache thật đã được tạo và commit, **một lệnh chạy toàn bộ** là:
+**Chạy toàn bộ bằng cache có sẵn trong repo**
 
 ```bash
 python run_pipeline.py --config configs/toronto.yaml
@@ -51,7 +50,7 @@ Lệnh tải những raw file còn thiếu theo config, đọc tập ID chính t
 đánh giá trên 100 nhãn tay → xuất CSV và hình. Không đọc `.env`, không gọi Gemini.
 Nếu raw đã đủ, thêm `--no-download` để không dùng mạng tải dữ liệu.
 
-Trong lúc chưa có cache, chạy phần không LLM:
+Các lệnh kiểm tra riêng gồm chế độ không LLM, demo, trạng thái module và kiểm thử:
 
 ```bash
 python run_pipeline.py --config configs/toronto.yaml --skip-llm --no-download
@@ -93,6 +92,7 @@ data/assignments/assignment.xlsx Workbook gốc cục bộ, gitignore
 data/raw/YYYY-MM-DD/            File nguồn, gitignore, không sửa
 data/processed/                 Cache cần commit; các CSV sinh ra được gitignore
 reports/checks/                 Báo cáo kiểm tra đầu vào ban đầu, giữ nguyên
+reports/Nhom10_InsideAirbnb_Report.pdf  PDF chính để nộp
 reports/generated/              QA, đánh giá, metadata của các lần chạy
 reports/sections/               Phần báo cáo của từng thành viên
 figures/                        Hình sinh tự động
@@ -149,6 +149,7 @@ không trộn hình cũ, CSV từ notebook hoặc hai chế độ vào một bá
 Các bảng chính: `listings.csv`, `calendar_summary.csv`, `reviews.csv`, `baseline.csv`,
 `kpi_market.csv` (mốc × analysis_area), `kpi_neighbourhood.csv` (mốc × neighbourhood),
 `kpi_calendar.csv`, `kpi_cohort.csv`, `kpi_churn.csv`; chế độ đầy đủ thêm `llm_reviews.csv`, `kpi_guest.csv`.
+Lần chạy đầy đủ cũng xuất các bảng KPI vào `data/processed/kpi_*.csv` theo đường dẫn chấm của đề.
 QA xuất `qa_report.csv`, `qa_missingness.csv`, `qa_kpi_impact.csv`, `eda_flags.csv`;
 đánh giá xuất `evaluation.csv` trên cùng 100 nhãn thật cho baseline và Gemini.
 Bản `reports/qa_report.csv` ở gốc là bản QA của lần chạy thật gần nhất.
@@ -159,10 +160,10 @@ Giá ngoài mốc được phép dùng để trống; mẫu số 0 được th�
 Guest KPI theo vùng chỉ dùng review nối được với cohort listing và có chỉ số join coverage riêng.
 Bản đồ HTML có thể cần Internet để tải thư viện/nền bản đồ khi mở; CSV và hình PNG/SVG vẫn được sinh cục bộ.
 
-## Tạo cache thật trước khi nộp — TV5/nhóm trưởng
+## Kiểm hoặc tạo lại cache Gemini — TV5/nhóm trưởng
 
-Đọc taxonomy/prompt trong `src/airbnb/llm.py` và config trước khi chạy; đặt `GEMINI_API_KEY` trong môi trường
-cục bộ, không commit khóa hoặc dán vào chat. Script không tự đọc `.env`.
+Cache trong repo đủ để chấm. Nếu cần tạo lại vì thay model, prompt hoặc mẫu, đọc taxonomy/prompt trong
+`src/airbnb/llm.py`. Script tạo cache nhận `GEMINI_API_KEY` từ môi trường hoặc `.env` cục bộ đã được gitignore.
 
 ```bash
 python scripts/generate_llm_cache.py --config configs/toronto.yaml
