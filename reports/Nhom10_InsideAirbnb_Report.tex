@@ -27,7 +27,7 @@ Ba câu hỏi dẫn dắt báo cáo là: \textbf{RQ1}, cơ cấu không gian và
 \caption{Bảy KPI chính sau QA. Giá dùng CAD/đêm; tỷ lệ tính trên mẫu số hợp lệ tương ứng.}\label{tab:kpi}
 \begin{tabularx}{\linewidth}{@{}P{3.7cm}YP{4.15cm}@{}}\toprule
 KPI & Công thức và ý nghĩa & Kết quả chính\\\midrule
-Nguồn cung quan sát & Số mã chỗ ở duy nhất theo mốc/khu vực & 1.000/mốc; Waterfront 209/1.000 ở mốc cuối\\
+Nguồn cung quan sát & Số mã chỗ ở duy nhất theo mốc/khu vực -> phản ánh quy mô, mức độ tập trung địa lý& 1.000/mốc; Waterfront 209/1.000 ở mốc cuối\\
 Giá niêm yết trung vị & Trung vị giá hợp lệ ở mốc cuối & \GlobalMedian{} CAD/đêm; n=980\\
 Tỷ lệ toàn bộ nhà/căn hộ & Entire home/apt / chỗ ở có loại phòng & 875/1.000 = 87,5\%\\
 Tỷ lệ chỗ ở thuộc host nhiều listing & Listing thuộc host có hơn một listing trong mẫu / listing có host ID & 116/1.000 = 11,6\% ở mốc cuối\\
@@ -65,7 +65,12 @@ Gemini \code{gemini-3.5-flash-lite} nhận văn bản review và trả JSON gồ
 \clearpage
 \section{Kết quả}
 \subsection{RQ1 Waterfront chiếm một phần năm mẫu và giá khác nhau giữa các vùng}
-\textbf{Waterfront Communities--The Island tập trung 209/1.000 chỗ ở trong mẫu, tương đương 20,9\%.} Quy mô này gấp khoảng 4,4 lần Niagara (47 chỗ ở), khu vực đứng tiếp theo. Hình~\ref{fig:space} dùng đúng neighbourhood từ GeoJSON và CSV KPI; phần còn lại được gộp nhưng vẫn giữ tổng mẫu 1.000. Tám vùng chữ nhật A01--A08 của workbook là một cách chia khác, không phải neighbourhood hành chính.
+\textbf{Waterfront Communities--The Island tập trung 209/1.000 chỗ ở trong mẫu, tương đương 20,9\%.} Quy mô này gấp khoảng 4,4 lần Niagara (47 chỗ ở), khu vực đứng tiếp theo. Hình~\ref{fig:space} dùng đúng neighbourhood từ GeoJSON và CSV KPI; phần còn lại được gộp nhưng vẫn giữ tổng mẫu 1.000. Tám vùng chữ nhật A01--A08 của workbook là một cách chia khác, không phải neighbourhood hành chính.Điều này phản ánh 
+
+
+Số listing tập trung cao tại phường Waterfront Communities-The Island (209) và Niagara (47) do nằm trực diện hồ Lake Ontario, có cảnh quan đẹp nhất thành phố, dông dân cư, nhiều tiện ích xã hội và là đầu mối giao thông công cộng với các nhà ga, sân bay
+Càng gần khu vực lõi trung tâm (giải mép phía Nam giáp với hồ Lake Ontario), cả số lượng chỗ ở và giá trung vị đều có xu hướng cao hơn. Điều này phản ánh đúng tính chất của khu vực này. Những vùng khác có giá trung vị lớn nằm ngoài vung này trên bản đồ chủ yếu là do số lượng listings quá ít, chưa đủ kết luận.
+
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{report_space.pdf}
