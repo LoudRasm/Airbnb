@@ -85,33 +85,61 @@ def viz1_median_price(df_listings,df_kpi_summary, gdf_areas,cfg, path):
 
 
 
-def viz2_choropleth(df_listings,toronto_geojson, cfg, path, neighbourhood_kpi=None):
-    plt = _pyplot()
+def viz2_choropleth(df_listings, toronto_geojson, cfg, path, neighbourhood_kpi=None):
     FINAL_SNAPSHOT = cfg.get('price_snapshot', cfg['snapshots'][-1])
-    CURRENCY= cfg['currency']
-    df_final = df_listings[df_listings['snapshot_date'] == FINAL_SNAPSHOT].copy()
-    hood_stats = pd.DataFrame(neighbourhood_kpi if neighbourhood_kpi is not None else neighbourhood_summary(df_listings, cfg))
-    hood_stats = hood_stats[hood_stats['snapshot_date'] == FINAL_SNAPSHOT].copy()
+    CURRENCY = cfg['currency']
+    
+    hood_stats = pd.DataFrame(
+        neighbourhood_kpi if neighbourhood_kpi is not None 
+        else neighbourhood_summary(df_listings, cfg)
+    )
+    if 'snapshot_date' in hood_stats.columns:
+        hood_stats = hood_stats[hood_stats['snapshot_date'] == FINAL_SNAPSHOT].copy()
+
+    valid_prices = hood_stats['median_price'].dropna()
+    min_price = valid_prices.min() if not valid_prices.empty else 0
+    max_price = valid_prices.quantile(0.95) if not valid_prices.empty else 500
 
     fig_choropleth = px.choropleth_mapbox(
         hood_stats,
         geojson=toronto_geojson,
         locations='neighbourhood_cleansed',
-        featureidkey="properties.neighbourhood",  # Ghép với thuộc tính 'neighbourhood' trong GeoJSON
+        featureidkey="properties.neighbourhood",
         color='median_price',
         color_continuous_scale="YlOrRd",
-        range_color=(hood_stats['median_price'].min(), hood_stats['median_price'].quantile(0.95)),
-        mapbox_style="open-street-map",
+        range_color=(min_price, max_price),
+        mapbox_style="white-bg",  # Đặt white-bg để tự định nghĩa layer OpenStreetMap bên dưới
         zoom=9.8,
         center={"lat": 43.70, "lon": -79.38},
-        opacity=0.7,
-        labels={'median_price': f'Giá trung vị ({CURRENCY})', 'supply': 'Số listing', 'neighbourhood_cleansed': 'Khu vực'},
-        hover_data={'neighbourhood_cleansed': True, 'median_price': ':$,.0f', 'supply': True},
+        opacity=0.65,
+        labels={
+            'median_price': f'Giá trung vị ({CURRENCY})', 
+            'supply': 'Số listing', 
+            'neighbourhood_cleansed': 'Khu vực'
+        },
+        hover_data={'neighbourhood_cleansed': True, 'median_price': ':.0f', 'supply': True},
         title=f"<b>Bản đồ Choropleth Tương tác: Giá Trung vị theo Khu vực Hành chính ({FINAL_SNAPSHOT})</b>"
     )
     
-    fig_choropleth.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, height=600)
-    fig_choropleth.write_html(path)
+    # Thêm lớp bản đồ OpenStreetMap qua server mirror của Pháp (OpenStreetMap France - không bị chặn 403)
+    fig_choropleth.update_layout(
+        mapbox_layers=[
+            {
+                "below": 'traces',
+                "sourcetype": "raster",
+                "sourceattribution": '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                "source": [
+                    "https://a.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
+                    # Hoặc server Đức: "https://tile.openstreetmap.de/{z}/{x}/{y}.png"
+                ]
+            }
+        ],
+        margin={"r": 0, "t": 40, "l": 0, "b": 0}, 
+        height=600
+    )
+    
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig_choropleth.write_html(str(path))
     print(f'Đã lưu fig2 ở {path}')
     return path
 
