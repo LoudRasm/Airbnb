@@ -164,9 +164,9 @@ Ba giới hạn chi phối mọi kết luận. \textbf{Thứ nhất}, cohort 1.0
 Kết quả trong báo cáo lấy từ lần chạy đầy đủ của mã nguồn \code{\SourceCommit}, Python 3.13.7 và dependencies ghim phiên bản. Lần kiểm chứng chặn mọi kết nối mạng/API nhưng vẫn hoàn thành 1.000 dự đoán từ cache và hai bảng đánh giá. Các tệp đầu ra và mã băm cache được ghi trong Supplement; dữ liệu nguồn, workbook và 100 nhãn tay không bị sửa.
 \begin{quote}\small\ttfamily
 python run\_pipeline.py --config configs/toronto.yaml --no-download\\
-python scripts/build\_report.py --no-download
+python scripts/build\_report.py --skip-pipeline
 \end{quote}
-Lệnh đầu tái tạo CSV/hình phân tích. Lệnh sau tái tạo tài sản báo cáo và hai PDF, cần XeLaTeX ngoài môi trường Python. Nếu raw chưa có, bỏ \code{--no-download} để tải theo config. Cache có sẵn được đọc, không gọi lại Gemini. OpenAI Codex hỗ trợ tích hợp, kiểm chứng và biên tập; Gemini tạo dự đoán, còn nhãn chuẩn do các thành viên gán. Vai trò AI và cách nhóm kiểm tra được công khai trong \path{AI_USAGE.md}.
+Lệnh đầu tạo lại CSV và hình từ cache Gemini. Nếu còn thiếu raw, bỏ \code{--no-download} để tải theo config. Lệnh sau dùng XeLaTeX để xuất PDF chính từ kết quả vừa chạy. Nhóm dùng 100 nhãn tay để đánh giá dự đoán. Phạm vi AI hỗ trợ và cách nhóm kiểm chứng được ghi trong \path{AI_USAGE.md}.
 
 \section{Kết luận}
 \textbf{Nhóm tái tạo được bảy KPI và phần phân tích LLM, đồng thời chỉ ra nơi kết quả cần được đọc thận trọng.} Trên cohort được giao, số listing không đổi nhưng lịch sẵn có giảm, giá cuối kỳ khác nhau giữa các vùng và tiện nghi nổi bật trong lời chê. Gemini đạt 96\% accuracy trên 100 nhãn tay song bỏ sót phần lớn mixed trong tập này. Giữ mẫu số, phạm vi và sai số cạnh từng kết luận giúp kết quả có thể kiểm tra lại; các bước tiếp theo nên ưu tiên thẩm định ca sai và nhãn khía cạnh, thay vì suy rộng thành kết luận toàn thị trường.
@@ -183,7 +183,7 @@ Lệnh đầu tái tạo CSV/hình phân tích. Lệnh sau tái tạo tài sản
 \bibitem{pricing} Google. \textit{Gemini Developer API pricing}, Standard, Gemini 3.5 Flash-Lite. \url{https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite}. Truy cập 17/11/2026.
 \end{thebibliography}
 
-\paragraph{Tài liệu bổ sung} Supplement đi kèm giữ bảng KPI theo vùng, QA, prompt/taxonomy, phân tích lỗi, ước tính chi phí và giải thích các đoạn mã quan trọng. Hai tài liệu dùng cùng một bộ CSV, nhãn tay và cache; không lấy số liệu từ ảnh terminal hoặc biểu đồ minh họa. Cách trình bày kết luận trước, bằng chứng và giới hạn theo định hướng Bài 13--14~\cite{story,viz}; thông số mô hình theo tài liệu nhà cung cấp~\cite{model}.
+\paragraph{Tài liệu bổ sung} Phụ lục LaTeX chứa bảng KPI theo vùng, chi tiết QA, prompt, phân tích lỗi, ước tính chi phí và giải thích mã. Thêm \code{--supplement} vào lệnh dựng báo cáo để xuất phụ lục từ cùng bộ kết quả. Báo cáo trình bày kết luận, bằng chứng và giới hạn theo Bài 13--14~\cite{story,viz}. Thông số mô hình theo tài liệu nhà cung cấp~\cite{model}.
 
 \clearpage
 \thispagestyle{plain}
