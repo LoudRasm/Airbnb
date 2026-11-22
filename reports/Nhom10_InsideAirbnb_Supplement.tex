@@ -44,7 +44,7 @@ Bảng & Dòng & Ý nghĩa\\\midrule
 \caption{Quyết định QA chính và tác động trong mẫu được giao.}
 \begin{tabularx}{\linewidth}{@{}P{3.25cm}YY@{}}\toprule
 Nhóm kiểm tra & Quy tắc xử lý & Kết quả/giới hạn\\\midrule
-ID và duplicate key & ID là chuỗi số; loại dòng thiếu/sai khóa; giữ một dòng khi trùng khóa listing trong mốc & Giữ 1.000 listing/mốc sau QA; không biến ID dài thành float\\
+ID và duplicate key & Bỏ dòng thiếu ID, gắn cờ ID sai định dạng, giữ dòng đầu khi trùng khóa listing trong mốc & Giữ 1.000 listing/mốc sau QA; ID được đọc dưới dạng chuỗi\\
 Thiếu trường & Gắn cờ host, room type, analysis area; không suy đoán giá trị thay thế & Các trường này không làm giảm mẫu số supply\\
 Giá ở mốc cuối & Giá không parse, không dương, trên 10.000 CAD được đặt thiếu; giữ listing & 20/1.000 thiếu; median trên 980 giá là \GlobalMedian{} CAD\\
 Kiểu/ngày/tọa độ & Parse hữu hạn, ngày hợp lệ, điểm trong giới hạn cấu hình & Cờ không chứng minh lỗi cần sửa thủ công trong mọi trường hợp\\
@@ -190,5 +190,5 @@ Các trích đoạn sau lấy trực tiếp từ source hiện tại khi build b
 \item Đối chiếu các giá trị trong PDF với \path{reports/generated/report/report_metrics.json}, CSV evaluation và các hình ở \path{figures/report/}. Kiểm thử phần mềm bằng \code{python -m pytest -q}; test fixture không được dùng làm số liệu thật.
 \end{enumerate}
 
-Các tệp chính của bản nộp là \path{reports/Nhom10_InsideAirbnb_Report.pdf} và source tương ứng. Tài liệu này là \path{reports/Nhom10_InsideAirbnb_Supplement.pdf}; \path{report_style.tex} giữ kiểu trình bày dùng chung. \path{reports/generated/report/} và \path{figures/report/} là tài sản tái tạo từ dữ liệu; không sửa tay giá trị để làm hình khớp câu văn. \path{AI_USAGE.md} ghi hỗ trợ của Codex và Gemini; các thành viên vẫn chịu trách nhiệm kiểm số liệu, hoàn thiện bìa/MSSV và giải thích toàn bộ sản phẩm.
+Các tệp chính của bản nộp là \path{reports/Nhom10_InsideAirbnb_Report.pdf} và source tương ứng. Phụ lục được xuất theo yêu cầu vào \path{reports/generated/report/}; \path{report_style.tex} giữ kiểu trình bày dùng chung. Bảng và hình là tài sản tái tạo từ dữ liệu. \path{AI_USAGE.md} ghi hỗ trợ của Codex và Gemini; các thành viên vẫn chịu trách nhiệm kiểm số liệu, hoàn thiện bìa/MSSV và giải thích toàn bộ sản phẩm.
 \end{document}

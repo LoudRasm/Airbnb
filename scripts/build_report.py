@@ -1,4 +1,4 @@
-"""Rebuild the report and supplement from verified pipeline outputs; never call an LLM API."""
+"""Build the report from verified pipeline outputs, with an optional supplement."""
 import argparse
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
@@ -84,7 +84,7 @@ def city_review_stats(raw_path, output):
     return result
 
 
-def produce(config_path, skip_pipeline=False, no_download=False, compile_pdf=True):
+def produce(config_path, skip_pipeline=False, no_download=False, compile_pdf=True, include_supplement=False):
     cfg, root = load_config(config_path)
     if root != ROOT:
         raise ValueError('The report template belongs to this repository; keep the config in its configs directory')
@@ -97,8 +97,10 @@ def produce(config_path, skip_pipeline=False, no_download=False, compile_pdf=Tru
     if metadata.get('demo') or metadata.get('llm_status') != 'validated_cache_only':
         raise ValueError('Report requires a successful full real-data cache-only pipeline run')
     cache_path = root / cfg['llm']['cache']
-    if metadata.get('llm_cache_sha256') != digest(cache_path):
-        raise ValueError('Cache changed after pipeline; rebuild the pipeline before the report')
+    label_path = root / cfg['paths']['manual_labels']
+    if (metadata.get('config') != cfg or metadata.get('llm_cache_sha256') != digest(cache_path)
+            or metadata.get('manual_labels_sha256') != digest(label_path)):
+        raise ValueError('Config, cache or hand labels changed after pipeline; rerun before building the report')
     folder = root / 'reports/generated/report'
     figures = root / 'figures/report'
     folder.mkdir(parents=True, exist_ok=True)
@@ -106,7 +108,7 @@ def produce(config_path, skip_pipeline=False, no_download=False, compile_pdf=Tru
     listing = read_table(source / 'listings.csv')
     prediction = read_table(source / 'llm_reviews.csv')
     review_list = read_table(source / 'reviews.csv')
-    labels = read_table(root / cfg['paths']['manual_labels'])
+    labels = read_table(label_path)
     baseline = read_table(source / 'baseline.csv')
     neighbourhood = read_table(source / 'kpi_neighbourhood.csv')
     market = read_table(source / 'kpi_market.csv')
@@ -125,6 +127,8 @@ def produce(config_path, skip_pipeline=False, no_download=False, compile_pdf=Tru
     for r in prediction:
         for column in ('positive_aspects', 'negative_aspects'):
             r[column] = json.loads(r[column])
+    if {r['review_id']: r for r in prediction} != {r['review_id']: r for r in validated}:
+        raise ValueError('Processed predictions differ from the validated cache; rerun the pipeline')
     final_snap = cfg.get('price_snapshot', cfg['snapshots'][-1])
     latest = [r for r in listing if r['snapshot_date'] == final_snap]
     price = [Decimal(r['price']) for r in latest if r['price']]
@@ -298,12 +302,15 @@ def produce(config_path, skip_pipeline=False, no_download=False, compile_pdf=Tru
         engine=shutil.which('xelatex') or ('/Library/TeX/texbin/xelatex' if Path('/Library/TeX/texbin/xelatex').exists() else None)
         if not engine:raise RuntimeError('Install XeLaTeX/TeX Live or compile the report source on Overleaf with XeLaTeX')
         build=folder/'latex';build.mkdir(exist_ok=True)
-        for stem in ('Nhom10_InsideAirbnb_Report','Nhom10_InsideAirbnb_Supplement'):
+        documents = {'Nhom10_InsideAirbnb_Report': root / 'reports'}
+        if include_supplement:
+            documents['Nhom10_InsideAirbnb_Supplement'] = folder
+        for stem, destination in documents.items():
             for attempt in range(2):
                 completed=subprocess.run([engine,'-interaction=nonstopmode','-halt-on-error',f'-output-directory={build}',f'{stem}.tex'],cwd=root/'reports',stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
                 (build/f'{stem}.console.log').write_text(completed.stdout)
                 if completed.returncode:raise RuntimeError(f'XeLaTeX failed; see {build / (stem+".console.log")}')
-            shutil.copy2(build/f'{stem}.pdf',root/'reports'/f'{stem}.pdf')
+            shutil.move(build/f'{stem}.pdf', destination/f'{stem}.pdf')
     return result
 
 
@@ -313,8 +320,11 @@ def main(argv=None):
     p.add_argument('--no-download',action='store_true')
     p.add_argument('--skip-pipeline',action='store_true',help='Reuse a verified full real run whose cache hash still matches')
     p.add_argument('--assets-only',action='store_true',help='Generate CSV/figure/LaTeX assets without requiring XeLaTeX')
+    p.add_argument('--supplement', action='store_true', help='Also build the supplement under reports/generated/report')
     args=p.parse_args(argv)
-    produce(args.config,args.skip_pipeline,args.no_download,not args.assets_only)
+    if args.assets_only and args.supplement:
+        p.error('--supplement requires PDF compilation')
+    produce(args.config, args.skip_pipeline, args.no_download, not args.assets_only, args.supplement)
 
 
 if __name__=='__main__':

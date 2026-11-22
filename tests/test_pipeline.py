@@ -98,6 +98,7 @@ class PipelineIntegrationTests(unittest.TestCase):
         self.assertEqual(mocks['collect'].call_count,4)
         self.assertEqual(mocks['predict'].call_count,3)
         self.assertTrue((self.root/'data/processed/demo/kpi_market.csv').exists())
+        self.assertFalse((self.root/'data/processed/kpi_market.csv').exists())
         with (self.root/'data/processed/demo/kpi_cohort.csv').open() as stream:
             cohort = list(csv.DictReader(stream))
         self.assertEqual(len(cohort), 4)
@@ -127,6 +128,11 @@ class PipelineIntegrationTests(unittest.TestCase):
         with (self.root/'data/processed/real/llm_reviews.csv').open() as stream:
             row=next(csv.DictReader(stream))
         self.assertEqual(json.loads(row['positive_aspects']),['host'])
+        processed = self.root / 'data/processed'
+        run_kpis = sorted((processed / 'real').glob('kpi_*.csv'))
+        self.assertEqual(len(run_kpis), 6)
+        for path in run_kpis:
+            self.assertEqual((processed / path.name).read_bytes(), path.read_bytes())
 
     def test_bad_member_schema_is_rejected_before_writing(self):
         stack,_=self.stage_doubles(bad_kpi=True)
