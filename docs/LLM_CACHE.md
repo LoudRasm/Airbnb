@@ -1,13 +1,13 @@
 # Tạo và kiểm cache Gemini trước khi nộp
 
-Người phụ trách: TV5, nhóm trưởng kiểm trước khi merge. Nhóm chưa có cache thật tính đến 2026-11-16.
+TV5 phụ trách và nhóm trưởng kiểm trước khi merge. Repo đã có cache thật cho đủ 1.000 review.
 Không dùng fixture test, keyword baseline hoặc nhãn tay thay cho kết quả Gemini.
 
 1. Cài môi trường theo README, chuẩn bị raw của đủ bốn mốc. Manifest phạm vi nhóm đã có trong repo;
    workbook gốc nếu có vẫn được ưu tiên. Giữ nguyên 100 nhãn tay trước khi đánh giá.
 2. Cấu hình model/taxonomy trong `configs/toronto.yaml`. Model hiện tại là `gemini-3.5-flash-lite`.
    Đặt `GEMINI_API_KEY` vào môi trường trên máy người tạo cache; không commit khóa hoặc gửi vào chat.
-   Chương trình không tự nạp `.env`. Lệnh tạo cache có thể sử dụng quota/chi phí API theo tài khoản.
+   Script tạo cache cũng đọc `.env` cục bộ khi biến môi trường chưa có. Lệnh tạo cache có thể sử dụng quota/chi phí API theo tài khoản.
 3. Chạy từ gốc repo:
 
 ```bash

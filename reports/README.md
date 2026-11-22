@@ -1,51 +1,25 @@
 # Báo cáo nhóm 10
 
-Bản chính: `Nhom10_InsideAirbnb_Report.pdf` (9 trang, gồm một trang thông tin nhóm).
-Supplement: `Nhom10_InsideAirbnb_Supplement.pdf` (tệp riêng cho bảng chi tiết, phân tích lỗi và giải thích code).
-Mỗi người đóng góp 20% theo yêu cầu nhóm trưởng; MSSV để trống cho nhóm tự điền ở trang cuối.
-Chèn bìa một trang theo mẫu viện sẽ đưa PDF chính lên 10 trang; không gộp supplement vào PDF chính.
+[Báo cáo chính](Nhom10_InsideAirbnb_Report.pdf) có 9 trang và được tạo từ số liệu, hình của lần chạy đầy đủ. Trang cuối có thông tin và đóng góp của năm thành viên. Hai ô MSSV còn trống trong `Nhom10_InsideAirbnb_Report.tex`. Nếu thêm một trang bìa của Viện, bản nộp có 10 trang.
 
-Bản này dùng dữ liệu thật từ pipeline đầy đủ, 1.000 kết quả Gemini trong cache và cùng 100 nhãn tay cho hai phương pháp.
-Mốc thứ hai là 2025-12-12, đã được nhóm trưởng xác nhận với giảng viên. Các phiếu/CSV nhãn tay, workbook và raw không bị sửa.
-Các bản ghi bàn giao trong `sections/` được giữ làm lịch sử; nội dung báo cáo chính đã được đối chiếu lại bằng kết quả mới.
+`checks/` lưu báo cáo kiểm tra dữ liệu đầu vào. `sections/` lưu phần bàn giao của từng thành viên. Phụ lục kỹ thuật được lưu dưới dạng nguồn LaTeX.
 
-## Tái tạo
+## Tái tạo PDF
 
-Sau khi cài Python dependencies theo README gốc và có XeLaTeX/TeX Live:
+Từ gốc repo, dùng môi trường Python theo README và cài XeLaTeX trong TeX Live:
 
 ```bash
 python scripts/build_report.py --no-download
 ```
 
-Lệnh chạy pipeline từ cache rồi tạo số liệu, hình PDF vector và biên dịch cả hai tài liệu.
-Nếu raw chưa có, bỏ `--no-download` để tải theo config. Không cần key Gemini để build từ cache.
+Bỏ `--no-download` nếu còn thiếu raw. Dùng `--skip-pipeline` nếu lần chạy đầy đủ còn khớp config, cache và nhãn tay hiện tại. Script lấy bảng và hình từ kết quả thật rồi xuất lại `Nhom10_InsideAirbnb_Report.pdf`. Ghép bìa riêng sau lần biên dịch cuối nếu dùng mẫu Viện.
 
-Nếu đã có lần chạy real đầy đủ khớp cache hiện tại:
+Thêm `--supplement` để xuất PDF phụ lục vào `reports/generated/report/`. Phụ lục chứa bảng chi tiết, phân tích lỗi và giải thích các đoạn code quan trọng.
 
-```bash
-python scripts/build_report.py --skip-pipeline
-```
+## Sửa bằng Overleaf
 
-Chỉ tạo tài sản cho người biên dịch bằng Overleaf/XeLaTeX ở máy khác:
+1. Sau khi chạy pipeline đầy đủ, chạy `python scripts/build_report.py --skip-pipeline --assets-only`.
+2. Tải `Nhom10_InsideAirbnb_Report.tex`, `report_style.tex` và `latexmkrc` từ `reports/` lên thư mục gốc Overleaf. Chép `reports/generated/report/` vào `generated/report/` và các PDF hình trong `figures/report/` vào `figures/report/` trên Overleaf. Có thể bỏ thư mục trung gian `latex/`.
+3. Chọn XeLaTeX và đặt `Nhom10_InsideAirbnb_Report.tex` làm main document. Chỉnh nội dung hoặc điền MSSV trong file này rồi biên dịch.
 
-```bash
-python scripts/build_report.py --skip-pipeline --assets-only
-```
-
-`reports/generated/report/` chứa values/tables LaTeX, metadata số đo, CSV lỗi và các đoạn code trích thật.
-`figures/report/` chứa hình vector/PNG, sinh từ CSV và GeoJSON nguồn. Hai thư mục được gitignore vì có thể tái tạo;
-không sửa tay các giá trị trong đó. Script dừng nếu những số đo chính đổi so với phần diễn giải đã kiểm chứng,
-để tránh tự tạo hình mới dưới câu văn cũ. Khi thay dữ liệu/model/nhãn, cần đọc lại và sửa nội dung báo cáo.
-
-## Chỉnh văn bản và MSSV
-
-- Chỉnh nội dung chính và điền năm ô MSSV trong `Nhom10_InsideAirbnb_Report.tex`.
-- Chỉnh nội dung kỹ thuật trong `Nhom10_InsideAirbnb_Supplement.tex`.
-- `report_style.tex` giữ A4, Times New Roman/TeX Gyre Termes, cỡ 11pt và lề 2,15 cm như mẫu ban đầu.
-- Gói `Nhom10_InsideAirbnb_Report_Sources.zip` chứa source và tài sản đóng băng để sửa/biên dịch trên Overleaf:
-  chọn compiler XeLaTeX, main document là file Report; đổi main document sang Supplement để tạo tệp còn lại.
-  Gói này không chứa raw, workbook hoặc khóa API. Muốn cập nhật số liệu, chạy script trong repo.
-
-Mỗi hình có thông điệp, đơn vị, mẫu số và nguồn. Báo cáo không dùng số liệu minh họa để thay kết quả thật;
-accuracy 96% không được coi là độ chính xác aspects/language. Ước tính chi phí dùng 679.139 review của toàn Toronto
-ở mốc cuối và được ghi là gần đúng, không phải hóa đơn thực trả.
+Bảng và hình trong `reports/generated/` và `figures/` được tạo lại từ pipeline. Nếu thay đổi dữ liệu hoặc cache, kiểm lại các nhận định trong nội dung trước khi xuất PDF.

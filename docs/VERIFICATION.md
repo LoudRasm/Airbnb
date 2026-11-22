@@ -1,6 +1,6 @@
 # Phạm vi kiểm chứng
 
-Cập nhật **2026-11-17**. Baseline trước sửa: main `86b609e`.
+Cập nhật **2026-11-22**. Baseline trước sửa: main `86b609e`.
 Môi trường kiểm tra: Python **3.13.7**, dependencies theo `requirements.txt`; `pip check` không có xung đột.
 Không gọi Gemini thật. Không sửa raw, workbook, 100 nhãn tay hoặc phiếu gán nhãn.
 
@@ -12,9 +12,8 @@ python scripts/label_reviews.py check
 python run_pipeline.py --status
 ```
 
-**139 tests đạt** trên workspace và một bản source sạch không có raw/workbook/cache thật.
-Có 14 cảnh báo deprecation của thư viện vẽ; không có test lỗi. Bản source sạch dùng cùng môi trường dependency
-đã cài, nên chưa thay thế lần thử cài mới/chạy đầy đủ từ cache thật trước nộp.
+**139 tests đạt** trong bản sao chỉ chứa các file bàn giao, dùng môi trường cài mới từ `requirements.txt`.
+Có 14 cảnh báo deprecation của thư viện vẽ. Có kiểm tra đúng đường dẫn KPI `data/processed/kpi_*.csv`.
 
 Bộ test gồm unittest của các thành viên và test dạng hàm của Hiếu; CI chạy pytest để thu đủ.
 Có test tích hợp chạy các thuật toán/vẽ thật trên fixture nhỏ, cache giả chỉ trong thư mục tạm:
@@ -54,7 +53,7 @@ QA report có schema_drift, cross_host_id_changed, cross_category_changed, cross
 và neighbourhood_not_in_reference. Listings vẫn đủ 1.000/mốc; giá cuối có 980/1.000 hợp lệ,
 supply neighbourhood cuối **1.000**, không còn bị giảm xuống 980 do lọc giá. Giá phân tích mốc trước để trống;
 missingness giá nguồn vẫn là 69/1.000/28/20 theo bốn mốc để đối chiếu báo cáo đầu vào.
-Calendar thiếu **200/560/0/0 listing-ngày trong cửa sổ 90 ngày**; mẫu số expected giữ nguyên 90.000/mốc.
+Calendar thiếu **200/560/719/1.372 listing-ngày trong cửa sổ 90 ngày**; mẫu số expected là 90.000/mốc.
 Điều này khác số dòng calendar thô 365.000/mốc; không coi là dữ liệu thô bị giảm sau khi sửa.
 Host-ID changes vẫn 3/35/37, room-type changes 0/0/0 như phần phân tích cohort đã có.
 
@@ -71,11 +70,11 @@ workbook hiện tại. Workbook hiện tại và báo cáo listings/reviews/merg
 `08cf3abf4fd13693c3ebca169e0190ee6866e75c2b262f432c39081978b3a351`.
 Biên bản [data_alignment_2026-11-16.json](../reports/data_alignment_2026-11-16.json) ghi chênh lệch và hash nhãn tay.
 
-## Chưa được xác nhận
+## Chạy đầy đủ từ cache Gemini
 
-- Cache Gemini thật cho 1.000 ID: nhóm trưởng xác nhận chưa có. Chưa đo accuracy/macro-F1 LLM thật;
-  test không thay thế kết quả đó. [Cách tạo cache](LLM_CACHE.md).
-- Full pipeline trên dữ liệu thật và clone sạch không key: cần cache thật trước. Lệnh hiện dừng rõ khi thiếu cache.
-- Trang đề ghi 2025-11-11, workbook/báo cáo nhóm ghi 2025-12-12. Repo bảo toàn bốn mốc được giao;
-  cần xác nhận với giảng viên hoặc bổ sung mốc tháng 11.
-- PDF cuối, lựa chọn 5–8 KPI chính và bảo vệ kết luận vẫn cần nhóm chốt. Không tag final ở đợt sửa này.
+Bốn mốc giữ theo workbook, gồm `2025-12-12` đã được giảng viên xác nhận với nhóm trưởng.
+Ngày 2026-11-22, bản sao chỉ chứa các file bàn giao tải đủ 16 tệp và chạy hết lệnh mặc định mà không có workbook cục bộ hoặc khóa Gemini. SHA-256 của 16 tệp tải lại khớp dữ liệu đã dùng trong nhóm.
+Chạy lại lệnh với các phiên bản cài mới từ `requirements.txt` xác nhận đủ sáu CSV KPI ở `data/processed/kpi_*.csv`.
+Đầu ra thật có 4.000 listings, 5.000 review duy nhất và 1.000 dự đoán Gemini.
+Trên cùng 100 nhãn tay, Gemini đạt 96% accuracy và 0,8594 macro-F1. Baseline đạt 95% và 0,8278.
+Đối chiếu trong `reports/generated/real/evaluation.csv` và [PDF chính](../reports/Nhom10_InsideAirbnb_Report.pdf).

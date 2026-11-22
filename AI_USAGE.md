@@ -2,8 +2,7 @@
 
 ## Công cụ đã dùng (vào việc gì)
 - OpenAI Codex: tạo starter repository từ tài liệu ZIP và đề bài, ngày 06/10/2026.
-- Gemini API: starter cũ từng có adapter AI; hiện `llm.py` là TODO của TV5.
-  Chưa chạy API và chưa có kết quả LLM thật được kiểm chứng trong khung hiện tại.
+- Gemini API: tạo 1.000 kết quả có cấu trúc cho mẫu review được giao. Pipeline khi chấm đọc cache đã lưu.
 
 ## Prompt then chốt
 1. Yêu cầu tạo bộ khung repository nhóm 5 người, bốn snapshot Toronto, pipeline và Git workflow (run_pipeline.py, src/, docs/).
@@ -154,6 +153,13 @@ LLM, nhãn tay và giải thích toàn bộ code trước khi nộp. Không dùn
 - Kiểm chứng: 53 test của repo đạt (`python -m unittest discover -s tests -v`); chạy `scripts/run_qa.py` trên raw 4 mốc với 1.000 ID của nhóm:
   20 listing thiếu giá ở mốc cuối khớp data check, entire/private 875/125 khớp, 1.000 listing nằm đúng vùng chữ nhật workbook ở cả 4 mốc,
   số cột 79/85/90/90 khớp `reports/checks`. Số liệu trong `reports/sections/tv2.md` lấy từ các CSV do script sinh.
+
+## Cập nhật 2026-11-22 — rà repo trước khi nộp
+
+- Yêu cầu: rà toàn bộ pipeline, dọn file trùng và giữ một PDF chính mới nhất.
+- Codex phát hiện bản trước chỉ xuất KPI dưới `data/processed/real/`. Đã bổ sung đường dẫn theo đề, kiểm CSV dự đoán khớp cache trước khi dựng báo cáo và làm rõ thao tác QA trong LaTeX.
+- Giữ nguồn phụ lục để tái tạo, bỏ các bản PDF/nguồn trùng và dọn đầu ra đã chạy trong notebook.
+- Kiểm chứng bằng 139 tests, lần chạy dữ liệu thật trong bản sao sạch, đối chiếu SHA-256 của 16 tệp nguồn và chạy lại data check. Cache và nhãn tay giữ nguyên. Đối chiếu lại số liệu và bố cục PDF chính sau khi dựng.
 
 ## Cập nhật 10/11/2026 — TV2: hình QA (`viz_qa.py`)
 
