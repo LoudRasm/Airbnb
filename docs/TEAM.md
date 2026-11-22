@@ -3,9 +3,8 @@
 Thứ tự do nhóm trưởng chốt: TV1 Dương Nhật Huy; TV2 Mai Anh Đức; TV3 Nguyễn Quốc Hiếu;
 TV4 Vũ Phạm Khánh Nam; TV5 Phan Ngọc Huy. Mỗi người phụ trách phần mình ở cả bốn mốc.
 
-**Cập nhật 2026-11-16:** các module đã tích hợp, 100 nhãn tay đã có và giữ nguyên.
-Xem [checklist hiện tại](FINAL_CHECKLIST.md), [kiểm chứng](VERIFICATION.md) và README.
-Code READY không thay cho peer review kết luận; Gemini thật và báo cáo cuối còn chờ hoàn thiện.
+Các module đã được tích hợp. Bản nộp dùng cache Gemini cho 1.000 review và 100 nhãn tay.
+Xem [checklist nộp](FINAL_CHECKLIST.md), [hồ sơ kiểm chứng](VERIFICATION.md) và [README](../README.md).
 
 ## Hai giai đoạn
 
@@ -17,13 +16,11 @@ mỗi người một snapshot và không chuyển code thủ công sau khi làm 
 config/checks, kết quả CSV/notes và tests. Kết quả cũ được giữ nguyên; hai script kiểm tra cá nhân đã chuyển tiếp sang data check chung để bỏ ID/đường dẫn ghi cứng. Lịch sử thuật toán cũ vẫn nằm trong Git.
 Không biến phần này thành TODO và không dùng nó thay cho QA/phân tích cả kỳ.
 
-**Bài phân tích cả kỳ:** bảng dưới là phân công sở hữu module; một số đã có implementation,
-các bước chốt bài theo checklist còn mở. Tên/chữ ký thống nhất để nhóm trưởng gọi qua import.
-Theo dõi hoàn thành trong checklist hiện tại thay vì suy ra từ bảng phân công.
+**Bài phân tích cả kỳ.** Bảng dưới ghi phần việc và module do mỗi thành viên phụ trách.
 
-| Người | File trong src/airbnb/ | Nhiệm vụ tự triển khai | Reviewer |
+| Người | File trong src/airbnb/ | Nhiệm vụ | Reviewer |
 |---|---|---|---|
-| TV1 — Dương Nhật Huy | pipeline.py, outputs.py, labels.py, loading.py, download.py, io.py, analysis.py, viz_market.py; run_pipeline.py ở gốc | Config/tải/loader/import đã có nền; còn market evolution và hình, tích hợp PR | Nam |
+| TV1 — Dương Nhật Huy | pipeline.py, outputs.py, labels.py, loading.py, download.py, io.py, analysis.py, viz_market.py; run_pipeline.py ở gốc | Điều phối, config/tải/loader, tích hợp pipeline, phân tích cohort và báo cáo chung | Nam |
 | TV2 — Mai Anh Đức | qa.py, eda.py, viz_qa.py | QA rules, cleaning/types/flags/drift, data dictionary, tác động KPI và hình QA | Hiếu |
 | TV3 — Nguyễn Quốc Hiếu | kpi.py, viz_spatial.py | Giá mốc cuối, entire-home/host share, vùng/map, denominator và giới hạn mẫu | Nhóm trưởng |
 | TV4 — Vũ Phạm Khánh Nam | calendar.py, viz_calendar.py | Streaming, availability 30/90 ngày, coverage, temporal; không dùng giá calendar | Phan Huy |

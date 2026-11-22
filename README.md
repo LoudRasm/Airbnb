@@ -7,7 +7,7 @@ Mã dữ liệu: **DSE2049-C01-G10-toronto**. Tiền tệ: **CAD**.
 · [Đề bài hiện hành](https://courses.iaidev.com/programming-for-data-processing/2627-1/projects/project_airbnb.html)
 · [Nguồn Toronto](https://data.insideairbnb.com/canada/on/toronto/)
 
-## Bản chuẩn bị nộp ngày 2026-11-22
+## Bản nộp cuối
 
 Pipeline đã tích hợp code của năm thành viên. Repo có cache Gemini cho đủ **1.000 review** và giữ nguyên **100 nhãn tay**.
 Kết quả trên cùng 100 nhãn tay:
@@ -16,9 +16,9 @@ nên không dùng riêng accuracy để tuyên bố mô hình vượt trội ở
 
 [Tải PDF báo cáo chính](reports/Nhom10_InsideAirbnb_Report.pdf) · [Cách sửa và tái tạo PDF](reports/README.md)
 
-PDF có 9 trang. Nhóm trưởng điền hai MSSV còn trống và có thể thêm một trang bìa theo mẫu Viện.
-Mốc **2025-12-12 đã được nhóm trưởng xác nhận với giảng viên**. Xem [checklist nộp và tag `final`](docs/FINAL_CHECKLIST.md).
-Xem [hướng dẫn cache](docs/LLM_CACHE.md) để biết cách chuẩn bị lại nếu đổi model/prompt/text.
+PDF có 9 trang và đã có đủ MSSV của năm thành viên. Nhóm trưởng có thể thêm một trang bìa theo mẫu Viện.
+Mốc **2025-12-12 đã được nhóm trưởng xác nhận với giảng viên**.
+[Checklist nộp](docs/FINAL_CHECKLIST.md) · [Minh bạch sử dụng AI](AI_USAGE.md) · [Hướng dẫn cache](docs/LLM_CACHE.md)
 
 Bên nhận phân tích giả định: nhóm theo dõi lưu trú ngắn hạn và du lịch Toronto. Mục tiêu là theo dõi
 cơ cấu nguồn cung trong cohort được giao, mức giá cuối kỳ, lịch sẵn có và vấn đề trải nghiệm khách.
